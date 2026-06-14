@@ -971,21 +971,25 @@
       font-weight: 500;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--text-muted);
-      background: rgba(240, 230, 211, 0.92);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--beige);
+      color: transparent;
+      background: transparent;
+      border: 1px solid transparent;
       padding: 9px 17px;
       border-radius: 30px;
+      cursor: default;
+      transition: color 0.4s, background 0.4s, border-color 0.4s;
+    }
+    .owner-toggle:hover {
+      color: var(--text-muted);
+      background: rgba(240, 230, 211, 0.92);
+      border-color: var(--beige);
       cursor: pointer;
-      transition: background 0.2s, color 0.2s, border-color 0.2s;
-      display: none;
     }
     body.owner .owner-toggle {
-      display: block;
-      background: var(--dark-brown);
       color: var(--parchment);
+      background: var(--dark-brown);
       border-color: var(--dark-brown);
+      cursor: pointer;
     }
     body.owner .owner-toggle:hover { background: var(--brown); }
 
