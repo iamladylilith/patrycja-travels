@@ -899,6 +899,53 @@
       border-color: var(--dark-brown);
     }
 
+    /* ── Owner login modal ── */
+    .login-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(40, 28, 18, 0.55);
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .login-overlay.open { display: flex; }
+    .login-box {
+      background: var(--parchment);
+      border: 1px solid var(--beige);
+      border-radius: 8px;
+      padding: 32px 30px;
+      width: 320px; max-width: 90vw;
+      box-shadow: 0 20px 60px rgba(40, 28, 18, 0.35);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .login-box h3 {
+      margin: 0 0 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--dark-brown);
+    }
+    .login-box p { margin: 0 0 18px; font-size: 0.74rem; color: var(--text-muted); }
+    .login-box input {
+      width: 100%; box-sizing: border-box;
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+      color: var(--text); background: var(--cream);
+      border: 1px solid var(--beige); border-radius: 4px;
+      padding: 10px 12px; margin-bottom: 10px;
+    }
+    .login-box input:focus { outline: none; border-color: var(--gold); }
+    .login-actions { display: flex; gap: 8px; margin-top: 6px; }
+    .login-btn {
+      flex: 1; font-family: 'DM Sans', sans-serif;
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      border: none; border-radius: 4px; padding: 11px 0; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .login-btn.primary { color: var(--parchment); background: var(--dark-brown); }
+    .login-btn.primary:hover { background: var(--brown); }
+    .login-btn.ghost { color: var(--text-muted); background: transparent; border: 1px solid var(--beige); }
+    .login-error { color: #b5462f; font-size: 0.72rem; min-height: 1em; margin-top: 8px; }
+
     .owner-row {
       display: none;
       width: 100%;
@@ -1687,7 +1734,7 @@
           <input id="new-outfit-pieces" type="text" data-i18n-ph="ph-outfit-pieces" placeholder="Where are the pieces from? (optional — e.g. Top: Zara · Jeans: Mango)" />
         </div>
         <div class="outfit-form-row" style="justify-content:flex-end">
-          <button class="outfit-form-add" onclick="addOutfit()" data-i18n="outfits-addbtn">Add outfit</button>
+          <button class="outfit-form-add" id="outfit-add-btn" onclick="addOutfit()" data-i18n="outfits-addbtn">Add outfit</button>
         </div>
       </div>
 
@@ -2070,7 +2117,23 @@
   </div>
 
   <!-- ── Owner mode toggle (only you use this) ── -->
-  <button class="owner-toggle" onclick="toggleOwner()" title="Add or edit your video links">⚙ &nbsp; Owner mode</button>
+  <button class="owner-toggle" onclick="toggleOwner()" title="Log in to add or edit content">⚙ &nbsp; Owner mode</button>
+
+  <!-- ── Owner login modal ── -->
+  <div class="login-overlay" id="login-overlay" onclick="loginBackdrop(event)">
+    <div class="login-box">
+      <h3>Owner login</h3>
+      <p>Sign in to edit your site.</p>
+      <input type="email" id="login-email" placeholder="Email" autocomplete="username" />
+      <input type="password" id="login-password" placeholder="Password" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') doLogin()" />
+      <div class="login-error" id="login-error"></div>
+      <div class="login-actions">
+        <button class="login-btn ghost" onclick="closeLogin()">Cancel</button>
+        <button class="login-btn primary" id="login-submit" onclick="doLogin()">Log in</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Video overlay player ── -->
   <div class="video-overlay" id="video-overlay" onclick="closeVideo(event)">
@@ -2080,7 +2143,15 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    /* ── Supabase backend (free tier): database + file storage + login ──
+       The anon/publishable key is safe in the page; writes are protected
+       server-side by Row Level Security, so only a logged-in owner can edit. */
+    const SUPABASE_URL = 'https://khirmbslimdbyjwvggxf.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_8tibH8JxxZZN8tf_PPKlWg_zk07AAo2';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     /* ── Language ── */
     let currentLang = localStorage.getItem('patriciaLang') || 'en';
 
@@ -2408,22 +2479,22 @@
       },
     };
 
-    const TRIP_PHOTOS_KEY = 'patriciaTripPhotos';
     let currentTripId = null;
 
-    /* One-time cleanup: wipe full-size photos saved before compression existed.
-       Runs once, then sets a flag so it never touches new photos again. */
-    (function () {
-      if (!localStorage.getItem('patriciaPhotosReset_v1')) {
-        localStorage.removeItem(TRIP_PHOTOS_KEY);
-        localStorage.setItem('patriciaPhotosReset_v1', '1');
-      }
-    })();
+    /* Trip photos live in Supabase; cached in memory as { tripId: [{id,url,path}] }. */
+    let tripPhotosCache = {};
 
-    function loadTripPhotos() {
-      try { return JSON.parse(localStorage.getItem(TRIP_PHOTOS_KEY)) || {}; } catch(e) { return {}; }
+    function loadTripPhotos() { return tripPhotosCache; }
+
+    async function fetchTripPhotos() {
+      const res = await sb.from('trip_photos').select('*').order('created_at', { ascending: true });
+      if (res.error) { console.error(res.error); return; }
+      const grouped = {};
+      res.data.forEach(function (r) {
+        (grouped[r.trip_id] = grouped[r.trip_id] || []).push({ id: r.id, url: r.img_url, path: r.storage_path });
+      });
+      tripPhotosCache = grouped;
     }
-    function saveTripPhotos(obj) { localStorage.setItem(TRIP_PHOTOS_KEY, JSON.stringify(obj)); }
 
     function openTrip(id) {
       currentTripId = id;
@@ -2484,12 +2555,12 @@
       grid.innerHTML = '';
       if (!photos.length) { empty.style.display = ''; return; }
       empty.style.display = 'none';
-      photos.forEach(function (src, i) {
+      photos.forEach(function (photo, i) {
         const wrap = document.createElement('div');
         wrap.className = 'trip-photo-wrap';
         const img = document.createElement('img');
         img.className = 'trip-gallery-img';
-        img.src = src;
+        img.src = photo.url;
         img.onclick = function () { openTripPhoto(id, i); };
         const del = document.createElement('button');
         del.className = 'trip-photo-delete';
@@ -2501,9 +2572,15 @@
       });
     }
 
-    function deleteTripPhoto(id, index) {
-      const all = loadTripPhotos();
-      if (all[id]) { all[id].splice(index, 1); saveTripPhotos(all); renderTripGallery(id); }
+    async function deleteTripPhoto(id, index) {
+      const photos = tripPhotosCache[id];
+      if (!photos || !photos[index]) return;
+      const photo = photos[index];
+      const del = await sb.from('trip_photos').delete().eq('id', photo.id);
+      if (del.error) { alert('Could not delete: ' + del.error.message); return; }
+      if (photo.path) await sb.storage.from('photos').remove([photo.path]);
+      photos.splice(index, 1);
+      renderTripGallery(id);
     }
 
     /* Shrink an image to a sensible size before storing, so many photos
@@ -2531,31 +2608,28 @@
       reader.readAsDataURL(file);
     }
 
-    /* Add one or many photos at once. Each is compressed, then all are
-       saved together in a single write so none get lost in a race. */
-    function addTripPhotos(fileList) {
+    /* Add one or many photos at once. Each is compressed, uploaded to Supabase
+       Storage, and recorded in the trip_photos table. */
+    async function addTripPhotos(fileList) {
       if (!currentTripId) return;
       const tripId = currentTripId;
       const imgs = Array.from(fileList).filter(function (f) { return f.type.startsWith('image/'); });
       if (!imgs.length) return;
-      const results = [];
-      let pending = imgs.length;
-      imgs.forEach(function (file, i) {
-        compressImage(file, function (dataUrl) {
-          results[i] = dataUrl;
-          if (--pending === 0) {
-            const all = loadTripPhotos();
-            if (!all[tripId]) all[tripId] = [];
-            results.forEach(function (d) { if (d) all[tripId].push(d); });
-            try {
-              saveTripPhotos(all);
-            } catch (err) {
-              alert('Storage is full — some photos could not be saved. Try removing a few older ones, or add fewer at a time.');
-            }
-            if (currentTripId === tripId) renderTripGallery(tripId);
-          }
-        });
-      });
+      const note = document.getElementById('td-video-note');
+      try {
+        for (let i = 0; i < imgs.length; i++) {
+          const up = await uploadPhotoFile(imgs[i], 'trips/' + tripId);
+          const ins = await sb.from('trip_photos')
+            .insert({ trip_id: tripId, img_url: up.url, storage_path: up.path })
+            .select().single();
+          if (ins.error) throw ins.error;
+          const r = ins.data;
+          (tripPhotosCache[tripId] = tripPhotosCache[tripId] || []).push({ id: r.id, url: r.img_url, path: r.storage_path });
+          if (currentTripId === tripId) renderTripGallery(tripId);
+        }
+      } catch (err) {
+        alert('Some photos could not be uploaded: ' + (err.message || err));
+      }
     }
 
     /* ── Trip upload zone drag-drop ── */
@@ -2588,12 +2662,11 @@
       if (e.target === document.getElementById('video-overlay')) closeOverlay();
     }
 
-    /* ── Owner mode: paste links on the page, saved in this browser ── */
-    const LS_KEY = 'patriciaTravelVideos';
-
-    function loadSaved() {
-      try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
-      catch (e) { return {}; }
+    /* ── Owner mode: video links, stored in Supabase (video_links table) ── */
+    async function fetchVideoLinks() {
+      const res = await sb.from('video_links').select('*');
+      if (res.error) { console.error(res.error); return; }
+      res.data.forEach(function (r) { VIDEOS[r.trip_id] = r.url; });
     }
 
     function refreshWatchButtons() {
@@ -2604,15 +2677,20 @@
       }
     }
 
-    function saveTripLink() {
+    async function saveTripLink() {
       if (!currentTripId) return;
+      const tripId = currentTripId;
       const url  = document.getElementById('td-video-input').value.trim();
-      const data = loadSaved();
-      if (url) data[currentTripId] = url; else delete data[currentTripId];
-      localStorage.setItem(LS_KEY, JSON.stringify(data));
-      VIDEOS[currentTripId] = url;
-      refreshWatchButtons();
       const note = document.getElementById('td-video-note');
+      let res;
+      if (url) {
+        res = await sb.from('video_links').upsert({ trip_id: tripId, url: url, updated_at: new Date().toISOString() });
+      } else {
+        res = await sb.from('video_links').delete().eq('trip_id', tripId);
+      }
+      if (res.error) { note.textContent = 'Error saving'; note.style.opacity = '1'; return; }
+      VIDEOS[tripId] = url;
+      refreshWatchButtons();
       note.textContent = url ? '✓ Saved' : 'Cleared';
       note.style.opacity = '1';
       setTimeout(function () { note.style.opacity = '0'; }, 1800);
@@ -2620,22 +2698,86 @@
 
     function saveLink(id) { /* kept for compatibility */ saveTripLink(); }
 
-    function toggleOwner() {
-      document.body.classList.toggle('owner');
+    /* ── Owner mode: real login via Supabase Auth ──
+       The ⚙ button opens a login form when logged out, or logs you out when
+       already in owner mode. Supabase remembers the session across reloads. */
+    async function toggleOwner() {
+      if (document.body.classList.contains('owner')) {
+        await sb.auth.signOut();
+        document.body.classList.remove('owner');
+      } else {
+        openLogin();
+      }
+    }
+
+    function openLogin() {
+      document.getElementById('login-error').textContent = '';
+      document.getElementById('login-password').value = '';
+      document.getElementById('login-overlay').classList.add('open');
+      document.getElementById('login-email').focus();
+    }
+    function closeLogin() {
+      document.getElementById('login-overlay').classList.remove('open');
+    }
+    function loginBackdrop(e) {
+      if (e.target === document.getElementById('login-overlay')) closeLogin();
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errEl = document.getElementById('login-error');
+      const btn = document.getElementById('login-submit');
+      errEl.textContent = '';
+      if (!email || !password) { errEl.textContent = 'Enter your email and password.'; return; }
+      btn.disabled = true; btn.textContent = 'Logging in…';
+      const { error } = await sb.auth.signInWithPassword({ email: email, password: password });
+      btn.disabled = false; btn.textContent = 'Log in';
+      if (error) { errEl.textContent = 'Wrong email or password.'; return; }
+      document.body.classList.add('owner');
+      closeLogin();
+    }
+
+    /* ── Supabase storage helpers: upload a compressed photo, get back a URL ── */
+    function dataUrlToBlob(dataUrl) {
+      const parts = dataUrl.split(',');
+      const mime = parts[0].match(/:(.*?);/)[1];
+      const bin = atob(parts[1]);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return new Blob([arr], { type: mime });
+    }
+
+    /* Compress (reuse existing compressImage) then upload to the "photos" bucket.
+       Returns { url, path } — url goes in the page, path lets us delete it later. */
+    function uploadPhotoFile(file, folder) {
+      return new Promise(function (resolve, reject) {
+        compressImage(file, async function (dataUrl) {
+          if (!dataUrl) { reject(new Error('bad image')); return; }
+          const blob = dataUrlToBlob(dataUrl);
+          const path = folder + '/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.jpg';
+          const up = await sb.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg' });
+          if (up.error) { reject(up.error); return; }
+          const pub = sb.storage.from('photos').getPublicUrl(path);
+          resolve({ url: pub.data.publicUrl, path: path });
+        });
+      });
     }
 
     /* ════════════════════════════════════════
-       OUTFITS
+       OUTFITS  (stored in Supabase; cached in memory for rendering)
     ════════════════════════════════════════ */
-    const OUTFITS_KEY = 'patriciaOutfits';
+    let outfitsCache = [];
 
-    function loadOutfits() {
-      try { return JSON.parse(localStorage.getItem(OUTFITS_KEY)) || []; }
-      catch (e) { return []; }
-    }
+    function loadOutfits() { return outfitsCache; }
 
-    function saveOutfits(arr) {
-      localStorage.setItem(OUTFITS_KEY, JSON.stringify(arr));
+    async function fetchOutfits() {
+      const res = await sb.from('outfits').select('*').order('created_at', { ascending: false });
+      if (res.error) { console.error(res.error); return; }
+      outfitsCache = res.data.map(function (r) {
+        return { id: r.id, img: r.img_url, path: r.storage_path,
+                 name: r.name, loc: r.loc, year: r.year, pieces: r.pieces };
+      });
     }
 
     function renderOutfits() {
@@ -2703,26 +2845,42 @@
       document.getElementById('outfit-dropzone').classList.remove('has-file');
     }
 
-    function addOutfit() {
+    async function addOutfit() {
       const name   = document.getElementById('new-outfit-name').value.trim();
       const loc    = document.getElementById('new-outfit-loc').value.trim();
       const year   = document.getElementById('new-outfit-year').value.trim();
       const pieces = document.getElementById('new-outfit-pieces').value.trim();
       if (!pendingImg || !name) return;
-      const outfits = loadOutfits();
-      outfits.push({ id: 'o' + Date.now(), img: pendingImg, name: name, loc: loc, year: year, pieces: pieces });
-      saveOutfits(outfits);
-      dzClear({ stopPropagation: function(){} });
-      document.getElementById('new-outfit-name').value   = '';
-      document.getElementById('new-outfit-loc').value    = '';
-      document.getElementById('new-outfit-year').value   = '';
-      document.getElementById('new-outfit-pieces').value = '';
-      renderOutfits();
+      const btn = document.getElementById('outfit-add-btn');
+      btn.disabled = true; const label = btn.textContent; btn.textContent = 'Saving…';
+      try {
+        const up = await uploadPhotoFile(dataUrlToBlob(pendingImg), 'outfits');
+        const ins = await sb.from('outfits')
+          .insert({ img_url: up.url, storage_path: up.path, name: name, loc: loc, year: year, pieces: pieces })
+          .select().single();
+        if (ins.error) throw ins.error;
+        const r = ins.data;
+        outfitsCache.unshift({ id: r.id, img: r.img_url, path: r.storage_path,
+                               name: r.name, loc: r.loc, year: r.year, pieces: r.pieces });
+        dzClear({ stopPropagation: function(){} });
+        document.getElementById('new-outfit-name').value   = '';
+        document.getElementById('new-outfit-loc').value    = '';
+        document.getElementById('new-outfit-year').value   = '';
+        document.getElementById('new-outfit-pieces').value = '';
+        renderOutfits();
+      } catch (e) {
+        alert('Could not save outfit: ' + (e.message || e));
+      } finally {
+        btn.disabled = false; btn.textContent = label;
+      }
     }
 
-    function deleteOutfit(id) {
-      const outfits = loadOutfits().filter(function (o) { return o.id !== id; });
-      saveOutfits(outfits);
+    async function deleteOutfit(id) {
+      const outfit = outfitsCache.find(function (o) { return o.id === id; });
+      const del = await sb.from('outfits').delete().eq('id', id);
+      if (del.error) { alert('Could not delete: ' + del.error.message); return; }
+      if (outfit && outfit.path) await sb.storage.from('photos').remove([outfit.path]);
+      outfitsCache = outfitsCache.filter(function (o) { return o.id !== id; });
       renderOutfits();
     }
 
@@ -2776,7 +2934,7 @@
     /* Trip gallery — open at a given photo and arrow through the rest */
     function openTripPhoto(tripId, index) {
       const all = loadTripPhotos();
-      overlayPhotos = all[tripId] || [];
+      overlayPhotos = (all[tripId] || []).map(function (p) { return p.url; });
       overlayIndex  = index;
       document.getElementById('photo-overlay-img').alt = tripId + ' ' + (index + 1);
       renderOverlayPhoto();
@@ -2806,12 +2964,15 @@
       document.body.style.overflow = '';
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-      const saved = loadSaved();
-      Object.keys(saved).forEach(function (id) {
-        if (VIDEOS.hasOwnProperty(id)) VIDEOS[id] = saved[id];
-      });
+    document.addEventListener('DOMContentLoaded', async function () {
+      /* Restore owner mode if a Supabase login session is still active. */
+      const sess = await sb.auth.getSession();
+      if (sess.data.session) document.body.classList.add('owner');
+
+      /* Load all shared content from Supabase, then render. */
+      await Promise.all([fetchVideoLinks(), fetchOutfits(), fetchTripPhotos()]);
       renderOutfits();
+      if (currentTripId) { setTripVideo(currentTripId); renderTripGallery(currentTripId); }
     });
 
     /* ── Map page (Leaflet — free, no API key, unlimited pins) ── */
