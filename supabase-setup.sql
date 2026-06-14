@@ -32,15 +32,33 @@ create table if not exists public.outfits (
   created_at   timestamptz default now()
 );
 
--- 2) ROW LEVEL SECURITY --------------------------------------
+create table if not exists public.page_views (
+  id         uuid primary key default gen_random_uuid(),
+  visited_at timestamptz default now()
+);
+
+-- 2) TABLE PRIVILEGES ----------------------------------------
+-- RLS (below) decides which rows; these GRANTs give the base access.
+grant usage on schema public to anon, authenticated;
+grant select on public.video_links, public.trip_photos, public.outfits to anon, authenticated;
+grant insert, update, delete on public.video_links, public.trip_photos, public.outfits to authenticated;
+grant insert on public.page_views to anon, authenticated;
+grant select on public.page_views to authenticated;
+
+-- 3) ROW LEVEL SECURITY --------------------------------------
 alter table public.video_links enable row level security;
 alter table public.trip_photos enable row level security;
 alter table public.outfits     enable row level security;
+alter table public.page_views  enable row level security;
 
 -- Public read for everyone (anon visitors)
 create policy "public read video_links" on public.video_links for select using (true);
 create policy "public read trip_photos" on public.trip_photos for select using (true);
 create policy "public read outfits"     on public.outfits     for select using (true);
+
+-- page_views: anyone can insert (tracks visits), only owner can read the count
+create policy "public insert page_views" on public.page_views for insert with check (true);
+create policy "auth read page_views" on public.page_views for select to authenticated using (true);
 
 -- Write (insert/update/delete) only for logged-in users
 create policy "auth write video_links" on public.video_links for all
@@ -50,7 +68,7 @@ create policy "auth write trip_photos" on public.trip_photos for all
 create policy "auth write outfits" on public.outfits for all
   to authenticated using (true) with check (true);
 
--- 3) STORAGE BUCKET for the actual photo files ----------------
+-- 4) STORAGE BUCKET for the actual photo files ----------------
 insert into storage.buckets (id, name, public)
 values ('photos', 'photos', true)
 on conflict (id) do nothing;
