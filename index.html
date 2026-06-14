@@ -2443,7 +2443,7 @@
 
       <!-- ── Trip detail panel (shown when a card is clicked) ── -->
       <div class="trip-detail" id="trip-detail">
-        <button class="trip-back" onclick="history.back()" data-i18n="td-back">← All Adventures</button>
+        <button class="trip-back" onclick="closeTripDetail()" data-i18n="td-back">← All Adventures</button>
 
         <!-- Owner mode: paste video link for this trip -->
         <div class="owner-row" id="td-owner-link-row" style="margin-bottom:1.5rem;gap:8px;align-items:center">
@@ -3425,7 +3425,7 @@
     }
 
     /* ── Navigation ── */
-    let _histNav = false; // true while handling popstate — prevents double-pushing
+    let _histNav = false; // true while handling popstate — prevents openTrip double-pushing
 
     function showPage(id) {
       // Always reset the Adventures tab back to the card grid on any navigation
@@ -3435,7 +3435,7 @@
       document.getElementById('page-' + id).classList.add('active');
       document.querySelector(`.nav-link[data-page="${id}"]`).classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (!_histNav) history.pushState({ page: id }, '');
+      // Tab switches do NOT push history — only openTrip does.
     }
 
     window.addEventListener('popstate', function (e) {
@@ -3443,10 +3443,9 @@
       const state = e.state;
       if (state && state.trip) {
         openTrip(state.trip);
-      } else if (state && state.page) {
-        showPage(state.page);
       } else {
-        showPage('welcome');
+        if (typeof closeTripDetail === 'function') closeTripDetail();
+        showPage((state && state.page) || 'welcome');
       }
       _histNav = false;
     });
@@ -3737,7 +3736,10 @@
       renderTripGallery(id);
       refreshWatchButtons();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (!_histNav) history.pushState({ page: 'adventures', trip: id }, '');
+      if (!_histNav) {
+        const s = history.state;
+        if (!s || s.trip !== id) history.pushState({ page: 'adventures', trip: id }, '');
+      }
     }
 
     /* Show the vlog inline (or a friendly note if there isn't one) */
