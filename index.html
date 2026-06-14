@@ -979,13 +979,15 @@
       border-radius: 30px;
       cursor: pointer;
       transition: background 0.2s, color 0.2s, border-color 0.2s;
+      display: none;
     }
-    .owner-toggle:hover { border-color: var(--gold); color: var(--gold); }
     body.owner .owner-toggle {
+      display: block;
       background: var(--dark-brown);
       color: var(--parchment);
       border-color: var(--dark-brown);
     }
+    body.owner .owner-toggle:hover { background: var(--brown); }
 
     /* ── Owner login modal ── */
     .login-overlay {
@@ -4001,6 +4003,14 @@
         openLogin();
       }
     }
+
+    /* Shift+O opens the login when not already in owner mode */
+    document.addEventListener('keydown', function(e) {
+      const tag = document.activeElement.tagName;
+      if (e.key === 'O' && e.shiftKey && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+        if (!document.body.classList.contains('owner')) openLogin();
+      }
+    });
 
     function openLogin() {
       document.getElementById('login-error').textContent = '';
