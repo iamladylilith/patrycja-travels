@@ -3421,6 +3421,8 @@
     }
 
     /* ── Navigation ── */
+    let _histNav = false; // true while handling popstate — prevents double-pushing
+
     function showPage(id) {
       // Always reset the Adventures tab back to the card grid on any navigation
       if (typeof closeTripDetail === 'function') closeTripDetail();
@@ -3429,7 +3431,21 @@
       document.getElementById('page-' + id).classList.add('active');
       document.querySelector(`.nav-link[data-page="${id}"]`).classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (!_histNav) history.pushState({ page: id }, '');
     }
+
+    window.addEventListener('popstate', function (e) {
+      _histNav = true;
+      const state = e.state;
+      if (state && state.trip) {
+        openTrip(state.trip);
+      } else if (state && state.page) {
+        showPage(state.page);
+      } else {
+        showPage('welcome');
+      }
+      _histNav = false;
+    });
 
     /* ═══════════════════════════════════════════════════════════
        ▼▼▼  PASTE YOUR VIDEO LINKS HERE  ▼▼▼
@@ -3717,6 +3733,7 @@
       renderTripGallery(id);
       refreshWatchButtons();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (!_histNav) history.pushState({ page: 'adventures', trip: id }, '');
     }
 
     /* Show the vlog inline (or a friendly note if there isn't one) */
@@ -4268,6 +4285,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', async function () {
+      /* Seed the initial history entry so the back button never exits the site cold. */
+      history.replaceState({ page: 'welcome' }, '');
+
       /* Restore owner mode if a Supabase login session is still active. */
       const sess = await sb.auth.getSession();
       if (sess.data.session) { document.body.classList.add('owner'); loadViewCount(); }
