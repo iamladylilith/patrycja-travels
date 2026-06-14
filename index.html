@@ -630,6 +630,84 @@
       gap: 22px;
     }
 
+    /* ── Two Lives toggle button ── */
+    .two-lives-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1.6rem;
+      padding: 0.6rem 1.6rem;
+      background: none;
+      border: 1px solid var(--beige);
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--brown);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .two-lives-btn:hover {
+      background: var(--parchment);
+      border-color: var(--gold);
+      color: var(--dark-brown);
+    }
+    .two-lives-btn .tl-dot {
+      display: inline-flex;
+      gap: 4px;
+    }
+    .two-lives-btn .tl-dot span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .two-lives-btn .tl-dot span:first-child { background: var(--gold); }
+    .two-lives-btn .tl-dot span:last-child  { background: var(--brown); opacity: 0.5; }
+
+    /* ── Two Lives sub-view ── */
+    .two-lives-view { display: none; }
+    .two-lives-view.open { display: block; animation: pgFade 0.35s ease; }
+
+    .tl-back {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-muted);
+      background: none; border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; padding: 0;
+      margin-bottom: 2.5rem; transition: color 0.2s;
+    }
+    .tl-back:hover { color: var(--dark-brown); }
+
+    .tl-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .tl-eyebrow {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem;
+    }
+    .tl-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700; color: var(--dark-brown);
+      line-height: 1.15; margin-bottom: 0.6rem;
+    }
+    .tl-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+    .tl-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 30px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
     .video-card {
       background: var(--parchment);
       border-radius: 3px;
@@ -1338,160 +1416,83 @@
   <div class="page" id="page-adventures">
     <div class="adv-wrap">
 
-      <div class="adv-header">
+      <div class="adv-header" id="adv-main-header">
         <p class="adv-eyebrow" data-i18n="adv-eyebrow">✦ &nbsp; The Archive &nbsp; ✦</p>
         <h2 class="adv-title" data-i18n="adv-title">My Adventures</h2>
         <p class="adv-sub" data-i18n="adv-sub">Proof that I actually went to all these places</p>
+        <button class="two-lives-btn" onclick="openTwoLives()">
+          <span class="tl-dot"><span></span><span></span></span>
+          Two Lives, Two Homes
+        </button>
       </div>
 
       <div class="video-grid" id="video-grid">
 
-        <!-- California 2023 -->
-        <div class="video-card" onclick="openTrip('california')">
+        <!-- Mallorca 2026 -->
+        <div class="video-card" onclick="openTrip('mallorca')">
           <div class="video-thumb">
             <div class="thumb-bg">
               <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
                 <defs>
-                  <linearGradient id="caSky" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#f9d9b0"/>
-                    <stop offset="0.42" stop-color="#f3ab74"/>
-                    <stop offset="0.72" stop-color="#e7834e"/>
-                    <stop offset="1" stop-color="#d56b3c"/>
+                  <linearGradient id="maSky" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#a7cbe0"/>
+                    <stop offset="0.42" stop-color="#cbb0d2"/>
+                    <stop offset="0.72" stop-color="#ecb6bd"/>
+                    <stop offset="1" stop-color="#f3c9a8"/>
                   </linearGradient>
-                  <radialGradient id="caGlow" cx="0.5" cy="0.54" r="0.5">
-                    <stop offset="0" stop-color="#fff4d8"/>
-                    <stop offset="0.5" stop-color="#ffe2a6" stop-opacity="0.7"/>
-                    <stop offset="1" stop-color="#ffe2a6" stop-opacity="0"/>
+                  <radialGradient id="maGlow" cx="0.38" cy="0.5" r="0.5">
+                    <stop offset="0" stop-color="#fff2e2"/>
+                    <stop offset="0.5" stop-color="#fbd9c8" stop-opacity="0.6"/>
+                    <stop offset="1" stop-color="#fbd9c8" stop-opacity="0"/>
                   </radialGradient>
-                  <linearGradient id="caSea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#dd8a52"/>
-                    <stop offset="1" stop-color="#b35c30"/>
+                  <linearGradient id="maHill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#6e4a68"/>
+                    <stop offset="1" stop-color="#543a55"/>
                   </linearGradient>
-                  <linearGradient id="caGlint" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#ffeec2" stop-opacity="0.85"/>
-                    <stop offset="1" stop-color="#ffeec2" stop-opacity="0"/>
-                  </linearGradient>
-                  <radialGradient id="caVig" cx="0.5" cy="0.45" r="0.75">
+                  <radialGradient id="maVig" cx="0.5" cy="0.45" r="0.75">
                     <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
-                    <stop offset="1" stop-color="#3a1505" stop-opacity="0.34"/>
+                    <stop offset="1" stop-color="#3a2240" stop-opacity="0.32"/>
                   </radialGradient>
                 </defs>
-                <rect width="320" height="180" fill="url(#caSky)"/>
-                <circle cx="160" cy="98" r="78" fill="url(#caGlow)"/>
-                <circle cx="160" cy="100" r="29" fill="#fff2cf"/>
-                <!-- Sea -->
-                <rect x="0" y="120" width="320" height="60" fill="url(#caSea)"/>
-                <rect x="149" y="120" width="22" height="60" fill="url(#caGlint)"/>
-                <g stroke="#ffeec2" stroke-opacity="0.3" stroke-width="1.4" stroke-linecap="round">
-                  <line x1="146" y1="132" x2="174" y2="132"/>
-                  <line x1="143" y1="143" x2="177" y2="143"/>
-                  <line x1="148" y1="154" x2="172" y2="154"/>
-                  <line x1="151" y1="165" x2="169" y2="165"/>
+                <rect width="320" height="180" fill="url(#maSky)"/>
+                <circle cx="122" cy="90" r="64" fill="url(#maGlow)"/>
+                <circle cx="122" cy="92" r="22" fill="#fff1e0"/>
+                <!-- Distant rolling hills -->
+                <path d="M 0 150 Q 70 124 150 138 Q 240 154 320 130 L 320 180 L 0 180 Z" fill="#7d5874" opacity="0.55"/>
+                <path d="M 0 162 Q 90 144 180 156 Q 260 166 320 152 L 320 180 L 0 180 Z" fill="url(#maHill)"/>
+                <!-- Cypress trees -->
+                <g fill="#4a3149">
+                  <path d="M 44 150 Q 48 128 52 150 Z"/>
+                  <path d="M 58 152 Q 62 134 66 152 Z"/>
                 </g>
-                <!-- Golden Gate silhouette -->
-                <g fill="#8a3a1c" stroke="#8a3a1c">
-                  <path d="M 0 80 Q 52 50 101 45 Q 130 99 160 99 Q 190 99 219 45 Q 268 50 320 80" stroke-width="2.4" fill="none"/>
-                  <g stroke-width="1.1" stroke-opacity="0.85">
-                    <line x1="116" y1="60" x2="116" y2="120"/>
-                    <line x1="131" y1="73" x2="131" y2="120"/>
-                    <line x1="146" y1="86" x2="146" y2="120"/>
-                    <line x1="160" y1="99" x2="160" y2="120"/>
-                    <line x1="174" y1="86" x2="174" y2="120"/>
-                    <line x1="189" y1="73" x2="189" y2="120"/>
-                    <line x1="204" y1="60" x2="204" y2="120"/>
-                  </g>
-                  <rect x="96" y="42" width="10" height="78" stroke="none"/>
-                  <rect x="214" y="42" width="10" height="78" stroke="none"/>
-                  <rect x="92" y="58" width="18" height="3" stroke="none"/>
-                  <rect x="92" y="80" width="18" height="3" stroke="none"/>
-                  <rect x="210" y="58" width="18" height="3" stroke="none"/>
-                  <rect x="210" y="80" width="18" height="3" stroke="none"/>
-                  <rect x="0" y="118" width="320" height="5" stroke="none"/>
+                <!-- Stone windmill on the rise -->
+                <g fill="#3f2a42">
+                  <polygon points="186,150 214,150 209,96 191,96"/>
+                  <ellipse cx="200" cy="96" rx="13" ry="4"/>
+                  <polygon points="189,96 211,96 200,80"/>
                 </g>
-                <rect width="320" height="180" fill="url(#caVig)"/>
+                <line x1="192" y1="120" x2="208" y2="120" stroke="#caa9c6" stroke-opacity="0.3" stroke-width="1"/>
+                <line x1="193" y1="134" x2="207" y2="134" stroke="#caa9c6" stroke-opacity="0.3" stroke-width="1"/>
+                <path d="M 196 150 L 196 138 A 4 5 0 0 1 204 138 L 204 150 Z" fill="#caa9c6" opacity="0.45"/>
+                <!-- Windmill sails -->
+                <g fill="#3f2a42">
+                  <polygon points="197,87 203,87 200,30" transform="rotate(28,200,87)"/>
+                  <polygon points="197,87 203,87 200,30" transform="rotate(118,200,87)"/>
+                  <polygon points="197,87 203,87 200,30" transform="rotate(208,200,87)"/>
+                  <polygon points="197,87 203,87 200,30" transform="rotate(298,200,87)"/>
+                </g>
+                <circle cx="200" cy="87" r="5.5" fill="#caa9c6"/>
+                <circle cx="200" cy="87" r="2.5" fill="#3f2a42"/>
+                <rect width="320" height="180" fill="url(#maVig)"/>
                 <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
               </svg>
             </div>
             <div class="thumb-play"><span>▶</span></div>
           </div>
           <div class="video-info">
-            <div class="video-badge">2023 &nbsp;·&nbsp; USA</div>
-            <h3 class="video-title" data-trip-title="california">California Road Trip</h3>
-            <p class="video-desc" data-trip-desc="california">Two weeks, gorgeous sunsets, LA nights, and one car tow that absolutely nobody saw coming. 10/10 would road trip again, maybe with a better parking strategy.</p>
-          </div>
-        </div>
-
-        <!-- Thailand 2025 -->
-        <div class="video-card" onclick="openTrip('thailand')">
-          <div class="video-thumb">
-            <div class="thumb-bg">
-              <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-                <defs>
-                  <linearGradient id="thSky" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#bfe3cf"/>
-                    <stop offset="0.45" stop-color="#86c8a3"/>
-                    <stop offset="0.74" stop-color="#dfc07c"/>
-                    <stop offset="1" stop-color="#e9b35e"/>
-                  </linearGradient>
-                  <radialGradient id="thGlow" cx="0.5" cy="0.62" r="0.5">
-                    <stop offset="0" stop-color="#fff2cf"/>
-                    <stop offset="0.5" stop-color="#f6d792" stop-opacity="0.65"/>
-                    <stop offset="1" stop-color="#f6d792" stop-opacity="0"/>
-                  </radialGradient>
-                  <linearGradient id="thWater" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#3f9a78"/>
-                    <stop offset="1" stop-color="#236e54"/>
-                  </linearGradient>
-                  <radialGradient id="thVig" cx="0.5" cy="0.45" r="0.75">
-                    <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
-                    <stop offset="1" stop-color="#10402f" stop-opacity="0.34"/>
-                  </radialGradient>
-                </defs>
-                <rect width="320" height="180" fill="url(#thSky)"/>
-                <circle cx="160" cy="108" r="74" fill="url(#thGlow)"/>
-                <circle cx="160" cy="110" r="26" fill="#fff3d2"/>
-                <!-- Palm fronds framing the top corners -->
-                <g stroke="#185040" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-opacity="0.9">
-                  <path d="M 6 14 C 34 20 52 34 60 56"/>
-                  <path d="M 6 14 C 30 12 50 18 64 30"/>
-                  <path d="M 6 14 C 22 30 30 46 32 64"/>
-                  <path d="M 314 14 C 286 20 268 34 260 56"/>
-                  <path d="M 314 14 C 290 12 270 18 256 30"/>
-                  <path d="M 314 14 C 298 30 290 46 288 64"/>
-                </g>
-                <!-- Temple prang silhouette -->
-                <g fill="#163f31">
-                  <polygon points="160,18 165,58 155,58"/>
-                  <polygon points="160,30 175,72 145,72"/>
-                  <polygon points="150,72 170,72 178,98 142,98"/>
-                  <polygon points="142,98 178,98 186,128 134,128"/>
-                  <rect x="134" y="126" width="52" height="22"/>
-                  <!-- Flanking smaller prangs -->
-                  <polygon points="112,84 118,108 106,108"/>
-                  <polygon points="106,108 118,108 124,130 100,130"/>
-                  <rect x="100" y="128" width="24" height="20"/>
-                  <polygon points="208,84 214,108 202,108"/>
-                  <polygon points="202,108 214,108 220,130 196,130"/>
-                  <rect x="196" y="128" width="24" height="20"/>
-                  <!-- Terrace -->
-                  <rect x="78" y="146" width="164" height="8"/>
-                </g>
-                <!-- Water + reflection -->
-                <rect x="0" y="154" width="320" height="26" fill="url(#thWater)"/>
-                <g stroke="#fff3d2" stroke-opacity="0.22" stroke-width="1.2" stroke-linecap="round">
-                  <line x1="150" y1="162" x2="170" y2="162"/>
-                  <line x1="146" y1="170" x2="174" y2="170"/>
-                </g>
-                <rect width="320" height="180" fill="url(#thVig)"/>
-                <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-              </svg>
-            </div>
-            <div class="thumb-play"><span>▶</span></div>
-          </div>
-          <div class="video-info">
-            <div class="video-badge">2025 &nbsp;·&nbsp; Thailand</div>
-            <h3 class="video-title" data-trip-title="thailand">Thailand with Lolek</h3>
-            <p class="video-desc" data-trip-desc="thailand">Three weeks, one best friend, and approximately one million scooter kilometres. The Full Moon Party in Koh Phangan was everything they said it would be and nothing I was prepared for.</p>
+            <div class="video-badge">2026 &nbsp;·&nbsp; Spain</div>
+            <h3 class="video-title" data-trip-title="mallorca">Mallorca with Kasia</h3>
+            <p class="video-desc" data-trip-desc="mallorca">One girls' week. Perfect beaches, perfect company, and one tree that had the audacity to win. I have stitches. The tree does not. 10/10 for everything except the tree.</p>
           </div>
         </div>
 
@@ -1575,114 +1576,485 @@
           </div>
         </div>
 
-        <!-- Mallorca 2026 -->
-        <div class="video-card" onclick="openTrip('mallorca')">
+        <!-- Paris 2023 & 2026 -->
+        <div class="video-card" onclick="openTrip('paris')">
+          <div class="video-thumb"><div class="thumb-bg">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+              <defs>
+                <linearGradient id="prSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a090c0"/><stop offset="0.35" stop-color="#c8a8d0"/><stop offset="0.62" stop-color="#f0c8c0"/><stop offset="0.82" stop-color="#f8e0a0"/><stop offset="1" stop-color="#f4d080"/></linearGradient>
+                <linearGradient id="prSeine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7890b0"/><stop offset="1" stop-color="#5070a0"/></linearGradient>
+                <radialGradient id="prVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#201030" stop-opacity="0.32"/></radialGradient>
+              </defs>
+              <rect width="320" height="180" fill="url(#prSky)"/>
+              <rect x="0" y="140" width="320" height="40" fill="url(#prSeine)"/>
+              <!-- rooftops -->
+              <path d="M 0 128 Q 40 118 80 124 Q 100 126 120 130 L 120 142 L 0 142 Z" fill="#2a2838"/>
+              <path d="M 200 130 Q 240 120 280 126 Q 300 128 320 124 L 320 142 L 200 142 Z" fill="#2a2838"/>
+              <rect x="10" y="118" width="40" height="18" fill="#32304a"/>
+              <path d="M 10 120 L 30 106 L 50 120 Z" fill="#32304a"/>
+              <rect x="208" y="110" width="28" height="32" fill="#32304a"/><rect x="240" y="114" width="24" height="28" fill="#2e2c46"/>
+              <!-- Eiffel Tower -->
+              <g fill="#2a283a">
+                <path d="M 120 142 L 140 88 L 160 84 L 180 88 L 200 142 Z"/>
+                <path d="M 124 138 Q 160 114 196 138 Z" fill="url(#prSky)" opacity="0.28"/>
+                <rect x="136" y="86" width="48" height="6"/>
+                <path d="M 138 86 L 150 56 L 170 56 L 182 86 Z"/>
+                <rect x="148" y="54" width="24" height="5"/>
+                <path d="M 150 54 L 156 26 L 164 26 L 170 54 Z"/>
+                <rect x="157" y="12" width="6" height="16"/>
+                <rect x="155" y="19" width="10" height="2"/>
+                <circle cx="160" cy="10" r="2.5" fill="#f8e060" opacity="0.8"/>
+              </g>
+              <!-- river shimmer -->
+              <g stroke="#fff" stroke-opacity="0.2" stroke-width="1.2" stroke-linecap="round"><line x1="40" y1="152" x2="80" y2="152"/><line x1="200" y1="158" x2="250" y2="158"/></g>
+              <rect width="320" height="180" fill="url(#prVig)"/>
+              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+            </svg>
+          </div><div class="thumb-play"><span>▶</span></div></div>
+          <div class="video-info">
+            <div class="video-badge">2023 &amp; 2026 &nbsp;·&nbsp; France</div>
+            <h3 class="video-title" data-trip-title="paris">Paris</h3>
+            <p class="video-desc" data-trip-desc="paris">Two trips, zero times I wasn't completely charmed. Paris should be a cliché by now but somehow refuses to be one. The baguettes are fresh, the attitude is real, and every arrondissement feels like its own tiny country. Je reviendrai.</p>
+          </div>
+        </div>
+
+        <!-- Brussels 2022–2026 -->
+        <div class="video-card" onclick="openTrip('brussels')">
+          <div class="video-thumb"><div class="thumb-bg">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+              <defs>
+                <linearGradient id="bsSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4a840"/><stop offset="0.42" stop-color="#e8b84a"/><stop offset="0.68" stop-color="#d49030"/><stop offset="1" stop-color="#b87020"/></linearGradient>
+                <radialGradient id="bsGlow" cx="0.5" cy="0.56" r="0.5"><stop offset="0" stop-color="#fff8d0"/><stop offset="0.5" stop-color="#f8e090" stop-opacity="0.5"/><stop offset="1" stop-color="#f8e090" stop-opacity="0"/></radialGradient>
+                <radialGradient id="bsVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#2a1400" stop-opacity="0.38"/></radialGradient>
+              </defs>
+              <rect width="320" height="180" fill="url(#bsSky)"/>
+              <circle cx="160" cy="98" r="65" fill="url(#bsGlow)"/>
+              <rect x="0" y="150" width="320" height="30" fill="#8a6a28"/>
+              <!-- left guild houses -->
+              <g fill="#5a4010">
+                <rect x="0" y="102" width="36" height="50"/><rect x="37" y="94" width="30" height="58"/><rect x="69" y="90" width="28" height="62"/>
+                <path d="M 2 104 L 10 88 L 18 104 Z"/><path d="M 12 104 L 20 90 L 28 104 Z"/><path d="M 38 96 L 46 80 L 54 96 Z"/><path d="M 52 96 L 60 82 L 68 96 Z"/><path d="M 70 92 L 78 76 L 86 92 Z"/><path d="M 82 92 L 90 78 L 98 92 Z"/>
+              </g>
+              <g fill="#f0c840" opacity="0.35"><rect x="4" y="110" width="7" height="10" rx="3.5"/><rect x="14" y="110" width="7" height="10" rx="3.5"/><rect x="24" y="110" width="7" height="10" rx="3.5"/><rect x="40" y="102" width="7" height="10" rx="3.5"/><rect x="52" y="102" width="7" height="10" rx="3.5"/><rect x="72" y="98" width="7" height="10" rx="3.5"/><rect x="84" y="98" width="7" height="10" rx="3.5"/></g>
+              <!-- Town Hall -->
+              <g fill="#4a3808">
+                <rect x="98" y="96" width="100" height="56"/>
+                <rect x="124" y="42" width="32" height="56"/>
+                <path d="M 122 44 L 140 6 L 158 44 Z"/>
+                <rect x="122" y="62" width="36" height="4"/><rect x="122" y="74" width="36" height="4"/><rect x="122" y="86" width="36" height="4"/>
+                <rect x="104" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
+                <rect x="120" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
+                <rect x="144" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
+                <rect x="160" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
+                <rect x="176" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
+                <rect x="130" y="50" width="8" height="12" rx="4" fill="#f0c840" opacity="0.4"/>
+                <rect x="130" y="66" width="8" height="10" rx="4" fill="#f0c840" opacity="0.35"/>
+              </g>
+              <circle cx="140" cy="5" r="3" fill="#c8a030"/>
+              <!-- right guild houses -->
+              <g fill="#5a4010">
+                <rect x="200" y="92" width="28" height="60"/><rect x="230" y="98" width="30" height="54"/><rect x="262" y="102" width="30" height="50"/><rect x="292" y="96" width="28" height="56"/>
+                <path d="M 201 94 L 208 80 L 215 94 Z"/><path d="M 213 94 L 220 82 L 227 94 Z"/><path d="M 231 100 L 238 86 L 245 100 Z"/><path d="M 245 100 L 252 88 L 259 100 Z"/><path d="M 263 104 L 270 90 L 277 104 Z"/><path d="M 294 98 L 303 82 L 312 98 Z"/>
+              </g>
+              <g fill="#f0c840" opacity="0.3"><rect x="204" y="100" width="7" height="10" rx="3.5"/><rect x="215" y="100" width="7" height="10" rx="3.5"/><rect x="234" y="106" width="7" height="10" rx="3.5"/><rect x="248" y="106" width="7" height="10" rx="3.5"/><rect x="266" y="110" width="7" height="10" rx="3.5"/><rect x="296" y="104" width="7" height="10" rx="3.5"/></g>
+              <rect width="320" height="180" fill="url(#bsVig)"/>
+              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+            </svg>
+          </div><div class="thumb-play"><span>▶</span></div></div>
+          <div class="video-info">
+            <div class="video-badge">2022–2026 &nbsp;·&nbsp; Belgium</div>
+            <h3 class="video-title" data-trip-title="brussels">Brussels</h3>
+            <p class="video-desc" data-trip-desc="brussels">Three visits and I am still working through the waffle situation. Brussels lets Amsterdam and Paris take the spotlight while quietly being one of the most interesting cities in Europe. The frites are non-negotiable. The beer list is dangerous.</p>
+          </div>
+        </div>
+
+        <!-- Vienna 2025 -->
+        <div class="video-card" onclick="openTrip('vienna')">
+          <div class="video-thumb"><div class="thumb-bg">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+              <defs>
+                <linearGradient id="vnSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c0d0e8"/><stop offset="0.42" stop-color="#d4c8a8"/><stop offset="0.7" stop-color="#e8d890"/><stop offset="1" stop-color="#d4c070"/></linearGradient>
+                <radialGradient id="vnGlow" cx="0.5" cy="0.52" r="0.5"><stop offset="0" stop-color="#fffde0"/><stop offset="0.5" stop-color="#f8eca0" stop-opacity="0.5"/><stop offset="1" stop-color="#f8eca0" stop-opacity="0"/></radialGradient>
+                <radialGradient id="vnVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1a1000" stop-opacity="0.32"/></radialGradient>
+              </defs>
+              <rect width="320" height="180" fill="url(#vnSky)"/>
+              <circle cx="160" cy="96" r="65" fill="url(#vnGlow)"/>
+              <!-- formal garden -->
+              <rect x="0" y="144" width="320" height="36" fill="#5a7840"/>
+              <rect x="0" y="138" width="320" height="10" fill="#6a8848"/>
+              <g fill="#4a6830"><rect x="0" y="130" width="30" height="10"/><rect x="36" y="130" width="30" height="10"/><rect x="72" y="130" width="30" height="10"/><rect x="108" y="130" width="30" height="10"/><rect x="144" y="130" width="30" height="10"/><rect x="180" y="130" width="30" height="10"/><rect x="216" y="130" width="30" height="10"/><rect x="252" y="130" width="30" height="10"/><rect x="288" y="130" width="32" height="10"/></g>
+              <!-- Palace -->
+              <rect x="28" y="80" width="264" height="54" fill="#d4b040"/>
+              <rect x="26" y="76" width="268" height="8" fill="#b89030"/>
+              <!-- central pavilion -->
+              <rect x="108" y="64" width="104" height="72" fill="#d8b848"/>
+              <rect x="106" y="60" width="108" height="8" fill="#b89030"/>
+              <path d="M 106 60 L 160 40 L 214 60 Z" fill="#c0a030"/>
+              <!-- columns -->
+              <g fill="#c4a030"><rect x="34" y="84" width="6" height="46"/><rect x="48" y="84" width="6" height="46"/><rect x="62" y="84" width="6" height="46"/><rect x="76" y="84" width="6" height="46"/><rect x="90" y="84" width="6" height="46"/><rect x="114" y="68" width="6" height="62"/><rect x="128" y="68" width="6" height="62"/><rect x="142" y="68" width="6" height="62"/><rect x="158" y="68" width="6" height="62"/><rect x="174" y="68" width="6" height="62"/><rect x="188" y="68" width="6" height="62"/><rect x="202" y="68" width="6" height="62"/><rect x="220" y="84" width="6" height="46"/><rect x="234" y="84" width="6" height="46"/><rect x="248" y="84" width="6" height="46"/><rect x="262" y="84" width="6" height="46"/><rect x="276" y="84" width="6" height="46"/></g>
+              <!-- windows -->
+              <g fill="#8ab0c0" opacity="0.45"><rect x="38" y="90" width="12" height="18" rx="6"/><rect x="54" y="90" width="12" height="18" rx="6"/><rect x="68" y="90" width="12" height="18" rx="6"/><rect x="82" y="90" width="12" height="18" rx="6"/><rect x="118" y="74" width="12" height="20" rx="6"/><rect x="134" y="74" width="12" height="20" rx="6"/><rect x="150" y="74" width="12" height="20" rx="6"/><rect x="166" y="74" width="12" height="20" rx="6"/><rect x="182" y="74" width="12" height="20" rx="6"/><rect x="198" y="74" width="12" height="20" rx="6"/><rect x="222" y="90" width="12" height="18" rx="6"/><rect x="236" y="90" width="12" height="18" rx="6"/><rect x="250" y="90" width="12" height="18" rx="6"/><rect x="264" y="90" width="12" height="18" rx="6"/></g>
+              <rect width="320" height="180" fill="url(#vnVig)"/>
+              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+            </svg>
+          </div><div class="thumb-play"><span>▶</span></div></div>
+          <div class="video-info">
+            <div class="video-badge">2025 &nbsp;·&nbsp; Austria</div>
+            <h3 class="video-title" data-trip-title="vienna">Vienna</h3>
+            <p class="video-desc" data-trip-desc="vienna">Coffee houses, imperial palaces, and Sachertorte that genuinely changed my relationship with chocolate cake. A city that has been beautiful since before it was fashionable to care about beauty, and it knows it.</p>
+          </div>
+        </div>
+
+        <!-- Thailand 2025 -->
+        <div class="video-card" onclick="openTrip('thailand')">
           <div class="video-thumb">
             <div class="thumb-bg">
               <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
                 <defs>
-                  <linearGradient id="maSky" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#a7cbe0"/>
-                    <stop offset="0.42" stop-color="#cbb0d2"/>
-                    <stop offset="0.72" stop-color="#ecb6bd"/>
-                    <stop offset="1" stop-color="#f3c9a8"/>
+                  <linearGradient id="thSky" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#bfe3cf"/>
+                    <stop offset="0.45" stop-color="#86c8a3"/>
+                    <stop offset="0.74" stop-color="#dfc07c"/>
+                    <stop offset="1" stop-color="#e9b35e"/>
                   </linearGradient>
-                  <radialGradient id="maGlow" cx="0.38" cy="0.5" r="0.5">
-                    <stop offset="0" stop-color="#fff2e2"/>
-                    <stop offset="0.5" stop-color="#fbd9c8" stop-opacity="0.6"/>
-                    <stop offset="1" stop-color="#fbd9c8" stop-opacity="0"/>
+                  <radialGradient id="thGlow" cx="0.5" cy="0.62" r="0.5">
+                    <stop offset="0" stop-color="#fff2cf"/>
+                    <stop offset="0.5" stop-color="#f6d792" stop-opacity="0.65"/>
+                    <stop offset="1" stop-color="#f6d792" stop-opacity="0"/>
                   </radialGradient>
-                  <linearGradient id="maHill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#6e4a68"/>
-                    <stop offset="1" stop-color="#543a55"/>
+                  <linearGradient id="thWater" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#3f9a78"/>
+                    <stop offset="1" stop-color="#236e54"/>
                   </linearGradient>
-                  <radialGradient id="maVig" cx="0.5" cy="0.45" r="0.75">
+                  <radialGradient id="thVig" cx="0.5" cy="0.45" r="0.75">
                     <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
-                    <stop offset="1" stop-color="#3a2240" stop-opacity="0.32"/>
+                    <stop offset="1" stop-color="#10402f" stop-opacity="0.34"/>
                   </radialGradient>
                 </defs>
-                <rect width="320" height="180" fill="url(#maSky)"/>
-                <circle cx="122" cy="90" r="64" fill="url(#maGlow)"/>
-                <circle cx="122" cy="92" r="22" fill="#fff1e0"/>
-                <!-- Distant rolling hills -->
-                <path d="M 0 150 Q 70 124 150 138 Q 240 154 320 130 L 320 180 L 0 180 Z" fill="#7d5874" opacity="0.55"/>
-                <path d="M 0 162 Q 90 144 180 156 Q 260 166 320 152 L 320 180 L 0 180 Z" fill="url(#maHill)"/>
-                <!-- Cypress trees -->
-                <g fill="#4a3149">
-                  <path d="M 44 150 Q 48 128 52 150 Z"/>
-                  <path d="M 58 152 Q 62 134 66 152 Z"/>
+                <rect width="320" height="180" fill="url(#thSky)"/>
+                <circle cx="160" cy="108" r="74" fill="url(#thGlow)"/>
+                <circle cx="160" cy="110" r="26" fill="#fff3d2"/>
+                <!-- Palm fronds framing the top corners -->
+                <g stroke="#185040" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-opacity="0.9">
+                  <path d="M 6 14 C 34 20 52 34 60 56"/>
+                  <path d="M 6 14 C 30 12 50 18 64 30"/>
+                  <path d="M 6 14 C 22 30 30 46 32 64"/>
+                  <path d="M 314 14 C 286 20 268 34 260 56"/>
+                  <path d="M 314 14 C 290 12 270 18 256 30"/>
+                  <path d="M 314 14 C 298 30 290 46 288 64"/>
                 </g>
-                <!-- Stone windmill on the rise -->
-                <g fill="#3f2a42">
-                  <polygon points="186,150 214,150 209,96 191,96"/>
-                  <ellipse cx="200" cy="96" rx="13" ry="4"/>
-                  <polygon points="189,96 211,96 200,80"/>
+                <!-- Temple prang silhouette -->
+                <g fill="#163f31">
+                  <polygon points="160,18 165,58 155,58"/>
+                  <polygon points="160,30 175,72 145,72"/>
+                  <polygon points="150,72 170,72 178,98 142,98"/>
+                  <polygon points="142,98 178,98 186,128 134,128"/>
+                  <rect x="134" y="126" width="52" height="22"/>
+                  <!-- Flanking smaller prangs -->
+                  <polygon points="112,84 118,108 106,108"/>
+                  <polygon points="106,108 118,108 124,130 100,130"/>
+                  <rect x="100" y="128" width="24" height="20"/>
+                  <polygon points="208,84 214,108 202,108"/>
+                  <polygon points="202,108 214,108 220,130 196,130"/>
+                  <rect x="196" y="128" width="24" height="20"/>
+                  <!-- Terrace -->
+                  <rect x="78" y="146" width="164" height="8"/>
                 </g>
-                <line x1="192" y1="120" x2="208" y2="120" stroke="#caa9c6" stroke-opacity="0.3" stroke-width="1"/>
-                <line x1="193" y1="134" x2="207" y2="134" stroke="#caa9c6" stroke-opacity="0.3" stroke-width="1"/>
-                <path d="M 196 150 L 196 138 A 4 5 0 0 1 204 138 L 204 150 Z" fill="#caa9c6" opacity="0.45"/>
-                <!-- Windmill sails -->
-                <g fill="#3f2a42">
-                  <polygon points="197,87 203,87 200,30" transform="rotate(28,200,87)"/>
-                  <polygon points="197,87 203,87 200,30" transform="rotate(118,200,87)"/>
-                  <polygon points="197,87 203,87 200,30" transform="rotate(208,200,87)"/>
-                  <polygon points="197,87 203,87 200,30" transform="rotate(298,200,87)"/>
+                <!-- Water + reflection -->
+                <rect x="0" y="154" width="320" height="26" fill="url(#thWater)"/>
+                <g stroke="#fff3d2" stroke-opacity="0.22" stroke-width="1.2" stroke-linecap="round">
+                  <line x1="150" y1="162" x2="170" y2="162"/>
+                  <line x1="146" y1="170" x2="174" y2="170"/>
                 </g>
-                <circle cx="200" cy="87" r="5.5" fill="#caa9c6"/>
-                <circle cx="200" cy="87" r="2.5" fill="#3f2a42"/>
-                <rect width="320" height="180" fill="url(#maVig)"/>
+                <rect width="320" height="180" fill="url(#thVig)"/>
                 <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
               </svg>
             </div>
             <div class="thumb-play"><span>▶</span></div>
           </div>
           <div class="video-info">
-            <div class="video-badge">2026 &nbsp;·&nbsp; Spain</div>
-            <h3 class="video-title" data-trip-title="mallorca">Mallorca with Kasia</h3>
-            <p class="video-desc" data-trip-desc="mallorca">One girls' week. Perfect beaches, perfect company, and one tree that had the audacity to win. I have stitches. The tree does not. 10/10 for everything except the tree.</p>
+            <div class="video-badge">2025 &nbsp;·&nbsp; Thailand</div>
+            <h3 class="video-title" data-trip-title="thailand">Thailand with Lolek</h3>
+            <p class="video-desc" data-trip-desc="thailand">Three weeks, one best friend, and approximately one million scooter kilometres. The Full Moon Party in Koh Phangan was everything they said it would be and nothing I was prepared for.</p>
           </div>
         </div>
 
-        <!-- Rhodes 2020 -->
-        <div class="video-card" onclick="openTrip('rhodes')">
+        <!-- Milan 2023 & 2025 -->
+        <div class="video-card" onclick="openTrip('milan')">
           <div class="video-thumb"><div class="thumb-bg">
             <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
               <defs>
-                <linearGradient id="rhSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8e4f7"/><stop offset="0.5" stop-color="#8ccae6"/><stop offset="0.78" stop-color="#f6dca6"/><stop offset="1" stop-color="#f4c98a"/></linearGradient>
-                <linearGradient id="rhSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a8cb0"/><stop offset="1" stop-color="#0e6888"/></linearGradient>
-                <radialGradient id="rhVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0a2d3f" stop-opacity="0.32"/></radialGradient>
+                <linearGradient id="mlSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8c0d8"/><stop offset="0.4" stop-color="#d8c8c0"/><stop offset="0.72" stop-color="#e8d4a8"/><stop offset="1" stop-color="#d4b888"/></linearGradient>
+                <radialGradient id="mlGlow" cx="0.5" cy="0.62" r="0.5"><stop offset="0" stop-color="#fff8e8"/><stop offset="0.5" stop-color="#f8e4b0" stop-opacity="0.5"/><stop offset="1" stop-color="#f8e4b0" stop-opacity="0"/></radialGradient>
+                <radialGradient id="mlVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1a0a20" stop-opacity="0.38"/></radialGradient>
               </defs>
-              <rect width="320" height="180" fill="url(#rhSky)"/>
-              <circle cx="240" cy="78" r="22" fill="#fffbe0"/>
-              <rect x="0" y="126" width="320" height="54" fill="url(#rhSea)"/>
-              <rect x="0" y="122" width="320" height="6" fill="#b09060"/>
-              <!-- white church body -->
-              <rect x="104" y="90" width="60" height="36" fill="#f0ecdf"/>
-              <!-- blue dome -->
-              <path d="M 104 90 Q 134 64 164 90 Z" fill="#1e7bb0"/>
-              <ellipse cx="134" cy="90" rx="30" ry="8" fill="#1a6fa0"/>
-              <!-- cross -->
-              <line x1="134" y1="56" x2="134" y2="72" stroke="#f0ecdf" stroke-width="2"/>
-              <line x1="128" y1="62" x2="140" y2="62" stroke="#f0ecdf" stroke-width="2"/>
-              <!-- bell tower -->
-              <rect x="68" y="78" width="22" height="50" fill="#e8e2d4"/>
-              <path d="M 66 80 Q 79 62 92 80 Z" fill="#1e7bb0"/>
-              <!-- side buildings -->
-              <rect x="164" y="102" width="32" height="24" fill="#e8e2d4"/>
-              <rect x="48" y="106" width="24" height="20" fill="#ede8da"/>
-              <!-- olive trees -->
-              <circle cx="44" cy="116" r="11" fill="#7a9a5a" opacity="0.75"/>
-              <line x1="44" y1="126" x2="44" y2="134" stroke="#5a6a40" stroke-width="2"/>
-              <circle cx="188" cy="114" r="9" fill="#7a9a5a" opacity="0.7"/>
-              <g stroke="#fff" stroke-opacity="0.2" stroke-width="1.2" stroke-linecap="round"><line x1="60" y1="140" x2="100" y2="140"/><line x1="200" y1="148" x2="250" y2="148"/></g>
-              <rect width="320" height="180" fill="url(#rhVig)"/>
+              <rect width="320" height="180" fill="url(#mlSky)"/>
+              <circle cx="160" cy="102" r="70" fill="url(#mlGlow)"/>
+              <!-- Duomo facade + spires -->
+              <g fill="#2a2030">
+                <rect x="78" y="100" width="164" height="80"/>
+                <!-- gables -->
+                <path d="M 78 100 L 108 80 L 138 100 Z"/><path d="M 108 100 L 128 87 L 148 100 Z"/>
+                <path d="M 138 100 L 160 82 L 182 100 Z"/><path d="M 172 100 L 192 87 L 212 100 Z"/>
+                <path d="M 202 100 L 224 80 L 242 100 Z"/>
+                <!-- central spire -->
+                <rect x="154" y="18" width="12" height="70"/><polygon points="154,20 160,5 166,20"/>
+                <rect x="151" y="44" width="18" height="5"/><rect x="152" y="35" width="16" height="4"/>
+                <!-- secondary spires -->
+                <rect x="126" y="32" width="10" height="52"/><polygon points="126,34 131,22 136,34"/>
+                <rect x="124" y="54" width="14" height="4"/>
+                <rect x="178" y="32" width="10" height="52"/><polygon points="178,34 183,22 188,34"/>
+                <rect x="176" y="54" width="14" height="4"/>
+                <!-- smaller -->
+                <rect x="102" y="52" width="7" height="32"/><polygon points="102,54 106,44 110,54"/>
+                <rect x="202" y="52" width="7" height="32"/><polygon points="202,54 206,44 210,54"/>
+                <rect x="86" y="62" width="6" height="24"/><polygon points="86,64 89,56 92,64"/>
+                <rect x="217" y="62" width="6" height="24"/><polygon points="217,64 220,56 223,64"/>
+                <rect x="116" y="58" width="5" height="26"/><polygon points="116,60 119,52 122,60"/>
+                <rect x="193" y="58" width="5" height="26"/><polygon points="193,60 196,52 199,60"/>
+              </g>
+              <!-- Madonnina -->
+              <circle cx="160" cy="5" r="3.5" fill="#c8a040"/>
+              <!-- rose window -->
+              <circle cx="160" cy="122" r="13" fill="none" stroke="#3a3050" stroke-width="2" opacity="0.45"/>
+              <!-- gothic windows glow -->
+              <g fill="#e8c070" opacity="0.28"><rect x="92" y="120" width="10" height="18" rx="5"/><rect x="112" y="116" width="10" height="22" rx="5"/><rect x="186" y="116" width="10" height="22" rx="5"/><rect x="206" y="120" width="10" height="18" rx="5"/></g>
+              <rect width="320" height="180" fill="url(#mlVig)"/>
               <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
             </svg>
           </div><div class="thumb-play"><span>▶</span></div></div>
           <div class="video-info">
-            <div class="video-badge">2020 &nbsp;·&nbsp; Greece</div>
-            <h3 class="video-title" data-trip-title="rhodes">Rhodes</h3>
-            <p class="video-desc" data-trip-desc="rhodes">Sun, sea, ancient ruins, and a very suspicious tan line. Turquoise water, excellent wine, and the kind of heat that turns you into a very willing nap enthusiast.</p>
+            <div class="video-badge">2023 &amp; 2025 &nbsp;·&nbsp; Italy</div>
+            <h3 class="video-title" data-trip-title="milan">Milan</h3>
+            <p class="video-desc" data-trip-desc="milan">The Duomo, the aperitivo hour, and a fashion week confidence I did not earn but fully adopted. A city that makes you walk faster, dress better, and drink your Campari without apologising. Both times I left feeling inexplicably chic.</p>
+          </div>
+        </div>
+
+        <!-- New England 2019 & 2025 -->
+        <div class="video-card" onclick="openTrip('newengland')">
+          <div class="video-thumb"><div class="thumb-bg">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+              <defs>
+                <linearGradient id="neSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8c890"/><stop offset="0.42" stop-color="#e0a050"/><stop offset="0.7" stop-color="#c87030"/><stop offset="1" stop-color="#a84820"/></linearGradient>
+                <radialGradient id="neGlow" cx="0.5" cy="0.38" r="0.42"><stop offset="0" stop-color="#fff4d0"/><stop offset="0.5" stop-color="#ffe0a0" stop-opacity="0.5"/><stop offset="1" stop-color="#ffe0a0" stop-opacity="0"/></radialGradient>
+                <linearGradient id="neSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a789a"/><stop offset="1" stop-color="#2a5878"/></linearGradient>
+                <radialGradient id="neVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#2a1008" stop-opacity="0.35"/></radialGradient>
+              </defs>
+              <rect width="320" height="180" fill="url(#neSky)"/>
+              <circle cx="160" cy="70" r="58" fill="url(#neGlow)"/>
+              <circle cx="160" cy="72" r="19" fill="#fff4d0"/>
+              <!-- autumn trees left -->
+              <ellipse cx="38" cy="118" rx="22" ry="17" fill="#c03020"/>
+              <ellipse cx="28" cy="126" rx="14" ry="11" fill="#a82818"/>
+              <line x1="38" y1="134" x2="38" y2="154" stroke="#5a3820" stroke-width="3"/>
+              <ellipse cx="80" cy="112" rx="20" ry="16" fill="#e07820"/>
+              <line x1="80" y1="128" x2="80" y2="148" stroke="#5a3820" stroke-width="3"/>
+              <ellipse cx="118" cy="118" rx="18" ry="14" fill="#d0a820"/>
+              <line x1="118" y1="130" x2="118" y2="150" stroke="#5a3820" stroke-width="2.5"/>
+              <!-- lighthouse -->
+              <rect x="150" y="82" width="16" height="48" fill="#f0f0f0"/>
+              <rect x="150" y="90" width="16" height="8" fill="#c03020"/>
+              <rect x="150" y="106" width="16" height="8" fill="#c03020"/>
+              <rect x="150" y="122" width="16" height="8" fill="#c03020"/>
+              <rect x="148" y="78" width="20" height="6" fill="#c03020"/>
+              <circle cx="158" cy="78" r="4" fill="#f0e860" opacity="0.85"/>
+              <rect x="155" y="118" width="6" height="12" rx="3" fill="#8a5030"/>
+              <!-- keeper cottage -->
+              <rect x="166" y="112" width="28" height="20" fill="#e8e0d4"/>
+              <path d="M 164 114 L 180 102 L 196 114 Z" fill="#c03020"/>
+              <!-- right trees -->
+              <ellipse cx="222" cy="116" rx="16" ry="14" fill="#c84020"/>
+              <ellipse cx="252" cy="118" rx="18" ry="15" fill="#e08820"/>
+              <ellipse cx="286" cy="112" rx="20" ry="17" fill="#c03020"/>
+              <line x1="252" y1="132" x2="252" y2="150" stroke="#5a3820" stroke-width="2.5"/>
+              <line x1="286" y1="128" x2="286" y2="148" stroke="#5a3820" stroke-width="2.5"/>
+              <path d="M 0 180 Q 60 132 140 138 Q 220 144 320 130 L 320 180 Z" fill="#5a3820"/>
+              <rect x="0" y="150" width="320" height="30" fill="url(#neSea)"/>
+              <rect width="320" height="180" fill="url(#neVig)"/>
+              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+            </svg>
+          </div><div class="thumb-play"><span>▶</span></div></div>
+          <div class="video-info">
+            <div class="video-badge">2019 &amp; 2025 &nbsp;·&nbsp; USA</div>
+            <h3 class="video-title" data-trip-title="newengland">New England</h3>
+            <p class="video-desc" data-trip-desc="newengland">Covered bridges, October foliage that doesn't look real, and enough clam chowder to reconsider your relationship with cream-based soups. Two visits and I still haven't decided which season is better.</p>
+          </div>
+        </div>
+
+        <!-- New York 2018–2025 -->
+        <div class="video-card" onclick="openTrip('newyork')">
+          <div class="video-thumb"><div class="thumb-bg">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+              <defs>
+                <linearGradient id="nySky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1428"/><stop offset="0.4" stop-color="#162040"/><stop offset="0.7" stop-color="#283860"/><stop offset="1" stop-color="#1a2848"/></linearGradient>
+                <radialGradient id="nyMoon" cx="0.2" cy="0.16" r="0.24"><stop offset="0" stop-color="#fff8e0"/><stop offset="0.35" stop-color="#f0e8b0" stop-opacity="0.5"/><stop offset="1" stop-color="#f0e8b0" stop-opacity="0"/></radialGradient>
+                <linearGradient id="nyWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101830"/><stop offset="1" stop-color="#080f1f"/></linearGradient>
+                <radialGradient id="nyVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.45"/></radialGradient>
+              </defs>
+              <rect width="320" height="180" fill="url(#nySky)"/>
+              <circle cx="60" cy="28" r="38" fill="url(#nyMoon)"/>
+              <circle cx="60" cy="28" r="11" fill="#fff8e0"/>
+              <g fill="#fff" opacity="0.55"><circle cx="112" cy="14" r="1"/><circle cx="162" cy="8" r="1.2"/><circle cx="202" cy="18" r="1"/><circle cx="252" cy="11" r="0.8"/><circle cx="292" cy="7" r="1"/><circle cx="140" cy="28" r="0.8"/><circle cx="280" cy="24" r="1"/></g>
+              <rect x="0" y="138" width="320" height="42" fill="url(#nyWater)"/>
+              <!-- reflections -->
+              <g opacity="0.2"><rect x="100" y="140" width="6" height="36" fill="#f0d060"/><rect x="148" y="140" width="8" height="36" fill="#f0e060"/><rect x="192" y="142" width="5" height="32" fill="#f0d060"/><rect x="232" y="141" width="6" height="34" fill="#f0c050"/></g>
+              <!-- skyline -->
+              <g fill="#1a2040">
+                <rect x="0" y="108" width="20" height="34"/><rect x="16" y="92" width="14" height="50"/><rect x="28" y="102" width="18" height="40"/><rect x="44" y="112" width="12" height="30"/>
+                <rect x="54" y="88" width="22" height="52"/><rect x="60" y="82" width="10" height="8"/>
+                <rect x="74" y="96" width="16" height="44"/><rect x="88" y="92" width="14" height="48"/>
+                <!-- Empire State -->
+                <rect x="100" y="70" width="22" height="70"/>
+                <rect x="104" y="60" width="14" height="12"/><rect x="106" y="52" width="10" height="10"/><rect x="108" y="46" width="6" height="8"/><rect x="109" y="42" width="4" height="6"/>
+                <line x1="111" y1="28" x2="111" y2="42" stroke="#304060" stroke-width="2"/>
+                <circle cx="111" cy="26" r="2.5" fill="#f0e060" opacity="0.9"/>
+                <!-- Chrysler hint -->
+                <rect x="126" y="80" width="18" height="58"/>
+                <path d="M 126 80 Q 135 62 144 80 Z" fill="#243050"/>
+                <path d="M 128 70 Q 135 56 142 70 Z" fill="#243050"/>
+                <path d="M 130 62 Q 135 52 140 62 Z" fill="#243050"/>
+                <!-- right buildings -->
+                <rect x="146" y="88" width="16" height="50"/><rect x="164" y="78" width="20" height="60"/><rect x="168" y="72" width="12" height="8"/>
+                <rect x="184" y="92" width="14" height="46"/><rect x="196" y="82" width="18" height="56"/>
+                <rect x="212" y="98" width="14" height="40"/><rect x="224" y="86" width="20" height="52"/>
+                <rect x="242" y="104" width="16" height="34"/><rect x="256" y="90" width="18" height="48"/>
+                <rect x="272" y="100" width="22" height="38"/><rect x="292" y="86" width="28" height="52"/>
+              </g>
+              <!-- lit windows -->
+              <g fill="#f0d860" opacity="0.65">
+                <rect x="18" y="94" width="3" height="3"/><rect x="56" y="92" width="3" height="3"/><rect x="62" y="100" width="3" height="3"/>
+                <rect x="76" y="102" width="3" height="3"/><rect x="90" y="96" width="3" height="3"/>
+                <rect x="102" y="80" width="3" height="3"/><rect x="108" y="88" width="3" height="3"/><rect x="114" y="94" width="3" height="3"/>
+                <rect x="130" y="88" width="3" height="3"/><rect x="136" y="94" width="3" height="3"/>
+                <rect x="148" y="96" width="3" height="3"/><rect x="166" y="84" width="3" height="3"/><rect x="172" y="92" width="3" height="3"/>
+                <rect x="198" y="90" width="3" height="3"/><rect x="226" y="94" width="3" height="3"/><rect x="258" y="96" width="3" height="3"/>
+              </g>
+              <rect width="320" height="180" fill="url(#nyVig)"/>
+              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+            </svg>
+          </div><div class="thumb-play"><span>▶</span></div></div>
+          <div class="video-info">
+            <div class="video-badge">2018–2025 &nbsp;·&nbsp; USA</div>
+            <h3 class="video-title" data-trip-title="newyork">New York</h3>
+            <p class="video-desc" data-trip-desc="newyork">The city that gives you everything and also all of your anxiety. Delis at 3am, subway platform heat, and someone in Central Park playing an instrument you've never seen. Multiple visits and it somehow gets bigger every time.</p>
+          </div>
+        </div>
+
+        <!-- Amalfi Coast 2024 -->
+        <div class="video-card" onclick="openTrip('amalfi')">
+          <div class="video-thumb"><div class="thumb-bg">
+            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+              <defs>
+                <linearGradient id="amSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c0dff4"/><stop offset="0.55" stop-color="#8ac8e8"/><stop offset="0.8" stop-color="#f4c07a"/><stop offset="1" stop-color="#f0a848"/></linearGradient>
+                <linearGradient id="amSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1890b8"/><stop offset="1" stop-color="#0e6888"/></linearGradient>
+                <radialGradient id="amSun" cx="0.76" cy="0.6" r="0.32"><stop offset="0" stop-color="#fff8e0"/><stop offset="0.5" stop-color="#fce4a0" stop-opacity="0.55"/><stop offset="1" stop-color="#fce4a0" stop-opacity="0"/></radialGradient>
+                <radialGradient id="amVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0a1e2c" stop-opacity="0.32"/></radialGradient>
+              </defs>
+              <rect width="320" height="180" fill="url(#amSky)"/>
+              <circle cx="244" cy="105" r="58" fill="url(#amSun)"/>
+              <circle cx="244" cy="107" r="20" fill="#fff8e0"/>
+              <rect x="0" y="132" width="320" height="48" fill="url(#amSea)"/>
+              <!-- cliff -->
+              <path d="M 0 180 L 0 88 Q 28 70 58 80 Q 88 90 100 102 L 100 180 Z" fill="#8a7a5a"/>
+              <path d="M 0 180 L 0 94 Q 24 76 54 86 Q 78 96 96 108 L 96 180 Z" fill="#a08a68"/>
+              <!-- stacked houses -->
+              <rect x="4" y="118" width="20" height="20" fill="#f0e8d0"/><rect x="4" y="113" width="20" height="6" fill="#d87840"/>
+              <rect x="26" y="112" width="18" height="24" fill="#e8c8a8"/><rect x="26" y="107" width="18" height="6" fill="#d07030"/>
+              <rect x="46" y="116" width="16" height="20" fill="#f4d8b0"/><rect x="46" y="111" width="16" height="6" fill="#c86828"/>
+              <rect x="8" y="96" width="16" height="20" fill="#e8d8b8"/><rect x="8" y="91" width="16" height="6" fill="#c87840" opacity="0.8"/>
+              <rect x="26" y="90" width="18" height="24" fill="#f0e0c0"/><rect x="26" y="85" width="18" height="6" fill="#d07830" opacity="0.8"/>
+              <rect x="12" y="72" width="14" height="22" fill="#e4d4a4" opacity="0.9"/><rect x="12" y="67" width="14" height="6" fill="#c06820" opacity="0.7"/>
+              <!-- bell tower -->
+              <rect x="60" y="92" width="14" height="40" fill="#e8e0cc"/>
+              <path d="M 58 94 Q 67 80 76 94 Z" fill="#c07038"/>
+              <line x1="67" y1="74" x2="67" y2="81" stroke="#c0c0c0" stroke-width="1.5"/><line x1="63" y1="78" x2="71" y2="78" stroke="#c0c0c0" stroke-width="1.5"/>
+              <!-- lemon tree -->
+              <circle cx="88" cy="100" r="9" fill="#7a9a40" opacity="0.85"/>
+              <ellipse cx="84" cy="97" rx="2.5" ry="2" fill="#f0d030"/><ellipse cx="91" cy="100" rx="2.5" ry="2" fill="#f0d030"/><ellipse cx="87" cy="104" rx="2.5" ry="2" fill="#f0d030"/>
+              <g stroke="#fff" stroke-opacity="0.22" stroke-width="1.2" stroke-linecap="round"><line x1="130" y1="144" x2="170" y2="144"/><line x1="210" y1="152" x2="260" y2="152"/></g>
+              <rect width="320" height="180" fill="url(#amVig)"/>
+              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+            </svg>
+          </div><div class="thumb-play"><span>▶</span></div></div>
+          <div class="video-info">
+            <div class="video-badge">2024 &nbsp;·&nbsp; Italy</div>
+            <h3 class="video-title" data-trip-title="amalfi">Amalfi Coast</h3>
+            <p class="video-desc" data-trip-desc="amalfi">The most beautiful road I have ever been terrified on. Cliffs and lemons and pastel houses stacked because someone ran out of flat land. The limoncello is obligatory. The vertigo is free.</p>
+          </div>
+        </div>
+
+        <!-- California 2023 -->
+        <div class="video-card" onclick="openTrip('california')">
+          <div class="video-thumb">
+            <div class="thumb-bg">
+              <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+                <defs>
+                  <linearGradient id="caSky" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#f9d9b0"/>
+                    <stop offset="0.42" stop-color="#f3ab74"/>
+                    <stop offset="0.72" stop-color="#e7834e"/>
+                    <stop offset="1" stop-color="#d56b3c"/>
+                  </linearGradient>
+                  <radialGradient id="caGlow" cx="0.5" cy="0.54" r="0.5">
+                    <stop offset="0" stop-color="#fff4d8"/>
+                    <stop offset="0.5" stop-color="#ffe2a6" stop-opacity="0.7"/>
+                    <stop offset="1" stop-color="#ffe2a6" stop-opacity="0"/>
+                  </radialGradient>
+                  <linearGradient id="caSea" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#dd8a52"/>
+                    <stop offset="1" stop-color="#b35c30"/>
+                  </linearGradient>
+                  <linearGradient id="caGlint" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#ffeec2" stop-opacity="0.85"/>
+                    <stop offset="1" stop-color="#ffeec2" stop-opacity="0"/>
+                  </linearGradient>
+                  <radialGradient id="caVig" cx="0.5" cy="0.45" r="0.75">
+                    <stop offset="0.55" stop-color="#000" stop-opacity="0"/>
+                    <stop offset="1" stop-color="#3a1505" stop-opacity="0.34"/>
+                  </radialGradient>
+                </defs>
+                <rect width="320" height="180" fill="url(#caSky)"/>
+                <circle cx="160" cy="98" r="78" fill="url(#caGlow)"/>
+                <circle cx="160" cy="100" r="29" fill="#fff2cf"/>
+                <!-- Sea -->
+                <rect x="0" y="120" width="320" height="60" fill="url(#caSea)"/>
+                <rect x="149" y="120" width="22" height="60" fill="url(#caGlint)"/>
+                <g stroke="#ffeec2" stroke-opacity="0.3" stroke-width="1.4" stroke-linecap="round">
+                  <line x1="146" y1="132" x2="174" y2="132"/>
+                  <line x1="143" y1="143" x2="177" y2="143"/>
+                  <line x1="148" y1="154" x2="172" y2="154"/>
+                  <line x1="151" y1="165" x2="169" y2="165"/>
+                </g>
+                <!-- Golden Gate silhouette -->
+                <g fill="#8a3a1c" stroke="#8a3a1c">
+                  <path d="M 0 80 Q 52 50 101 45 Q 130 99 160 99 Q 190 99 219 45 Q 268 50 320 80" stroke-width="2.4" fill="none"/>
+                  <g stroke-width="1.1" stroke-opacity="0.85">
+                    <line x1="116" y1="60" x2="116" y2="120"/>
+                    <line x1="131" y1="73" x2="131" y2="120"/>
+                    <line x1="146" y1="86" x2="146" y2="120"/>
+                    <line x1="160" y1="99" x2="160" y2="120"/>
+                    <line x1="174" y1="86" x2="174" y2="120"/>
+                    <line x1="189" y1="73" x2="189" y2="120"/>
+                    <line x1="204" y1="60" x2="204" y2="120"/>
+                  </g>
+                  <rect x="96" y="42" width="10" height="78" stroke="none"/>
+                  <rect x="214" y="42" width="10" height="78" stroke="none"/>
+                  <rect x="92" y="58" width="18" height="3" stroke="none"/>
+                  <rect x="92" y="80" width="18" height="3" stroke="none"/>
+                  <rect x="210" y="58" width="18" height="3" stroke="none"/>
+                  <rect x="210" y="80" width="18" height="3" stroke="none"/>
+                  <rect x="0" y="118" width="320" height="5" stroke="none"/>
+                </g>
+                <rect width="320" height="180" fill="url(#caVig)"/>
+                <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+              </svg>
+            </div>
+            <div class="thumb-play"><span>▶</span></div>
+          </div>
+          <div class="video-info">
+            <div class="video-badge">2023 &nbsp;·&nbsp; USA</div>
+            <h3 class="video-title" data-trip-title="california">California Road Trip</h3>
+            <p class="video-desc" data-trip-desc="california">Two weeks, gorgeous sunsets, LA nights, and one car tow that absolutely nobody saw coming. 10/10 would road trip again, maybe with a better parking strategy.</p>
           </div>
         </div>
 
@@ -1854,442 +2226,151 @@
           </div>
         </div>
 
-        <!-- Amalfi Coast 2024 -->
-        <div class="video-card" onclick="openTrip('amalfi')">
+        <!-- Rhodes 2020 -->
+        <div class="video-card" onclick="openTrip('rhodes')">
           <div class="video-thumb"><div class="thumb-bg">
             <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
               <defs>
-                <linearGradient id="amSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c0dff4"/><stop offset="0.55" stop-color="#8ac8e8"/><stop offset="0.8" stop-color="#f4c07a"/><stop offset="1" stop-color="#f0a848"/></linearGradient>
-                <linearGradient id="amSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1890b8"/><stop offset="1" stop-color="#0e6888"/></linearGradient>
-                <radialGradient id="amSun" cx="0.76" cy="0.6" r="0.32"><stop offset="0" stop-color="#fff8e0"/><stop offset="0.5" stop-color="#fce4a0" stop-opacity="0.55"/><stop offset="1" stop-color="#fce4a0" stop-opacity="0"/></radialGradient>
-                <radialGradient id="amVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0a1e2c" stop-opacity="0.32"/></radialGradient>
+                <linearGradient id="rhSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8e4f7"/><stop offset="0.5" stop-color="#8ccae6"/><stop offset="0.78" stop-color="#f6dca6"/><stop offset="1" stop-color="#f4c98a"/></linearGradient>
+                <linearGradient id="rhSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a8cb0"/><stop offset="1" stop-color="#0e6888"/></linearGradient>
+                <radialGradient id="rhVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0a2d3f" stop-opacity="0.32"/></radialGradient>
               </defs>
-              <rect width="320" height="180" fill="url(#amSky)"/>
-              <circle cx="244" cy="105" r="58" fill="url(#amSun)"/>
-              <circle cx="244" cy="107" r="20" fill="#fff8e0"/>
-              <rect x="0" y="132" width="320" height="48" fill="url(#amSea)"/>
-              <!-- cliff -->
-              <path d="M 0 180 L 0 88 Q 28 70 58 80 Q 88 90 100 102 L 100 180 Z" fill="#8a7a5a"/>
-              <path d="M 0 180 L 0 94 Q 24 76 54 86 Q 78 96 96 108 L 96 180 Z" fill="#a08a68"/>
-              <!-- stacked houses -->
-              <rect x="4" y="118" width="20" height="20" fill="#f0e8d0"/><rect x="4" y="113" width="20" height="6" fill="#d87840"/>
-              <rect x="26" y="112" width="18" height="24" fill="#e8c8a8"/><rect x="26" y="107" width="18" height="6" fill="#d07030"/>
-              <rect x="46" y="116" width="16" height="20" fill="#f4d8b0"/><rect x="46" y="111" width="16" height="6" fill="#c86828"/>
-              <rect x="8" y="96" width="16" height="20" fill="#e8d8b8"/><rect x="8" y="91" width="16" height="6" fill="#c87840" opacity="0.8"/>
-              <rect x="26" y="90" width="18" height="24" fill="#f0e0c0"/><rect x="26" y="85" width="18" height="6" fill="#d07830" opacity="0.8"/>
-              <rect x="12" y="72" width="14" height="22" fill="#e4d4a4" opacity="0.9"/><rect x="12" y="67" width="14" height="6" fill="#c06820" opacity="0.7"/>
+              <rect width="320" height="180" fill="url(#rhSky)"/>
+              <circle cx="240" cy="78" r="22" fill="#fffbe0"/>
+              <rect x="0" y="126" width="320" height="54" fill="url(#rhSea)"/>
+              <rect x="0" y="122" width="320" height="6" fill="#b09060"/>
+              <!-- white church body -->
+              <rect x="104" y="90" width="60" height="36" fill="#f0ecdf"/>
+              <!-- blue dome -->
+              <path d="M 104 90 Q 134 64 164 90 Z" fill="#1e7bb0"/>
+              <ellipse cx="134" cy="90" rx="30" ry="8" fill="#1a6fa0"/>
+              <!-- cross -->
+              <line x1="134" y1="56" x2="134" y2="72" stroke="#f0ecdf" stroke-width="2"/>
+              <line x1="128" y1="62" x2="140" y2="62" stroke="#f0ecdf" stroke-width="2"/>
               <!-- bell tower -->
-              <rect x="60" y="92" width="14" height="40" fill="#e8e0cc"/>
-              <path d="M 58 94 Q 67 80 76 94 Z" fill="#c07038"/>
-              <line x1="67" y1="74" x2="67" y2="81" stroke="#c0c0c0" stroke-width="1.5"/><line x1="63" y1="78" x2="71" y2="78" stroke="#c0c0c0" stroke-width="1.5"/>
-              <!-- lemon tree -->
-              <circle cx="88" cy="100" r="9" fill="#7a9a40" opacity="0.85"/>
-              <ellipse cx="84" cy="97" rx="2.5" ry="2" fill="#f0d030"/><ellipse cx="91" cy="100" rx="2.5" ry="2" fill="#f0d030"/><ellipse cx="87" cy="104" rx="2.5" ry="2" fill="#f0d030"/>
-              <g stroke="#fff" stroke-opacity="0.22" stroke-width="1.2" stroke-linecap="round"><line x1="130" y1="144" x2="170" y2="144"/><line x1="210" y1="152" x2="260" y2="152"/></g>
-              <rect width="320" height="180" fill="url(#amVig)"/>
+              <rect x="68" y="78" width="22" height="50" fill="#e8e2d4"/>
+              <path d="M 66 80 Q 79 62 92 80 Z" fill="#1e7bb0"/>
+              <!-- side buildings -->
+              <rect x="164" y="102" width="32" height="24" fill="#e8e2d4"/>
+              <rect x="48" y="106" width="24" height="20" fill="#ede8da"/>
+              <!-- olive trees -->
+              <circle cx="44" cy="116" r="11" fill="#7a9a5a" opacity="0.75"/>
+              <line x1="44" y1="126" x2="44" y2="134" stroke="#5a6a40" stroke-width="2"/>
+              <circle cx="188" cy="114" r="9" fill="#7a9a5a" opacity="0.7"/>
+              <g stroke="#fff" stroke-opacity="0.2" stroke-width="1.2" stroke-linecap="round"><line x1="60" y1="140" x2="100" y2="140"/><line x1="200" y1="148" x2="250" y2="148"/></g>
+              <rect width="320" height="180" fill="url(#rhVig)"/>
               <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
             </svg>
           </div><div class="thumb-play"><span>▶</span></div></div>
           <div class="video-info">
-            <div class="video-badge">2024 &nbsp;·&nbsp; Italy</div>
-            <h3 class="video-title" data-trip-title="amalfi">Amalfi Coast</h3>
-            <p class="video-desc" data-trip-desc="amalfi">The most beautiful road I have ever been terrified on. Cliffs and lemons and pastel houses stacked because someone ran out of flat land. The limoncello is obligatory. The vertigo is free.</p>
+            <div class="video-badge">2020 &nbsp;·&nbsp; Greece</div>
+            <h3 class="video-title" data-trip-title="rhodes">Rhodes</h3>
+            <p class="video-desc" data-trip-desc="rhodes">Sun, sea, ancient ruins, and a very suspicious tan line. Turquoise water, excellent wine, and the kind of heat that turns you into a very willing nap enthusiast.</p>
           </div>
         </div>
 
-        <!-- New England 2019 & 2025 -->
-        <div class="video-card" onclick="openTrip('newengland')">
-          <div class="video-thumb"><div class="thumb-bg">
-            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-              <defs>
-                <linearGradient id="neSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8c890"/><stop offset="0.42" stop-color="#e0a050"/><stop offset="0.7" stop-color="#c87030"/><stop offset="1" stop-color="#a84820"/></linearGradient>
-                <radialGradient id="neGlow" cx="0.5" cy="0.38" r="0.42"><stop offset="0" stop-color="#fff4d0"/><stop offset="0.5" stop-color="#ffe0a0" stop-opacity="0.5"/><stop offset="1" stop-color="#ffe0a0" stop-opacity="0"/></radialGradient>
-                <linearGradient id="neSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a789a"/><stop offset="1" stop-color="#2a5878"/></linearGradient>
-                <radialGradient id="neVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#2a1008" stop-opacity="0.35"/></radialGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#neSky)"/>
-              <circle cx="160" cy="70" r="58" fill="url(#neGlow)"/>
-              <circle cx="160" cy="72" r="19" fill="#fff4d0"/>
-              <!-- autumn trees left -->
-              <ellipse cx="38" cy="118" rx="22" ry="17" fill="#c03020"/>
-              <ellipse cx="28" cy="126" rx="14" ry="11" fill="#a82818"/>
-              <line x1="38" y1="134" x2="38" y2="154" stroke="#5a3820" stroke-width="3"/>
-              <ellipse cx="80" cy="112" rx="20" ry="16" fill="#e07820"/>
-              <line x1="80" y1="128" x2="80" y2="148" stroke="#5a3820" stroke-width="3"/>
-              <ellipse cx="118" cy="118" rx="18" ry="14" fill="#d0a820"/>
-              <line x1="118" y1="130" x2="118" y2="150" stroke="#5a3820" stroke-width="2.5"/>
-              <!-- lighthouse -->
-              <rect x="150" y="82" width="16" height="48" fill="#f0f0f0"/>
-              <rect x="150" y="90" width="16" height="8" fill="#c03020"/>
-              <rect x="150" y="106" width="16" height="8" fill="#c03020"/>
-              <rect x="150" y="122" width="16" height="8" fill="#c03020"/>
-              <rect x="148" y="78" width="20" height="6" fill="#c03020"/>
-              <circle cx="158" cy="78" r="4" fill="#f0e860" opacity="0.85"/>
-              <rect x="155" y="118" width="6" height="12" rx="3" fill="#8a5030"/>
-              <!-- keeper cottage -->
-              <rect x="166" y="112" width="28" height="20" fill="#e8e0d4"/>
-              <path d="M 164 114 L 180 102 L 196 114 Z" fill="#c03020"/>
-              <!-- right trees -->
-              <ellipse cx="222" cy="116" rx="16" ry="14" fill="#c84020"/>
-              <ellipse cx="252" cy="118" rx="18" ry="15" fill="#e08820"/>
-              <ellipse cx="286" cy="112" rx="20" ry="17" fill="#c03020"/>
-              <line x1="252" y1="132" x2="252" y2="150" stroke="#5a3820" stroke-width="2.5"/>
-              <line x1="286" y1="128" x2="286" y2="148" stroke="#5a3820" stroke-width="2.5"/>
-              <path d="M 0 180 Q 60 132 140 138 Q 220 144 320 130 L 320 180 Z" fill="#5a3820"/>
-              <rect x="0" y="150" width="320" height="30" fill="url(#neSea)"/>
-              <rect width="320" height="180" fill="url(#neVig)"/>
-              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-            </svg>
-          </div><div class="thumb-play"><span>▶</span></div></div>
-          <div class="video-info">
-            <div class="video-badge">2019 &amp; 2025 &nbsp;·&nbsp; USA</div>
-            <h3 class="video-title" data-trip-title="newengland">New England</h3>
-            <p class="video-desc" data-trip-desc="newengland">Covered bridges, October foliage that doesn't look real, and enough clam chowder to reconsider your relationship with cream-based soups. Two visits and I still haven't decided which season is better.</p>
-          </div>
-        </div>
+      
+      </div>
 
-        <!-- New York 2018–2025 -->
-        <div class="video-card" onclick="openTrip('newyork')">
-          <div class="video-thumb"><div class="thumb-bg">
-            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-              <defs>
-                <linearGradient id="nySky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1428"/><stop offset="0.4" stop-color="#162040"/><stop offset="0.7" stop-color="#283860"/><stop offset="1" stop-color="#1a2848"/></linearGradient>
-                <radialGradient id="nyMoon" cx="0.2" cy="0.16" r="0.24"><stop offset="0" stop-color="#fff8e0"/><stop offset="0.35" stop-color="#f0e8b0" stop-opacity="0.5"/><stop offset="1" stop-color="#f0e8b0" stop-opacity="0"/></radialGradient>
-                <linearGradient id="nyWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101830"/><stop offset="1" stop-color="#080f1f"/></linearGradient>
-                <radialGradient id="nyVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.45"/></radialGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#nySky)"/>
-              <circle cx="60" cy="28" r="38" fill="url(#nyMoon)"/>
-              <circle cx="60" cy="28" r="11" fill="#fff8e0"/>
-              <g fill="#fff" opacity="0.55"><circle cx="112" cy="14" r="1"/><circle cx="162" cy="8" r="1.2"/><circle cx="202" cy="18" r="1"/><circle cx="252" cy="11" r="0.8"/><circle cx="292" cy="7" r="1"/><circle cx="140" cy="28" r="0.8"/><circle cx="280" cy="24" r="1"/></g>
-              <rect x="0" y="138" width="320" height="42" fill="url(#nyWater)"/>
-              <!-- reflections -->
-              <g opacity="0.2"><rect x="100" y="140" width="6" height="36" fill="#f0d060"/><rect x="148" y="140" width="8" height="36" fill="#f0e060"/><rect x="192" y="142" width="5" height="32" fill="#f0d060"/><rect x="232" y="141" width="6" height="34" fill="#f0c050"/></g>
-              <!-- skyline -->
-              <g fill="#1a2040">
-                <rect x="0" y="108" width="20" height="34"/><rect x="16" y="92" width="14" height="50"/><rect x="28" y="102" width="18" height="40"/><rect x="44" y="112" width="12" height="30"/>
-                <rect x="54" y="88" width="22" height="52"/><rect x="60" y="82" width="10" height="8"/>
-                <rect x="74" y="96" width="16" height="44"/><rect x="88" y="92" width="14" height="48"/>
-                <!-- Empire State -->
-                <rect x="100" y="70" width="22" height="70"/>
-                <rect x="104" y="60" width="14" height="12"/><rect x="106" y="52" width="10" height="10"/><rect x="108" y="46" width="6" height="8"/><rect x="109" y="42" width="4" height="6"/>
-                <line x1="111" y1="28" x2="111" y2="42" stroke="#304060" stroke-width="2"/>
-                <circle cx="111" cy="26" r="2.5" fill="#f0e060" opacity="0.9"/>
-                <!-- Chrysler hint -->
-                <rect x="126" y="80" width="18" height="58"/>
-                <path d="M 126 80 Q 135 62 144 80 Z" fill="#243050"/>
-                <path d="M 128 70 Q 135 56 142 70 Z" fill="#243050"/>
-                <path d="M 130 62 Q 135 52 140 62 Z" fill="#243050"/>
-                <!-- right buildings -->
-                <rect x="146" y="88" width="16" height="50"/><rect x="164" y="78" width="20" height="60"/><rect x="168" y="72" width="12" height="8"/>
-                <rect x="184" y="92" width="14" height="46"/><rect x="196" y="82" width="18" height="56"/>
-                <rect x="212" y="98" width="14" height="40"/><rect x="224" y="86" width="20" height="52"/>
-                <rect x="242" y="104" width="16" height="34"/><rect x="256" y="90" width="18" height="48"/>
-                <rect x="272" y="100" width="22" height="38"/><rect x="292" y="86" width="28" height="52"/>
-              </g>
-              <!-- lit windows -->
-              <g fill="#f0d860" opacity="0.65">
-                <rect x="18" y="94" width="3" height="3"/><rect x="56" y="92" width="3" height="3"/><rect x="62" y="100" width="3" height="3"/>
-                <rect x="76" y="102" width="3" height="3"/><rect x="90" y="96" width="3" height="3"/>
-                <rect x="102" y="80" width="3" height="3"/><rect x="108" y="88" width="3" height="3"/><rect x="114" y="94" width="3" height="3"/>
-                <rect x="130" y="88" width="3" height="3"/><rect x="136" y="94" width="3" height="3"/>
-                <rect x="148" y="96" width="3" height="3"/><rect x="166" y="84" width="3" height="3"/><rect x="172" y="92" width="3" height="3"/>
-                <rect x="198" y="90" width="3" height="3"/><rect x="226" y="94" width="3" height="3"/><rect x="258" y="96" width="3" height="3"/>
-              </g>
-              <rect width="320" height="180" fill="url(#nyVig)"/>
-              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-            </svg>
-          </div><div class="thumb-play"><span>▶</span></div></div>
-          <div class="video-info">
-            <div class="video-badge">2018–2025 &nbsp;·&nbsp; USA</div>
-            <h3 class="video-title" data-trip-title="newyork">New York</h3>
-            <p class="video-desc" data-trip-desc="newyork">The city that gives you everything and also all of your anxiety. Delis at 3am, subway platform heat, and someone in Central Park playing an instrument you've never seen. Multiple visits and it somehow gets bigger every time.</p>
-          </div>
+      <!-- ── Two Lives, Two Homes sub-view ── -->
+      <div class="two-lives-view" id="two-lives-view">
+        <button class="tl-back" onclick="closeTwoLives()">← All Adventures</button>
+        <div class="tl-header">
+          <p class="tl-eyebrow">✦ &nbsp; The Other Side &nbsp; ✦</p>
+          <h2 class="tl-title">Two Lives, Two Homes</h2>
+          <p class="tl-sub">Not trips. Places I carry everywhere I go.</p>
         </div>
+        <div class="tl-grid">
 
-        <!-- Milan 2023 & 2025 -->
-        <div class="video-card" onclick="openTrip('milan')">
-          <div class="video-thumb"><div class="thumb-bg">
-            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-              <defs>
-                <linearGradient id="mlSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8c0d8"/><stop offset="0.4" stop-color="#d8c8c0"/><stop offset="0.72" stop-color="#e8d4a8"/><stop offset="1" stop-color="#d4b888"/></linearGradient>
-                <radialGradient id="mlGlow" cx="0.5" cy="0.62" r="0.5"><stop offset="0" stop-color="#fff8e8"/><stop offset="0.5" stop-color="#f8e4b0" stop-opacity="0.5"/><stop offset="1" stop-color="#f8e4b0" stop-opacity="0"/></radialGradient>
-                <radialGradient id="mlVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1a0a20" stop-opacity="0.38"/></radialGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#mlSky)"/>
-              <circle cx="160" cy="102" r="70" fill="url(#mlGlow)"/>
-              <!-- Duomo facade + spires -->
-              <g fill="#2a2030">
-                <rect x="78" y="100" width="164" height="80"/>
-                <!-- gables -->
-                <path d="M 78 100 L 108 80 L 138 100 Z"/><path d="M 108 100 L 128 87 L 148 100 Z"/>
-                <path d="M 138 100 L 160 82 L 182 100 Z"/><path d="M 172 100 L 192 87 L 212 100 Z"/>
-                <path d="M 202 100 L 224 80 L 242 100 Z"/>
-                <!-- central spire -->
-                <rect x="154" y="18" width="12" height="70"/><polygon points="154,20 160,5 166,20"/>
-                <rect x="151" y="44" width="18" height="5"/><rect x="152" y="35" width="16" height="4"/>
-                <!-- secondary spires -->
-                <rect x="126" y="32" width="10" height="52"/><polygon points="126,34 131,22 136,34"/>
-                <rect x="124" y="54" width="14" height="4"/>
-                <rect x="178" y="32" width="10" height="52"/><polygon points="178,34 183,22 188,34"/>
-                <rect x="176" y="54" width="14" height="4"/>
-                <!-- smaller -->
-                <rect x="102" y="52" width="7" height="32"/><polygon points="102,54 106,44 110,54"/>
-                <rect x="202" y="52" width="7" height="32"/><polygon points="202,54 206,44 210,54"/>
-                <rect x="86" y="62" width="6" height="24"/><polygon points="86,64 89,56 92,64"/>
-                <rect x="217" y="62" width="6" height="24"/><polygon points="217,64 220,56 223,64"/>
-                <rect x="116" y="58" width="5" height="26"/><polygon points="116,60 119,52 122,60"/>
-                <rect x="193" y="58" width="5" height="26"/><polygon points="193,60 196,52 199,60"/>
-              </g>
-              <!-- Madonnina -->
-              <circle cx="160" cy="5" r="3.5" fill="#c8a040"/>
-              <!-- rose window -->
-              <circle cx="160" cy="122" r="13" fill="none" stroke="#3a3050" stroke-width="2" opacity="0.45"/>
-              <!-- gothic windows glow -->
-              <g fill="#e8c070" opacity="0.28"><rect x="92" y="120" width="10" height="18" rx="5"/><rect x="112" y="116" width="10" height="22" rx="5"/><rect x="186" y="116" width="10" height="22" rx="5"/><rect x="206" y="120" width="10" height="18" rx="5"/></g>
-              <rect width="320" height="180" fill="url(#mlVig)"/>
-              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-            </svg>
-          </div><div class="thumb-play"><span>▶</span></div></div>
-          <div class="video-info">
-            <div class="video-badge">2023 &amp; 2025 &nbsp;·&nbsp; Italy</div>
-            <h3 class="video-title" data-trip-title="milan">Milan</h3>
-            <p class="video-desc" data-trip-desc="milan">The Duomo, the aperitivo hour, and a fashion week confidence I did not earn but fully adopted. A city that makes you walk faster, dress better, and drink your Campari without apologising. Both times I left feeling inexplicably chic.</p>
-          </div>
+            <!-- Poland through my lenses -->
+            <div class="video-card" onclick="openTrip('poland')">
+              <div class="video-thumb"><div class="thumb-bg">
+                <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+                  <defs>
+                    <linearGradient id="poSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8e8f4"/><stop offset="0.45" stop-color="#e8d4c0"/><stop offset="0.72" stop-color="#e8b870"/><stop offset="1" stop-color="#d09040"/></linearGradient>
+                    <linearGradient id="poMtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#788090"/><stop offset="1" stop-color="#505870"/></linearGradient>
+                    <radialGradient id="poVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#100808" stop-opacity="0.35"/></radialGradient>
+                  </defs>
+                  <rect width="320" height="180" fill="url(#poSky)"/>
+                  <path d="M 0 104 L 30 78 L 55 94 L 82 60 L 112 80 L 142 68 L 162 56 L 182 70 L 212 56 L 242 74 L 270 62 L 292 76 L 320 70 L 320 122 L 0 122 Z" fill="url(#poMtn)" opacity="0.65"/>
+                  <path d="M 0 180 L 0 140 Q 80 128 160 132 Q 240 134 320 128 L 320 180 Z" fill="#4a6030"/>
+                  <path d="M 58 140 Q 120 110 182 112 Q 202 114 222 124 L 222 144 L 58 144 Z" fill="#5a7840"/>
+                  <rect x="70" y="110" width="144" height="36" fill="#d0c8a8"/>
+                  <rect x="68" y="106" width="148" height="6" fill="#b8a888"/>
+                  <g fill="#b8a888"><rect x="68" y="100" width="8" height="8"/><rect x="80" y="100" width="8" height="8"/><rect x="92" y="100" width="8" height="8"/><rect x="152" y="100" width="8" height="8"/><rect x="164" y="100" width="8" height="8"/><rect x="176" y="100" width="8" height="8"/><rect x="188" y="100" width="8" height="8"/><rect x="200" y="100" width="8" height="8"/></g>
+                  <ellipse cx="132" cy="100" rx="20" ry="9" fill="#c0a830" opacity="0.9"/>
+                  <path d="M 112 100 Q 132 78 152 100 Z" fill="#c8b030"/>
+                  <rect x="128" y="70" width="8" height="10" fill="#a89020"/>
+                  <line x1="132" y1="60" x2="132" y2="70" stroke="#d0b830" stroke-width="2"/>
+                  <rect x="76" y="88" width="16" height="26" fill="#c8c0a0"/>
+                  <path d="M 74 90 Q 84 76 94 90 Z" fill="#c0a830"/>
+                  <rect x="192" y="88" width="16" height="26" fill="#c8c0a0"/>
+                  <path d="M 190 90 Q 200 76 210 90 Z" fill="#c0a830"/>
+                  <rect x="120" y="116" width="20" height="28" rx="10" fill="#b8a878"/>
+                  <rect x="126" y="116" width="8" height="28" rx="4" fill="#8a7040"/>
+                  <rect x="88" y="134" width="144" height="14" fill="#c8b878"/>
+                  <g fill="#c0b068"><path d="M 86 136 L 94 126 L 102 136 Z"/><path d="M 102 136 L 108 130 L 114 136 Z"/><path d="M 116 136 L 122 130 L 128 136 Z"/><path d="M 130 136 L 138 126 L 146 136 Z"/><path d="M 178 136 L 186 126 L 194 136 Z"/><path d="M 194 136 L 200 130 L 206 136 Z"/><path d="M 208 136 L 214 130 L 220 136 Z"/><path d="M 222 136 L 230 126 L 232 136 Z"/></g>
+                  <g fill="#f0e0a0" opacity="0.35"><rect x="96" y="116" width="4" height="6" rx="2"/><rect x="112" y="116" width="4" height="6" rx="2"/><rect x="168" y="116" width="4" height="6" rx="2"/><rect x="184" y="116" width="4" height="6" rx="2"/><rect x="200" y="116" width="4" height="6" rx="2"/></g>
+                  <rect width="320" height="180" fill="url(#poVig)"/>
+                  <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+                </svg>
+              </div><div class="thumb-play"><span>▶</span></div></div>
+              <div class="video-info">
+                <div class="video-badge">Photo Diary &nbsp;·&nbsp; Poland</div>
+                <h3 class="video-title" data-trip-title="poland">Poland through my lenses</h3>
+                <p class="video-desc" data-trip-desc="poland">Home is complicated. Poland is where I'm from, where my family is, where the summers are long and the food is heavy in all the right ways. Not tourist shots — the country as I actually see it.</p>
+              </div>
+            </div>
+
+            <!-- Berlin life -->
+            <div class="video-card" onclick="openTrip('berlin')">
+              <div class="video-thumb"><div class="thumb-bg">
+                <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+                  <defs>
+                    <linearGradient id="bnSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a3c50"/><stop offset="0.38" stop-color="#4a607c"/><stop offset="0.62" stop-color="#7890a4"/><stop offset="0.82" stop-color="#c8a870"/><stop offset="1" stop-color="#d0b060"/></linearGradient>
+                    <radialGradient id="bnGlow" cx="0.62" cy="0.74" r="0.38"><stop offset="0" stop-color="#fff8e0"/><stop offset="0.45" stop-color="#f8dca0" stop-opacity="0.45"/><stop offset="1" stop-color="#f8dca0" stop-opacity="0"/></radialGradient>
+                    <radialGradient id="bnVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#100a00" stop-opacity="0.42"/></radialGradient>
+                  </defs>
+                  <rect width="320" height="180" fill="url(#bnSky)"/>
+                  <circle cx="200" cy="130" r="60" fill="url(#bnGlow)"/>
+                  <g fill="#fff" opacity="0.38"><circle cx="30" cy="20" r="1"/><circle cx="80" cy="10" r="0.8"/><circle cx="50" cy="40" r="1"/><circle cx="240" cy="15" r="0.8"/><circle cx="280" cy="28" r="1"/></g>
+                  <rect x="0" y="150" width="320" height="30" fill="#383028"/>
+                  <g fill="#2a3820" opacity="0.8"><ellipse cx="18" cy="144" rx="14" ry="10"/><ellipse cx="50" cy="144" rx="13" ry="10"/><line x1="18" y1="154" x2="18" y2="166" stroke="#2a3820" stroke-width="3"/><line x1="50" y1="154" x2="50" y2="166" stroke="#2a3820" stroke-width="3"/><ellipse cx="240" cy="144" rx="13" ry="10"/><ellipse cx="272" cy="144" rx="14" ry="10"/><line x1="240" y1="154" x2="240" y2="166" stroke="#2a3820" stroke-width="3"/><line x1="272" y1="154" x2="272" y2="166" stroke="#2a3820" stroke-width="3"/></g>
+                  <rect x="268" y="22" width="10" height="130" fill="#4a5060"/>
+                  <rect x="266" y="150" width="14" height="14" fill="#4a5060"/>
+                  <circle cx="273" cy="62" r="22" fill="#505868"/>
+                  <ellipse cx="273" cy="58" rx="18" ry="4" fill="#3a4050" opacity="0.5"/>
+                  <ellipse cx="273" cy="64" rx="20" ry="4" fill="#3a4050" opacity="0.5"/>
+                  <ellipse cx="273" cy="70" rx="16" ry="3" fill="#3a4050" opacity="0.45"/>
+                  <rect x="271" y="2" width="4" height="22" fill="#4a5060"/>
+                  <circle cx="273" cy="2" r="2" fill="#f8d040" opacity="0.9"/>
+                  <g fill="#f8c040" opacity="0.45"><circle cx="260" cy="60" r="2"/><circle cx="286" cy="58" r="2"/></g>
+                  <g fill="#302818">
+                    <rect x="84" y="66" width="132" height="22"/>
+                    <ellipse cx="150" cy="62" rx="30" ry="7" fill="#382e14"/>
+                    <rect x="88" y="88" width="14" height="64"/><rect x="110" y="88" width="14" height="64"/><rect x="132" y="88" width="14" height="64"/>
+                    <rect x="154" y="88" width="14" height="64"/><rect x="176" y="88" width="14" height="64"/><rect x="198" y="88" width="14" height="64"/>
+                    <rect x="86" y="84" width="18" height="5"/><rect x="108" y="84" width="18" height="5"/><rect x="130" y="84" width="18" height="5"/><rect x="152" y="84" width="18" height="5"/><rect x="174" y="84" width="18" height="5"/><rect x="196" y="84" width="18" height="5"/>
+                    <rect x="80" y="150" width="140" height="6"/><rect x="76" y="154" width="148" height="6"/>
+                    <rect x="58" y="96" width="28" height="60"/><rect x="58" y="92" width="28" height="6"/>
+                    <rect x="214" y="96" width="28" height="60"/><rect x="214" y="92" width="28" height="6"/>
+                    <rect x="102" y="118" width="22" height="30" rx="11" fill="#2a1a08"/>
+                    <rect x="148" y="118" width="22" height="30" rx="11" fill="#2a1a08"/>
+                    <rect x="66" y="116" width="12" height="28" rx="6" fill="#2a1a08"/>
+                    <rect x="222" y="116" width="12" height="28" rx="6" fill="#2a1a08"/>
+                  </g>
+                  <rect width="320" height="180" fill="url(#bnVig)"/>
+                  <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
+                </svg>
+              </div><div class="thumb-play"><span>▶</span></div></div>
+              <div class="video-info">
+                <div class="video-badge">Photo Diary &nbsp;·&nbsp; Germany</div>
+                <h3 class="video-title" data-trip-title="berlin">Berlin life</h3>
+                <p class="video-desc" data-trip-desc="berlin">My other home — the one that chose me back. Chaotic, beautiful, permanently under construction, and absolutely fine with all of it. Markets, parks, corners that don't show up in any guidebook but somehow define everything.</p>
+              </div>
+            </div>
+
         </div>
-
-        <!-- Vienna 2025 -->
-        <div class="video-card" onclick="openTrip('vienna')">
-          <div class="video-thumb"><div class="thumb-bg">
-            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-              <defs>
-                <linearGradient id="vnSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c0d0e8"/><stop offset="0.42" stop-color="#d4c8a8"/><stop offset="0.7" stop-color="#e8d890"/><stop offset="1" stop-color="#d4c070"/></linearGradient>
-                <radialGradient id="vnGlow" cx="0.5" cy="0.52" r="0.5"><stop offset="0" stop-color="#fffde0"/><stop offset="0.5" stop-color="#f8eca0" stop-opacity="0.5"/><stop offset="1" stop-color="#f8eca0" stop-opacity="0"/></radialGradient>
-                <radialGradient id="vnVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1a1000" stop-opacity="0.32"/></radialGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#vnSky)"/>
-              <circle cx="160" cy="96" r="65" fill="url(#vnGlow)"/>
-              <!-- formal garden -->
-              <rect x="0" y="144" width="320" height="36" fill="#5a7840"/>
-              <rect x="0" y="138" width="320" height="10" fill="#6a8848"/>
-              <g fill="#4a6830"><rect x="0" y="130" width="30" height="10"/><rect x="36" y="130" width="30" height="10"/><rect x="72" y="130" width="30" height="10"/><rect x="108" y="130" width="30" height="10"/><rect x="144" y="130" width="30" height="10"/><rect x="180" y="130" width="30" height="10"/><rect x="216" y="130" width="30" height="10"/><rect x="252" y="130" width="30" height="10"/><rect x="288" y="130" width="32" height="10"/></g>
-              <!-- Palace -->
-              <rect x="28" y="80" width="264" height="54" fill="#d4b040"/>
-              <rect x="26" y="76" width="268" height="8" fill="#b89030"/>
-              <!-- central pavilion -->
-              <rect x="108" y="64" width="104" height="72" fill="#d8b848"/>
-              <rect x="106" y="60" width="108" height="8" fill="#b89030"/>
-              <path d="M 106 60 L 160 40 L 214 60 Z" fill="#c0a030"/>
-              <!-- columns -->
-              <g fill="#c4a030"><rect x="34" y="84" width="6" height="46"/><rect x="48" y="84" width="6" height="46"/><rect x="62" y="84" width="6" height="46"/><rect x="76" y="84" width="6" height="46"/><rect x="90" y="84" width="6" height="46"/><rect x="114" y="68" width="6" height="62"/><rect x="128" y="68" width="6" height="62"/><rect x="142" y="68" width="6" height="62"/><rect x="158" y="68" width="6" height="62"/><rect x="174" y="68" width="6" height="62"/><rect x="188" y="68" width="6" height="62"/><rect x="202" y="68" width="6" height="62"/><rect x="220" y="84" width="6" height="46"/><rect x="234" y="84" width="6" height="46"/><rect x="248" y="84" width="6" height="46"/><rect x="262" y="84" width="6" height="46"/><rect x="276" y="84" width="6" height="46"/></g>
-              <!-- windows -->
-              <g fill="#8ab0c0" opacity="0.45"><rect x="38" y="90" width="12" height="18" rx="6"/><rect x="54" y="90" width="12" height="18" rx="6"/><rect x="68" y="90" width="12" height="18" rx="6"/><rect x="82" y="90" width="12" height="18" rx="6"/><rect x="118" y="74" width="12" height="20" rx="6"/><rect x="134" y="74" width="12" height="20" rx="6"/><rect x="150" y="74" width="12" height="20" rx="6"/><rect x="166" y="74" width="12" height="20" rx="6"/><rect x="182" y="74" width="12" height="20" rx="6"/><rect x="198" y="74" width="12" height="20" rx="6"/><rect x="222" y="90" width="12" height="18" rx="6"/><rect x="236" y="90" width="12" height="18" rx="6"/><rect x="250" y="90" width="12" height="18" rx="6"/><rect x="264" y="90" width="12" height="18" rx="6"/></g>
-              <rect width="320" height="180" fill="url(#vnVig)"/>
-              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-            </svg>
-          </div><div class="thumb-play"><span>▶</span></div></div>
-          <div class="video-info">
-            <div class="video-badge">2025 &nbsp;·&nbsp; Austria</div>
-            <h3 class="video-title" data-trip-title="vienna">Vienna</h3>
-            <p class="video-desc" data-trip-desc="vienna">Coffee houses, imperial palaces, and Sachertorte that genuinely changed my relationship with chocolate cake. A city that has been beautiful since before it was fashionable to care about beauty, and it knows it.</p>
-          </div>
-        </div>
-
-        <!-- Paris 2023 & 2026 -->
-        <div class="video-card" onclick="openTrip('paris')">
-          <div class="video-thumb"><div class="thumb-bg">
-            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-              <defs>
-                <linearGradient id="prSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a090c0"/><stop offset="0.35" stop-color="#c8a8d0"/><stop offset="0.62" stop-color="#f0c8c0"/><stop offset="0.82" stop-color="#f8e0a0"/><stop offset="1" stop-color="#f4d080"/></linearGradient>
-                <linearGradient id="prSeine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7890b0"/><stop offset="1" stop-color="#5070a0"/></linearGradient>
-                <radialGradient id="prVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#201030" stop-opacity="0.32"/></radialGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#prSky)"/>
-              <rect x="0" y="140" width="320" height="40" fill="url(#prSeine)"/>
-              <!-- rooftops -->
-              <path d="M 0 128 Q 40 118 80 124 Q 100 126 120 130 L 120 142 L 0 142 Z" fill="#2a2838"/>
-              <path d="M 200 130 Q 240 120 280 126 Q 300 128 320 124 L 320 142 L 200 142 Z" fill="#2a2838"/>
-              <rect x="10" y="118" width="40" height="18" fill="#32304a"/>
-              <path d="M 10 120 L 30 106 L 50 120 Z" fill="#32304a"/>
-              <rect x="208" y="110" width="28" height="32" fill="#32304a"/><rect x="240" y="114" width="24" height="28" fill="#2e2c46"/>
-              <!-- Eiffel Tower -->
-              <g fill="#2a283a">
-                <path d="M 120 142 L 140 88 L 160 84 L 180 88 L 200 142 Z"/>
-                <path d="M 124 138 Q 160 114 196 138 Z" fill="url(#prSky)" opacity="0.28"/>
-                <rect x="136" y="86" width="48" height="6"/>
-                <path d="M 138 86 L 150 56 L 170 56 L 182 86 Z"/>
-                <rect x="148" y="54" width="24" height="5"/>
-                <path d="M 150 54 L 156 26 L 164 26 L 170 54 Z"/>
-                <rect x="157" y="12" width="6" height="16"/>
-                <rect x="155" y="19" width="10" height="2"/>
-                <circle cx="160" cy="10" r="2.5" fill="#f8e060" opacity="0.8"/>
-              </g>
-              <!-- river shimmer -->
-              <g stroke="#fff" stroke-opacity="0.2" stroke-width="1.2" stroke-linecap="round"><line x1="40" y1="152" x2="80" y2="152"/><line x1="200" y1="158" x2="250" y2="158"/></g>
-              <rect width="320" height="180" fill="url(#prVig)"/>
-              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-            </svg>
-          </div><div class="thumb-play"><span>▶</span></div></div>
-          <div class="video-info">
-            <div class="video-badge">2023 &amp; 2026 &nbsp;·&nbsp; France</div>
-            <h3 class="video-title" data-trip-title="paris">Paris</h3>
-            <p class="video-desc" data-trip-desc="paris">Two trips, zero times I wasn't completely charmed. Paris should be a cliché by now but somehow refuses to be one. The baguettes are fresh, the attitude is real, and every arrondissement feels like its own tiny country. Je reviendrai.</p>
-          </div>
-        </div>
-
-        <!-- Brussels 2022–2026 -->
-        <div class="video-card" onclick="openTrip('brussels')">
-          <div class="video-thumb"><div class="thumb-bg">
-            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-              <defs>
-                <linearGradient id="bsSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4a840"/><stop offset="0.42" stop-color="#e8b84a"/><stop offset="0.68" stop-color="#d49030"/><stop offset="1" stop-color="#b87020"/></linearGradient>
-                <radialGradient id="bsGlow" cx="0.5" cy="0.56" r="0.5"><stop offset="0" stop-color="#fff8d0"/><stop offset="0.5" stop-color="#f8e090" stop-opacity="0.5"/><stop offset="1" stop-color="#f8e090" stop-opacity="0"/></radialGradient>
-                <radialGradient id="bsVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#2a1400" stop-opacity="0.38"/></radialGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#bsSky)"/>
-              <circle cx="160" cy="98" r="65" fill="url(#bsGlow)"/>
-              <rect x="0" y="150" width="320" height="30" fill="#8a6a28"/>
-              <!-- left guild houses -->
-              <g fill="#5a4010">
-                <rect x="0" y="102" width="36" height="50"/><rect x="37" y="94" width="30" height="58"/><rect x="69" y="90" width="28" height="62"/>
-                <path d="M 2 104 L 10 88 L 18 104 Z"/><path d="M 12 104 L 20 90 L 28 104 Z"/><path d="M 38 96 L 46 80 L 54 96 Z"/><path d="M 52 96 L 60 82 L 68 96 Z"/><path d="M 70 92 L 78 76 L 86 92 Z"/><path d="M 82 92 L 90 78 L 98 92 Z"/>
-              </g>
-              <g fill="#f0c840" opacity="0.35"><rect x="4" y="110" width="7" height="10" rx="3.5"/><rect x="14" y="110" width="7" height="10" rx="3.5"/><rect x="24" y="110" width="7" height="10" rx="3.5"/><rect x="40" y="102" width="7" height="10" rx="3.5"/><rect x="52" y="102" width="7" height="10" rx="3.5"/><rect x="72" y="98" width="7" height="10" rx="3.5"/><rect x="84" y="98" width="7" height="10" rx="3.5"/></g>
-              <!-- Town Hall -->
-              <g fill="#4a3808">
-                <rect x="98" y="96" width="100" height="56"/>
-                <rect x="124" y="42" width="32" height="56"/>
-                <path d="M 122 44 L 140 6 L 158 44 Z"/>
-                <rect x="122" y="62" width="36" height="4"/><rect x="122" y="74" width="36" height="4"/><rect x="122" y="86" width="36" height="4"/>
-                <rect x="104" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
-                <rect x="120" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
-                <rect x="144" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
-                <rect x="160" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
-                <rect x="176" y="108" width="12" height="18" rx="6" fill="#f0c840" opacity="0.35"/>
-                <rect x="130" y="50" width="8" height="12" rx="4" fill="#f0c840" opacity="0.4"/>
-                <rect x="130" y="66" width="8" height="10" rx="4" fill="#f0c840" opacity="0.35"/>
-              </g>
-              <circle cx="140" cy="5" r="3" fill="#c8a030"/>
-              <!-- right guild houses -->
-              <g fill="#5a4010">
-                <rect x="200" y="92" width="28" height="60"/><rect x="230" y="98" width="30" height="54"/><rect x="262" y="102" width="30" height="50"/><rect x="292" y="96" width="28" height="56"/>
-                <path d="M 201 94 L 208 80 L 215 94 Z"/><path d="M 213 94 L 220 82 L 227 94 Z"/><path d="M 231 100 L 238 86 L 245 100 Z"/><path d="M 245 100 L 252 88 L 259 100 Z"/><path d="M 263 104 L 270 90 L 277 104 Z"/><path d="M 294 98 L 303 82 L 312 98 Z"/>
-              </g>
-              <g fill="#f0c840" opacity="0.3"><rect x="204" y="100" width="7" height="10" rx="3.5"/><rect x="215" y="100" width="7" height="10" rx="3.5"/><rect x="234" y="106" width="7" height="10" rx="3.5"/><rect x="248" y="106" width="7" height="10" rx="3.5"/><rect x="266" y="110" width="7" height="10" rx="3.5"/><rect x="296" y="104" width="7" height="10" rx="3.5"/></g>
-              <rect width="320" height="180" fill="url(#bsVig)"/>
-              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-            </svg>
-          </div><div class="thumb-play"><span>▶</span></div></div>
-          <div class="video-info">
-            <div class="video-badge">2022–2026 &nbsp;·&nbsp; Belgium</div>
-            <h3 class="video-title" data-trip-title="brussels">Brussels</h3>
-            <p class="video-desc" data-trip-desc="brussels">Three visits and I am still working through the waffle situation. Brussels lets Amsterdam and Paris take the spotlight while quietly being one of the most interesting cities in Europe. The frites are non-negotiable. The beer list is dangerous.</p>
-          </div>
-        </div>
-
-        <!-- Poland through my lenses -->
-        <div class="video-card" onclick="openTrip('poland')">
-          <div class="video-thumb"><div class="thumb-bg">
-            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-              <defs>
-                <linearGradient id="poSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8e8f4"/><stop offset="0.45" stop-color="#e8d4c0"/><stop offset="0.72" stop-color="#e8b870"/><stop offset="1" stop-color="#d09040"/></linearGradient>
-                <linearGradient id="poMtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#788090"/><stop offset="1" stop-color="#505870"/></linearGradient>
-                <radialGradient id="poVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#100808" stop-opacity="0.35"/></radialGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#poSky)"/>
-              <!-- Tatras -->
-              <path d="M 0 104 L 30 78 L 55 94 L 82 60 L 112 80 L 142 68 L 162 56 L 182 70 L 212 56 L 242 74 L 270 62 L 292 76 L 320 70 L 320 122 L 0 122 Z" fill="url(#poMtn)" opacity="0.65"/>
-              <path d="M 0 180 L 0 140 Q 80 128 160 132 Q 240 134 320 128 L 320 180 Z" fill="#4a6030"/>
-              <!-- Wawel hill -->
-              <path d="M 58 140 Q 120 110 182 112 Q 202 114 222 124 L 222 144 L 58 144 Z" fill="#5a7840"/>
-              <!-- castle walls -->
-              <rect x="70" y="110" width="144" height="36" fill="#d0c8a8"/>
-              <rect x="68" y="106" width="148" height="6" fill="#b8a888"/>
-              <g fill="#b8a888"><rect x="68" y="100" width="8" height="8"/><rect x="80" y="100" width="8" height="8"/><rect x="92" y="100" width="8" height="8"/><rect x="152" y="100" width="8" height="8"/><rect x="164" y="100" width="8" height="8"/><rect x="176" y="100" width="8" height="8"/><rect x="188" y="100" width="8" height="8"/><rect x="200" y="100" width="8" height="8"/></g>
-              <!-- cathedral dome -->
-              <ellipse cx="132" cy="100" rx="20" ry="9" fill="#c0a830" opacity="0.9"/>
-              <path d="M 112 100 Q 132 78 152 100 Z" fill="#c8b030"/>
-              <rect x="128" y="70" width="8" height="10" fill="#a89020"/>
-              <line x1="132" y1="60" x2="132" y2="70" stroke="#d0b830" stroke-width="2"/>
-              <!-- towers -->
-              <rect x="76" y="88" width="16" height="26" fill="#c8c0a0"/>
-              <path d="M 74 90 Q 84 76 94 90 Z" fill="#c0a830"/>
-              <rect x="192" y="88" width="16" height="26" fill="#c8c0a0"/>
-              <path d="M 190 90 Q 200 76 210 90 Z" fill="#c0a830"/>
-              <!-- gate -->
-              <rect x="120" y="116" width="20" height="28" rx="10" fill="#b8a878"/>
-              <rect x="126" y="116" width="8" height="28" rx="4" fill="#8a7040"/>
-              <!-- cloth hall -->
-              <rect x="88" y="134" width="144" height="14" fill="#c8b878"/>
-              <g fill="#c0b068"><path d="M 86 136 L 94 126 L 102 136 Z"/><path d="M 102 136 L 108 130 L 114 136 Z"/><path d="M 116 136 L 122 130 L 128 136 Z"/><path d="M 130 136 L 138 126 L 146 136 Z"/><path d="M 178 136 L 186 126 L 194 136 Z"/><path d="M 194 136 L 200 130 L 206 136 Z"/><path d="M 208 136 L 214 130 L 220 136 Z"/><path d="M 222 136 L 230 126 L 232 136 Z"/></g>
-              <g fill="#f0e0a0" opacity="0.35"><rect x="96" y="116" width="4" height="6" rx="2"/><rect x="112" y="116" width="4" height="6" rx="2"/><rect x="168" y="116" width="4" height="6" rx="2"/><rect x="184" y="116" width="4" height="6" rx="2"/><rect x="200" y="116" width="4" height="6" rx="2"/></g>
-              <rect width="320" height="180" fill="url(#poVig)"/>
-              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-            </svg>
-          </div><div class="thumb-play"><span>▶</span></div></div>
-          <div class="video-info">
-            <div class="video-badge">Photo Diary &nbsp;·&nbsp; Poland</div>
-            <h3 class="video-title" data-trip-title="poland">Poland through my lenses</h3>
-            <p class="video-desc" data-trip-desc="poland">Home is complicated. Poland is where I'm from, where my family is, where the summers are long and the food is heavy in all the right ways. Not tourist shots — the country as I actually see it.</p>
-          </div>
-        </div>
-
-        <!-- Berlin life -->
-        <div class="video-card" onclick="openTrip('berlin')">
-          <div class="video-thumb"><div class="thumb-bg">
-            <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-              <defs>
-                <linearGradient id="bnSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a3c50"/><stop offset="0.38" stop-color="#4a607c"/><stop offset="0.62" stop-color="#7890a4"/><stop offset="0.82" stop-color="#c8a870"/><stop offset="1" stop-color="#d0b060"/></linearGradient>
-                <radialGradient id="bnGlow" cx="0.62" cy="0.74" r="0.38"><stop offset="0" stop-color="#fff8e0"/><stop offset="0.45" stop-color="#f8dca0" stop-opacity="0.45"/><stop offset="1" stop-color="#f8dca0" stop-opacity="0"/></radialGradient>
-                <radialGradient id="bnVig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#100a00" stop-opacity="0.42"/></radialGradient>
-              </defs>
-              <rect width="320" height="180" fill="url(#bnSky)"/>
-              <circle cx="200" cy="130" r="60" fill="url(#bnGlow)"/>
-              <g fill="#fff" opacity="0.38"><circle cx="30" cy="20" r="1"/><circle cx="80" cy="10" r="0.8"/><circle cx="50" cy="40" r="1"/><circle cx="240" cy="15" r="0.8"/><circle cx="280" cy="28" r="1"/></g>
-              <rect x="0" y="150" width="320" height="30" fill="#383028"/>
-              <!-- linden trees -->
-              <g fill="#2a3820" opacity="0.8"><ellipse cx="18" cy="144" rx="14" ry="10"/><ellipse cx="50" cy="144" rx="13" ry="10"/><line x1="18" y1="154" x2="18" y2="166" stroke="#2a3820" stroke-width="3"/><line x1="50" y1="154" x2="50" y2="166" stroke="#2a3820" stroke-width="3"/><ellipse cx="240" cy="144" rx="13" ry="10"/><ellipse cx="272" cy="144" rx="14" ry="10"/><line x1="240" y1="154" x2="240" y2="166" stroke="#2a3820" stroke-width="3"/><line x1="272" y1="154" x2="272" y2="166" stroke="#2a3820" stroke-width="3"/></g>
-              <!-- TV Tower -->
-              <rect x="268" y="22" width="10" height="130" fill="#4a5060"/>
-              <rect x="266" y="150" width="14" height="14" fill="#4a5060"/>
-              <circle cx="273" cy="62" r="22" fill="#505868"/>
-              <ellipse cx="273" cy="58" rx="18" ry="4" fill="#3a4050" opacity="0.5"/>
-              <ellipse cx="273" cy="64" rx="20" ry="4" fill="#3a4050" opacity="0.5"/>
-              <ellipse cx="273" cy="70" rx="16" ry="3" fill="#3a4050" opacity="0.45"/>
-              <rect x="271" y="2" width="4" height="22" fill="#4a5060"/>
-              <circle cx="273" cy="2" r="2" fill="#f8d040" opacity="0.9"/>
-              <g fill="#f8c040" opacity="0.45"><circle cx="260" cy="60" r="2"/><circle cx="286" cy="58" r="2"/></g>
-              <!-- Brandenburg Gate -->
-              <g fill="#302818">
-                <rect x="84" y="66" width="132" height="22"/>
-                <ellipse cx="150" cy="62" rx="30" ry="7" fill="#382e14"/>
-                <!-- columns 6 -->
-                <rect x="88" y="88" width="14" height="64"/><rect x="110" y="88" width="14" height="64"/><rect x="132" y="88" width="14" height="64"/>
-                <rect x="154" y="88" width="14" height="64"/><rect x="176" y="88" width="14" height="64"/><rect x="198" y="88" width="14" height="64"/>
-                <!-- capitals -->
-                <rect x="86" y="84" width="18" height="5"/><rect x="108" y="84" width="18" height="5"/><rect x="130" y="84" width="18" height="5"/><rect x="152" y="84" width="18" height="5"/><rect x="174" y="84" width="18" height="5"/><rect x="196" y="84" width="18" height="5"/>
-                <!-- steps -->
-                <rect x="80" y="150" width="140" height="6"/><rect x="76" y="154" width="148" height="6"/>
-                <!-- wings -->
-                <rect x="58" y="96" width="28" height="60"/><rect x="58" y="92" width="28" height="6"/>
-                <rect x="214" y="96" width="28" height="60"/><rect x="214" y="92" width="28" height="6"/>
-                <!-- gate arches -->
-                <rect x="102" y="118" width="22" height="30" rx="11" fill="#2a1a08"/>
-                <rect x="148" y="118" width="22" height="30" rx="11" fill="#2a1a08"/>
-                <rect x="66" y="116" width="12" height="28" rx="6" fill="#2a1a08"/>
-                <rect x="222" y="116" width="12" height="28" rx="6" fill="#2a1a08"/>
-              </g>
-              <rect width="320" height="180" fill="url(#bnVig)"/>
-              <rect x="7" y="7" width="306" height="166" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="1"/>
-            </svg>
-          </div><div class="thumb-play"><span>▶</span></div></div>
-          <div class="video-info">
-            <div class="video-badge">Photo Diary &nbsp;·&nbsp; Germany</div>
-            <h3 class="video-title" data-trip-title="berlin">Berlin life</h3>
-            <p class="video-desc" data-trip-desc="berlin">My other home — the one that chose me back. Chaotic, beautiful, permanently under construction, and absolutely fine with all of it. Markets, parks, corners that don't show up in any guidebook but somehow define everything.</p>
-          </div>
-        </div>
-
       </div>
 
       <!-- ── Trip detail panel (shown when a card is clicked) ── -->
@@ -2406,204 +2487,116 @@
       </div>
       <div class="map-grid">
 
-        <div class="map-card" onclick="openMapModal('california')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-california"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2023 &nbsp;·&nbsp; USA</div>
-            <h3 class="map-title">🌅 &nbsp; California</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('thailand')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-thailand"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2025 &nbsp;·&nbsp; Thailand</div>
-            <h3 class="map-title">🛵 &nbsp; Thailand</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('maldives')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-maldives"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2026 &nbsp;·&nbsp; Maldives</div>
-            <h3 class="map-title">🐠 &nbsp; Maldives</h3>
-          </div>
-        </div>
 
         <div class="map-card" onclick="openMapModal('mallorca')">
           <div class="map-mini">
             <div class="map-mini-canvas" id="mini-mallorca"></div>
             <span class="map-open">Open map ↗</span>
           </div>
-          <div class="map-info">
-            <div class="map-badge">2026 &nbsp;·&nbsp; Spain</div>
-            <h3 class="map-title">🏖️ &nbsp; Mallorca</h3>
-          </div>
-        </div>
 
-        <div class="map-card" onclick="openMapModal('rhodes')">
+        <div class="map-card" onclick="openMapModal('maldives')">
           <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-rhodes"></div>
+            <div class="map-mini-canvas" id="mini-maldives"></div>
             <span class="map-open">Open map ↗</span>
           </div>
-          <div class="map-info">
-            <div class="map-badge">2020 &nbsp;·&nbsp; Greece</div>
-            <h3 class="map-title">🏛️ &nbsp; Rhodes</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('rome')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-rome"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2023 &nbsp;·&nbsp; Italy</div>
-            <h3 class="map-title">🏺 &nbsp; Rome</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('copenhagen')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-copenhagen"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2023 &nbsp;·&nbsp; Denmark</div>
-            <h3 class="map-title">🧁 &nbsp; Copenhagen</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('sicily')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-sicily"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2023 &nbsp;·&nbsp; Italy</div>
-            <h3 class="map-title">🌋 &nbsp; Sicily</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('edinburgh')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-edinburgh"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2023 &nbsp;·&nbsp; Scotland</div>
-            <h3 class="map-title">🏰 &nbsp; Edinburgh</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('amalfi')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-amalfi"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2024 &nbsp;·&nbsp; Italy</div>
-            <h3 class="map-title">🍋 &nbsp; Amalfi Coast</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('newengland')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-newengland"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2019 &amp; 2025 &nbsp;·&nbsp; USA</div>
-            <h3 class="map-title">🍂 &nbsp; New England</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('newyork')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-newyork"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2018–2025 &nbsp;·&nbsp; USA</div>
-            <h3 class="map-title">🗽 &nbsp; New York</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('milan')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-milan"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2023 &amp; 2025 &nbsp;·&nbsp; Italy</div>
-            <h3 class="map-title">🎨 &nbsp; Milan</h3>
-          </div>
-        </div>
-
-        <div class="map-card" onclick="openMapModal('vienna')">
-          <div class="map-mini">
-            <div class="map-mini-canvas" id="mini-vienna"></div>
-            <span class="map-open">Open map ↗</span>
-          </div>
-          <div class="map-info">
-            <div class="map-badge">2025 &nbsp;·&nbsp; Austria</div>
-            <h3 class="map-title">☕ &nbsp; Vienna</h3>
-          </div>
-        </div>
 
         <div class="map-card" onclick="openMapModal('paris')">
           <div class="map-mini">
             <div class="map-mini-canvas" id="mini-paris"></div>
             <span class="map-open">Open map ↗</span>
           </div>
-          <div class="map-info">
-            <div class="map-badge">2023 &amp; 2026 &nbsp;·&nbsp; France</div>
-            <h3 class="map-title">🗼 &nbsp; Paris</h3>
-          </div>
-        </div>
 
         <div class="map-card" onclick="openMapModal('brussels')">
           <div class="map-mini">
             <div class="map-mini-canvas" id="mini-brussels"></div>
             <span class="map-open">Open map ↗</span>
           </div>
-          <div class="map-info">
-            <div class="map-badge">2022–2026 &nbsp;·&nbsp; Belgium</div>
-            <h3 class="map-title">🧇 &nbsp; Brussels</h3>
+
+        <div class="map-card" onclick="openMapModal('vienna')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-vienna"></div>
+            <span class="map-open">Open map ↗</span>
           </div>
-        </div>
+
+        <div class="map-card" onclick="openMapModal('thailand')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-thailand"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('milan')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-milan"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('newengland')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-newengland"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('newyork')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-newyork"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('amalfi')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-amalfi"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('california')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-california"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('rome')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-rome"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('copenhagen')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-copenhagen"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('sicily')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-sicily"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('edinburgh')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-edinburgh"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
+
+        <div class="map-card" onclick="openMapModal('rhodes')">
+          <div class="map-mini">
+            <div class="map-mini-canvas" id="mini-rhodes"></div>
+            <span class="map-open">Open map ↗</span>
+          </div>
 
         <div class="map-card" onclick="openMapModal('poland')">
           <div class="map-mini">
             <div class="map-mini-canvas" id="mini-poland"></div>
             <span class="map-open">Open map ↗</span>
           </div>
-          <div class="map-info">
-            <div class="map-badge">Photo Diary &nbsp;·&nbsp; Poland</div>
-            <h3 class="map-title">🌲 &nbsp; Poland</h3>
-          </div>
-        </div>
 
         <div class="map-card" onclick="openMapModal('berlin')">
           <div class="map-mini">
             <div class="map-mini-canvas" id="mini-berlin"></div>
             <span class="map-open">Open map ↗</span>
           </div>
-          <div class="map-info">
-            <div class="map-badge">Photo Diary &nbsp;·&nbsp; Germany</div>
-            <h3 class="map-title">🎸 &nbsp; Berlin</h3>
-          </div>
-        </div>
 
+      
       </div>
     </div>
   </div>
@@ -3451,6 +3444,24 @@
       tripPhotosCache = grouped;
     }
 
+    let twoLivesOpen = false;
+
+    function openTwoLives() {
+      twoLivesOpen = true;
+      document.getElementById('adv-main-header').style.display = 'none';
+      document.getElementById('video-grid').style.display = 'none';
+      document.getElementById('two-lives-view').classList.add('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closeTwoLives() {
+      twoLivesOpen = false;
+      document.getElementById('adv-main-header').style.display = '';
+      document.getElementById('video-grid').style.display = '';
+      document.getElementById('two-lives-view').classList.remove('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function openTrip(id) {
       currentTripId = id;
       const t = TRIPS[id];
@@ -3459,7 +3470,11 @@
       document.getElementById('td-title').textContent = t.title[lang] || t.title.en;
       document.getElementById('td-desc').textContent  = t.desc[lang]  || t.desc.en;
       setTripVideo(id);
-      document.getElementById('video-grid').style.display = 'none';
+      if (twoLivesOpen) {
+        document.getElementById('two-lives-view').classList.remove('open');
+      } else {
+        document.getElementById('video-grid').style.display = 'none';
+      }
       document.getElementById('trip-detail').classList.add('open');
       renderTripGallery(id);
       refreshWatchButtons();
@@ -3493,7 +3508,11 @@
       const frame = document.getElementById('td-video-frame');
       if (frame) frame.src = '';
       document.getElementById('trip-detail').classList.remove('open');
-      document.getElementById('video-grid').style.display = '';
+      if (twoLivesOpen) {
+        document.getElementById('two-lives-view').classList.add('open');
+      } else {
+        document.getElementById('video-grid').style.display = '';
+      }
     }
 
     function goToMap() { showPage('map'); }
