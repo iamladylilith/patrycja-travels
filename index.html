@@ -4,6 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    if (localStorage.getItem('patriciaDarkMode') === 'on') {
+      document.documentElement.classList.add('dark-mode');
+    }
+  </script>
   <title>Patricia's Travels</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +29,18 @@
       --text-muted: #9c7a5a;
     }
 
+    html.dark-mode {
+      --cream:      #0a0e1f;
+      --parchment:  #131933;
+      --beige:      #2c3358;
+      --brown:      #c9c4e8;
+      --dark-brown: #f1edfa;
+      --gold:       #d8b56a;
+      --gold-light: #f0d9a0;
+      --text:       #e3dff2;
+      --text-muted: #8d8fb8;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -32,6 +49,50 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+
+    /* ── Dark mode: nav + starry sky ── */
+    html.dark-mode nav {
+      background: rgba(10, 14, 31, 0.92);
+      border-bottom-color: rgba(216, 181, 106, 0.22);
+    }
+    .bg-stars, .bg-milkyway {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    html.dark-mode .bg-stars { opacity: 1; }
+    .bg-stars {
+      background-image:
+        radial-gradient(1.4px 1.4px at 8% 12%, rgba(255,255,255,0.85), transparent),
+        radial-gradient(1px 1px at 22% 38%, rgba(255,255,255,0.55), transparent),
+        radial-gradient(1.8px 1.8px at 38% 8%, rgba(255,255,255,0.75), transparent),
+        radial-gradient(1px 1px at 52% 28%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.3px 1.3px at 68% 18%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 80% 42%, rgba(255,255,255,0.55), transparent),
+        radial-gradient(1.6px 1.6px at 92% 10%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 14% 62%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.4px 1.4px at 30% 80%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 46% 58%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.2px 1.2px at 60% 92%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 76% 70%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.6px 1.6px at 88% 86%, rgba(255,255,255,0.75), transparent),
+        radial-gradient(1px 1px at 96% 56%, rgba(255,255,255,0.5), transparent);
+      background-size: 420px 420px;
+      background-repeat: repeat;
+    }
+    html.dark-mode .bg-milkyway { opacity: 1; }
+    .bg-milkyway {
+      background: linear-gradient(115deg,
+        transparent 25%,
+        rgba(180, 170, 230, 0.05) 40%,
+        rgba(225, 215, 250, 0.07) 50%,
+        rgba(180, 170, 230, 0.05) 60%,
+        transparent 75%);
     }
 
     /* ── Scattered background travel icons ── */
@@ -202,16 +263,31 @@
     .welcome-photo.left {
       left: 0;
       object-position: 60% 15%;
-      -webkit-mask-image: linear-gradient(to right, black 0%, black 30%, transparent 92%);
-      mask-image: linear-gradient(to right, black 0%, black 30%, transparent 92%);
+      -webkit-mask-image:
+        linear-gradient(to right, black 0%, black 30%, transparent 92%),
+        linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to right, black 0%, black 30%, transparent 92%),
+        linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+      mask-composite: intersect;
     }
     .welcome-photo.right {
       right: 0;
       object-position: 25% 15%;
-      -webkit-mask-image: linear-gradient(to left, black 0%, black 30%, transparent 92%);
-      mask-image: linear-gradient(to left, black 0%, black 30%, transparent 92%);
+      -webkit-mask-image:
+        linear-gradient(to left, black 0%, black 30%, transparent 92%),
+        linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to left, black 0%, black 30%, transparent 92%),
+        linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+      mask-composite: intersect;
     }
     @media (max-width: 860px) { .welcome-photo { display: none; } }
+    .welcome-photo.dark-only { display: none; }
+    html.dark-mode .welcome-photo.light-only { display: none; }
+    html.dark-mode .welcome-photo.dark-only { display: block; }
 
     .welcome-wrap {
       position: relative;
@@ -374,7 +450,6 @@
     }
     .outfit-card:hover { transform: translateY(-4px); box-shadow: 0 18px 44px rgba(61,32,16,0.12); }
     .outfit-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; cursor: zoom-in; }
-
     /* ── Photo lightbox ── */
     .photo-overlay {
       display: none;
@@ -430,6 +505,33 @@
       .photo-nav { width: 44px; height: 44px; font-size: 1.7rem; }
       .photo-prev { left: 2vw; }
       .photo-next { right: 2vw; }
+    }
+    /* ── Photo watermark (lightbox only) ── */
+    .photo-img-wrap {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+    }
+    .photo-watermark-lightbox {
+      position: absolute;
+      bottom: 8%;
+      right: 6%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.48);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    /* ── Disable image dragging ── */
+    .trip-gallery-img, .outfit-photo, #photo-overlay-img {
+      -webkit-user-drag: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
     .outfit-info { padding: 1rem 1.2rem 1.4rem; }
     .outfit-badge {
@@ -1083,6 +1185,38 @@
     }
     body.owner .owner-toggle:hover { background: var(--brown); }
 
+    /* ── Dark mode toggle (crescent moon, top-right, all pages) ── */
+    .theme-toggle {
+      position: fixed;
+      top: 14px; right: 18px;
+      z-index: 250;
+      width: 36px; height: 36px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+    .theme-toggle:hover { background: rgba(200, 144, 60, 0.12); }
+    .theme-toggle { color: var(--gold); }
+    html.dark-mode .theme-toggle { color: #f1edfa; }
+    .theme-toggle svg {
+      position: absolute;
+      width: 18px; height: 18px;
+      opacity: 0;
+      transform: scale(0.5) rotate(-90deg);
+      transition: opacity 0.35s ease, transform 0.35s ease, color 0.4s;
+    }
+    .theme-toggle .icon-sun { opacity: 1; transform: scale(1) rotate(0deg); }
+    html.dark-mode .theme-toggle .icon-sun { opacity: 0; transform: scale(0.5) rotate(90deg); }
+    html.dark-mode .theme-toggle .icon-moon { opacity: 1; transform: scale(1) rotate(0deg); }
+    @media (max-width: 600px) {
+      .theme-toggle { top: 10px; right: 10px; }
+    }
+
     /* ── Owner login modal ── */
     .login-overlay {
       display: none;
@@ -1556,6 +1690,28 @@
     <span style="top:94%;left:75%;font-size:0.85rem">⚓</span>
   </div>
 
+  <!-- ── Dark mode: starry sky background ── -->
+  <div class="bg-milkyway" aria-hidden="true"></div>
+  <div class="bg-stars" aria-hidden="true"></div>
+
+  <!-- ── Dark mode toggle (crescent moon, visible on every page) ── -->
+  <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4.2"/>
+      <line x1="12" y1="2.4" x2="12" y2="4.8"/>
+      <line x1="12" y1="19.2" x2="12" y2="21.6"/>
+      <line x1="2.4" y1="12" x2="4.8" y2="12"/>
+      <line x1="19.2" y1="12" x2="21.6" y2="12"/>
+      <line x1="5.3" y1="5.3" x2="7" y2="7"/>
+      <line x1="17" y1="17" x2="18.7" y2="18.7"/>
+      <line x1="5.3" y1="18.7" x2="7" y2="17"/>
+      <line x1="17" y1="7" x2="18.7" y2="5.3"/>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+
   <!-- ── Navigation ── -->
   <nav>
     <div class="nav-brand" onclick="showPage('welcome')" style="cursor:pointer">
@@ -1601,8 +1757,9 @@
        PAGE 1 — WELCOME
   ════════════════════════════════════════ -->
   <div class="page active" id="page-welcome">
-    <img src="welcome-left.jpg" alt="" class="welcome-photo left">
-    <img src="welcome-right.jpg" alt="" class="welcome-photo right">
+    <img src="welcome-left.jpg" alt="" class="welcome-photo left light-only">
+    <img src="IMG_3392.jpg" alt="" class="welcome-photo left dark-only">
+    <img src="welcome-right.jpg" alt="" class="welcome-photo right light-only">
     <div class="welcome-wrap">
 
       <div class="w-deco">
@@ -3322,7 +3479,10 @@
   <!-- ── Photo lightbox ── -->
   <div class="photo-overlay" id="photo-overlay" onclick="closePhoto()">
     <button class="photo-nav photo-prev" id="photo-prev" onclick="photoPrev(event)" aria-label="Previous photo">‹</button>
-    <img id="photo-overlay-img" src="" alt="" onclick="event.stopPropagation()" />
+    <div class="photo-img-wrap" onclick="event.stopPropagation()">
+      <img id="photo-overlay-img" src="" alt="" />
+      <span class="photo-watermark-lightbox">Patricia's Travels</span>
+    </div>
     <button class="photo-nav photo-next" id="photo-next" onclick="photoNext(event)" aria-label="Next photo">›</button>
     <span class="photo-counter" id="photo-counter" onclick="event.stopPropagation()"></span>
   </div>
@@ -4317,6 +4477,11 @@
       } catch (e) {}
     }
 
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark-mode');
+      localStorage.setItem('patriciaDarkMode', isDark ? 'on' : 'off');
+    }
+
     async function toggleOwner() {
       if (document.body.classList.contains('owner')) {
         await sb.auth.signOut();
@@ -4599,6 +4764,18 @@
       if      (e.key === 'ArrowLeft')  photoPrev();
       else if (e.key === 'ArrowRight') photoNext();
       else if (e.key === 'Escape')     closePhoto();
+    });
+
+    /* Disable right-click and drag on photos */
+    document.addEventListener('contextmenu', function (e) {
+      if (e.target.matches('.trip-gallery-img, .outfit-photo, #photo-overlay-img')) {
+        e.preventDefault();
+      }
+    });
+    document.addEventListener('dragstart', function (e) {
+      if (e.target.matches('.trip-gallery-img, .outfit-photo, #photo-overlay-img')) {
+        e.preventDefault();
+      }
     });
 
     function closeCat(e) {
