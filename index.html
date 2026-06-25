@@ -8,7 +8,10 @@
     if (localStorage.getItem('patriciaDarkMode') === 'on') {
       document.documentElement.classList.add('dark-mode');
     }
-  </script>
+    if (localStorage.getItem('patriciaTextZoom') === 'on') {
+      document.documentElement.classList.add('text-zoom');
+    }
+</script>
   <title>Patricia's Travels</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -253,7 +256,9 @@
     .welcome-photo {
       position: absolute;
       top: 0;
-      height: 100%;
+      /* viewport-based so the text magnifier (A+) never stretches the photos —
+         it grows #page-welcome, and height:100% would scale with it */
+      height: 100vh;
       width: 42%;
       object-fit: cover;
       pointer-events: none;
@@ -1217,6 +1222,47 @@
       .theme-toggle { top: 10px; right: 10px; }
     }
 
+    /* ── Text magnifier (enlarges ALL text only, every page) ── */
+    /* Base root is 16px; bumping it scales every rem-based text up
+       proportionally while images/icons (px) stay the same size. */
+    html.text-zoom { font-size: 21px; }
+
+    .text-zoom-toggle {
+      height: 34px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border: 1.5px solid var(--gold);
+      border-radius: 17px;
+      background: transparent;
+      color: var(--gold);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
+    }
+    .text-zoom-toggle:hover { background: rgba(200, 144, 60, 0.12); }
+    .text-zoom-toggle svg { width: 17px; height: 17px; flex: none; }
+    .text-zoom-toggle .tz-label {
+      font-size: 14px;        /* px so the button itself never magnifies */
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+    /* "On" state — filled so it clearly signals the magnifier is active */
+    html.text-zoom .text-zoom-toggle {
+      background: var(--gold);
+      color: #fff;
+      border-color: var(--gold);
+    }
+    html.text-zoom .text-zoom-toggle:hover { background: var(--brown); border-color: var(--brown); }
+    html.dark-mode .text-zoom-toggle { color: #f1edfa; border-color: #f1edfa; }
+    html.dark-mode.text-zoom .text-zoom-toggle { background: #f1edfa; color: #131933; }
+    @media (max-width: 600px) {
+      .text-zoom-toggle { height: 32px; padding: 0 9px; }
+      .text-zoom-toggle .tz-label { font-size: 13px; }
+    }
+
     /* ── Owner login modal ── */
     .login-overlay {
       display: none;
@@ -1719,6 +1765,16 @@
       <span class="nav-name">Patricia's Travels</span>
     </div>
     <div class="nav-right">
+      <!-- ── Text magnifier toggle (enlarges all text, every page) ── -->
+      <button class="text-zoom-toggle" onclick="toggleTextZoom()" title="Enlarge text / Powiększ tekst" aria-label="Enlarge text for easier reading" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+          <line x1="11" y1="8" x2="11" y2="14"></line>
+          <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+        <span class="tz-label">A+</span>
+      </button>
       <div class="nav-menu-wrap" id="nav-menu-wrap">
         <button class="nav-menu-btn" onclick="toggleNavMenu()" id="nav-menu-btn" data-i18n="nav-menu">Menu</button>
         <div class="nav-dropdown" id="nav-dropdown">
@@ -1760,6 +1816,7 @@
     <img src="welcome-left.jpg" alt="" class="welcome-photo left light-only">
     <img src="IMG_3392.jpg" alt="" class="welcome-photo left dark-only">
     <img src="welcome-right.jpg" alt="" class="welcome-photo right light-only">
+    <img src="welcome-right-dark.jpg" alt="" class="welcome-photo right dark-only">
     <div class="welcome-wrap">
 
       <div class="w-deco">
@@ -4481,6 +4538,20 @@
       const isDark = document.documentElement.classList.toggle('dark-mode');
       localStorage.setItem('patriciaDarkMode', isDark ? 'on' : 'off');
     }
+
+    function toggleTextZoom() {
+      const isBig = document.documentElement.classList.toggle('text-zoom');
+      localStorage.setItem('patriciaTextZoom', isBig ? 'on' : 'off');
+      const btn = document.querySelector('.text-zoom-toggle');
+      if (btn) btn.setAttribute('aria-pressed', isBig ? 'true' : 'false');
+    }
+
+    // Reflect saved state on the button after load
+    document.addEventListener('DOMContentLoaded', function () {
+      const btn = document.querySelector('.text-zoom-toggle');
+      if (btn) btn.setAttribute('aria-pressed',
+        document.documentElement.classList.contains('text-zoom') ? 'true' : 'false');
+    });
 
     async function toggleOwner() {
       if (document.body.classList.contains('owner')) {
