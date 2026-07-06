@@ -347,6 +347,77 @@
     .outfit-delete:hover { border-color: #b04040; color: #b04040; }
     body.owner .outfit-delete { display: inline-block; }
 
+    /* ── Notes to Self (plain text, owner-managed) ── */
+    .note-list { display: flex; flex-direction: column; gap: 14px; }
+    .note-item {
+      background: var(--parchment);
+      border: 1px solid rgba(223, 201, 168, 0.7);
+      border-radius: 3px;
+      padding: 1.1rem 1.3rem;
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .note-body {
+      flex: 1;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    /* Owner: per-note Edit / Delete (hidden for visitors) */
+    .note-item-actions { display: none; gap: 6px; flex-shrink: 0; }
+    body.owner .note-item-actions { display: flex; }
+    .note-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.58rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted); background: none;
+      border: 1px solid var(--beige); border-radius: 2px;
+      padding: 5px 11px; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .note-btn:hover { border-color: var(--gold); color: var(--dark-brown); }
+    .note-btn.note-del:hover { border-color: #b04040; color: #b04040; }
+    /* Owner: add-a-note box (hidden for visitors) */
+    .note-add-wrap {
+      display: none;
+      margin-bottom: 2rem;
+      padding: 1.4rem 1.5rem;
+      border: 1px solid var(--beige);
+      border-radius: 3px;
+      background: var(--parchment);
+    }
+    body.owner .note-add-wrap { display: block; }
+    .note-form-title {
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 0.9rem;
+    }
+    .note-input {
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; line-height: 1.6;
+      color: var(--text);
+      background: var(--cream);
+      border: 1px solid var(--beige); border-radius: 2px;
+      padding: 10px 13px;
+      resize: vertical;
+      min-height: 80px;
+    }
+    .note-input:focus { outline: none; border-color: var(--gold); }
+    .note-form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+    .note-form-add {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--parchment); background: var(--dark-brown);
+      border: none; border-radius: 2px;
+      padding: 8px 20px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .note-form-add:hover { background: var(--brown); }
+
     /* ── Cat meme overlay ── */
     .cat-overlay {
       display: none;
@@ -1651,10 +1722,23 @@
         <h2 class="sub-title">Notes to Self</h2>
         <p class="sub-sub">Lessons learned the hard way, so you don't have to</p>
       </div>
-      <div class="sub-placeholder">
-        <div class="sub-placeholder-icon">📝</div>
-        <p>Travel lessons and learn-from-my-mistakes notes coming soon.<br>There are many. So many.</p>
+      <!-- Owner mode: add a new note -->
+      <div class="note-add-wrap">
+        <p class="note-form-title">+ &nbsp; Add a note</p>
+        <textarea id="new-note-text" class="note-input" placeholder="Write a note to self…"></textarea>
+        <div class="note-form-actions">
+          <button class="note-form-add" onclick="addNote()">Add note</button>
+        </div>
       </div>
+
+      <!-- Empty state (shown when there are no notes) -->
+      <div class="sub-placeholder" id="notes-empty" style="display:none">
+        <div class="sub-placeholder-icon">📝</div>
+        <p>No notes yet.<br>Turn on ⚙ Owner mode to add your first note.</p>
+      </div>
+
+      <!-- Notes render here -->
+      <div class="note-list" id="note-list"></div>
     </div>
   </div>
 
@@ -2283,6 +2367,108 @@
       renderOutfits();
     }
 
+    /* ════════════════════════════════════════
+       NOTES TO SELF — plain text, add / edit / delete
+    ════════════════════════════════════════ */
+    const NOTES_KEY = 'patriciaNotes';
+
+    function loadNotes() {
+      try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || []; }
+      catch (e) { return []; }
+    }
+
+    function saveNotes(arr) {
+      localStorage.setItem(NOTES_KEY, JSON.stringify(arr));
+    }
+
+    // Which note (if any) is currently open in its inline editor.
+    let editingNoteId = null;
+
+    function renderNotes() {
+      const notes = loadNotes();
+      const list  = document.getElementById('note-list');
+      const empty = document.getElementById('notes-empty');
+      list.innerHTML = '';
+      if (!notes.length) { empty.style.display = ''; return; }
+      empty.style.display = 'none';
+      notes.forEach(function (n) {
+        const item = document.createElement('div');
+        item.className = 'note-item';
+        if (n.id === editingNoteId) {
+          const ta = document.createElement('textarea');
+          ta.className = 'note-input';
+          ta.id = 'edit-note-' + n.id;
+          ta.value = n.text;
+          const actions = document.createElement('div');
+          actions.className = 'note-form-actions';
+          actions.style.marginTop = '0';
+          actions.innerHTML =
+            '<button class="note-btn" onclick="cancelEditNote()">Cancel</button>' +
+            '<button class="note-form-add" onclick="saveEditNote(\'' + n.id + '\')">Save</button>';
+          const editWrap = document.createElement('div');
+          editWrap.style.flex = '1';
+          editWrap.appendChild(ta);
+          editWrap.appendChild(actions);
+          item.appendChild(editWrap);
+        } else {
+          const body = document.createElement('div');
+          body.className = 'note-body';
+          body.textContent = n.text;   // textContent keeps arbitrary text safe
+          const actions = document.createElement('div');
+          actions.className = 'note-item-actions';
+          actions.innerHTML =
+            '<button class="note-btn" onclick="startEditNote(\'' + n.id + '\')">Edit</button>' +
+            '<button class="note-btn note-del" onclick="deleteNote(\'' + n.id + '\')">Delete</button>';
+          item.appendChild(body);
+          item.appendChild(actions);
+        }
+        list.appendChild(item);
+      });
+    }
+
+    function addNote() {
+      const input = document.getElementById('new-note-text');
+      const text  = input.value.trim();
+      if (!text) return;
+      const notes = loadNotes();
+      notes.push({ id: 'n' + Date.now() + Math.random().toString(36).slice(2, 7), text: text });
+      saveNotes(notes);
+      input.value = '';
+      renderNotes();
+    }
+
+    function startEditNote(id) {
+      editingNoteId = id;
+      renderNotes();
+      const ta = document.getElementById('edit-note-' + id);
+      if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    }
+
+    function saveEditNote(id) {
+      const ta = document.getElementById('edit-note-' + id);
+      if (!ta) return;
+      const text  = ta.value.trim();
+      editingNoteId = null;
+      if (!text) { deleteNote(id); return; }   // clearing a note deletes it
+      const notes = loadNotes();
+      const note  = notes.find(function (n) { return n.id === id; });
+      if (note) note.text = text;
+      saveNotes(notes);
+      renderNotes();
+    }
+
+    function cancelEditNote() {
+      editingNoteId = null;
+      renderNotes();
+    }
+
+    function deleteNote(id) {
+      const notes = loadNotes().filter(function (n) { return n.id !== id; });
+      saveNotes(notes);
+      editingNoteId = null;
+      renderNotes();
+    }
+
     function rateOutfit(id, rating, btn) {
       const btns = btn.closest('.rating-buttons').querySelectorAll('.rating-btn');
       btns.forEach(function (b) { b.classList.remove('selected'); });
@@ -2326,6 +2512,7 @@
         if (VIDEOS.hasOwnProperty(id)) VIDEOS[id] = saved[id];
       });
       renderOutfits();
+      renderNotes();
     });
 
     /* ── Map page (Leaflet — free, no API key, unlimited pins) ── */
