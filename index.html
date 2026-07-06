@@ -1413,6 +1413,16 @@
     html.dark-mode .home-img { filter: brightness(1.04); }
     .home-img--poland { left: -1%; }
     .home-img--berlin { right: -1%; }
+    /* Berlin is drawn twice from the same file so the Brandenburg Gate can be
+       shown larger without touching the artwork: the first copy is clipped to
+       the sky/tower (gate erased), the second to the gate strip, enlarged from
+       the image's bottom-right corner so it stays on the ground line. */
+    .home-img--berlin-tower { clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%); }
+    .home-img--berlin-gate {
+      clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+      transform: scale(1.3);
+      transform-origin: 100% 100%;
+    }
     /* album-name buttons — match the welcome-page CTA (DM Sans, solid pill) */
     .home-name {
       position: absolute;
@@ -1428,6 +1438,7 @@
       padding: 17px 38px;
       border-radius: 18px;
       white-space: nowrap;
+      text-align: center;
       cursor: pointer;
       box-shadow: 0 6px 20px rgba(61, 32, 16, 0.18);
       transition: background 0.25s, transform 0.15s;
@@ -1738,6 +1749,46 @@
       60% { transform: translateX(-6px); }
       80% { transform: translateX(4px); }
     }
+
+    /* ── Owner-only "Logins" manager ── */
+    .nav-link.owner-only { display: none; }
+    body.owner .nav-link.owner-only { display: inline-block; color: var(--gold); }
+    .logins-add { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.6rem; }
+    .logins-add input {
+      flex: 1; min-width: 140px; box-sizing: border-box;
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+      color: var(--text); background: var(--cream);
+      border: 1px solid var(--beige); border-radius: 6px; padding: 11px 13px;
+    }
+    .logins-add input:focus { outline: none; border-color: var(--gold); }
+    .logins-add button {
+      font-family: 'DM Sans', sans-serif; font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--parchment); background: var(--dark-brown);
+      border: none; border-radius: 6px; padding: 11px 22px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .logins-add button:hover { background: var(--brown); }
+    .logins-add button:disabled { opacity: 0.5; cursor: default; }
+    .logins-table { width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif; }
+    .logins-table th, .logins-table td {
+      text-align: left; padding: 11px 12px;
+      border-bottom: 1px solid var(--beige); font-size: 0.85rem; color: var(--text);
+    }
+    .logins-table th {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold);
+    }
+    .logins-table td.num { font-variant-numeric: tabular-nums; }
+    .login-del {
+      font-family: 'DM Sans', sans-serif; font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); background: none;
+      border: 1px solid var(--beige); border-radius: 4px; padding: 5px 11px; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .login-del:hover { border-color: #b04040; color: #b04040; }
+    .logins-note { margin-top: 1.4rem; font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
 
     .owner-row {
       display: none;
@@ -2304,6 +2355,7 @@
           <button class="nav-link" data-page="map" onclick="showPage('map')" data-i18n="nav-map">Map</button>
           <button class="nav-link" data-page="notes" onclick="showPage('notes')" data-i18n="nav-notes">Notes to Self</button>
           <button class="nav-link" data-page="playlists" onclick="showPage('playlists')" data-i18n="nav-playlists">Playlists</button>
+          <button class="nav-link owner-only" data-page="logins" onclick="openLogins()">🔑 Logins</button>
         </div>
       </div>
       <div class="lang-switcher" id="lang-switcher">
@@ -3198,6 +3250,34 @@
 
 
   <!-- ════════════════════════════════════════
+       PAGE — LOGINS  (owner only)
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-logins">
+    <div class="sub-wrap">
+      <div class="sub-header">
+        <p class="sub-eyebrow">Owner only</p>
+        <h2 class="sub-title">Guest Logins</h2>
+        <p class="sub-sub">Who's allowed in — and how often they drop by.</p>
+      </div>
+
+      <div class="logins-add">
+        <input id="new-login-name" type="text" placeholder="Name (e.g. kasia)" autocomplete="off" />
+        <input id="new-login-pass" type="text" placeholder="Password" autocomplete="off" />
+        <button id="login-add-btn" onclick="addLogin()">Add login</button>
+      </div>
+
+      <table class="logins-table" id="logins-table">
+        <thead>
+          <tr><th>Name</th><th>Password</th><th>Visits</th><th>Last seen</th><th></th></tr>
+        </thead>
+        <tbody id="logins-tbody"></tbody>
+      </table>
+      <p class="sub-placeholder" id="logins-empty" style="display:none">No guest logins yet — add one above.</p>
+      <p class="logins-note" id="logins-note"></p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
        PAGE — HOMES
   ════════════════════════════════════════ -->
   <div class="page" id="page-homes">
@@ -3257,8 +3337,9 @@
       <div class="home-zone home-zone--berlin" onclick="openTrip('berlin')" role="button" tabindex="0"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrip('berlin');}"
            aria-label="Open the Berlin photo album">
-        <img class="home-img home-img--berlin" src="home-berlin.png" alt="Brandenburg Gate and TV Tower, Berlin" loading="lazy">
-        <span class="home-name home-name--berlin" data-trip-title="berlin">Berlin life</span>
+        <img class="home-img home-img--berlin home-img--berlin-tower" src="home-berlin.png" alt="Brandenburg Gate and TV Tower, Berlin" loading="lazy">
+        <img class="home-img home-img--berlin home-img--berlin-gate" src="home-berlin.png" alt="" aria-hidden="true" loading="lazy">
+        <span class="home-name home-name--berlin" data-trip-title="berlin">Berlin day by day</span>
       </div>
 
       <div class="adv-wrap homes-header">
@@ -4010,6 +4091,7 @@
         const id = el.getAttribute('data-trip-desc');
         if (TRIPS[id]) el.textContent = TRIPS[id].desc[lang] || TRIPS[id].desc.en;
       });
+      if (typeof equalizeHomeButtons === 'function') equalizeHomeButtons();
       // Re-render the outfit cards so their "Rate this outfit" / "Remove" labels translate
       if (typeof renderOutfits === 'function') renderOutfits();
       if (typeof renderNotes === 'function') renderNotes();
@@ -4067,8 +4149,25 @@
       const link = document.querySelector('.nav-link[data-page="' + id + '"]');
       if (page) page.classList.add('active');
       if (link) link.classList.add('active');
+      equalizeHomeButtons();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // The two My Homes album buttons always share one size: both stretch to
+    // the wider label's natural width, shorter labels sit centered. Re-run
+    // whenever the labels or metrics change (language, text zoom, page show,
+    // resize). No-op in the stacked mobile layout and while the page is hidden.
+    function equalizeHomeButtons() {
+      const btns = document.querySelectorAll('.home-name');
+      if (!btns.length) return;
+      btns.forEach(function(b) { b.style.width = ''; });
+      if (window.innerWidth <= 760) return;
+      let w = 0;
+      btns.forEach(function(b) { w = Math.max(w, b.offsetWidth); });
+      if (!w) return;   // homes page not visible; runs again when it opens
+      btns.forEach(function(b) { b.style.width = Math.ceil(w) + 'px'; });
+    }
+    window.addEventListener('resize', equalizeHomeButtons);
 
     // Public navigation: update DOM, then push a hash entry so the browser
     // back/forward arrows work. Hash navigation works on file://, http://,
@@ -4323,7 +4422,7 @@
       },
       berlin: {
         badge: 'Photo Diary &nbsp;·&nbsp; Germany', location: 'Berlin, Germany',
-        title: { en: 'Berlin life', pl: 'Berlińskie życie', fr: 'La vie à Berlin', de: 'Berliner Leben', it: 'Vita a Berlino', es: 'Vida en Berlín' },
+        title: { en: 'Berlin day by day', pl: 'Berlin na co dzień', fr: 'Berlin au quotidien', de: 'Berlin Tag für Tag', it: 'Berlino giorno per giorno', es: 'Berlín día a día' },
         desc:  { en: 'My other home — the one that chose me back. Chaotic, beautiful, permanently under construction, and absolutely fine with all of it. Markets, parks, corners that don\'t show up in any guidebook.',
                  pl: 'Mój drugi dom — ten, który mnie wybrał z powrotem. Chaotyczny, piękny, wiecznie w budowie i absolutnie z tym pogodzony. Targi, parki, zakamarki, których nie ma w żadnym przewodniku.',
                  fr: 'Mon autre maison — celle qui m\'a choisie en retour. Chaotique, belle, en construction permanente et absolument à l\'aise avec tout ça. Marchés, parcs, coins qui n\'apparaissent dans aucun guide.',
@@ -4833,6 +4932,7 @@
       localStorage.setItem('patriciaTextZoom', isBig ? 'on' : 'off');
       const btn = document.querySelector('.text-zoom-toggle');
       if (btn) btn.setAttribute('aria-pressed', isBig ? 'true' : 'false');
+      equalizeHomeButtons();
     }
 
     // Reflect saved state on the button after load
@@ -4898,14 +4998,24 @@
       if (remember) localStorage.setItem('patriciaAccess', 'granted');
     }
 
-    function tryUnlock(e) {
+    async function tryUnlock(e) {
       e.preventDefault();
       const name = (document.getElementById('gate-name').value || '').trim().toLowerCase();
       const pass = document.getElementById('gate-pass').value || '';
-      const ok = GUEST_LOGINS.some(function (u) {
-        return u.name.toLowerCase() === name && u.pass === pass;
-      });
-      if (ok) { grantAccess(true); return false; }
+      const submitBtn = (e.target && e.target.querySelector) ? e.target.querySelector('button[type="submit"]') : null;
+      if (submitBtn) submitBtn.disabled = true;
+      /* Verify against Supabase (passwords stay server-side); if that's
+         unavailable or not set up yet, fall back to the local list. */
+      const localOk = function () {
+        return GUEST_LOGINS.some(function (u) { return u.name.toLowerCase() === name && u.pass === pass; });
+      };
+      let ok = false;
+      try {
+        const res = await sb.rpc('verify_guest_login', { p_name: name, p_pass: pass });
+        ok = (!res.error && typeof res.data === 'boolean') ? res.data : localOk();
+      } catch (_) { ok = localOk(); }
+      if (submitBtn) submitBtn.disabled = false;
+      if (ok) { localStorage.setItem('patriciaGuestName', name); grantAccess(true); return false; }
       const card = document.getElementById('access-card');
       const dict = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS[currentLang]) || {};
       document.getElementById('gate-error').textContent =
@@ -4937,6 +5047,7 @@
       if (error) { errEl.textContent = 'Wrong email or password.'; return; }
       document.body.classList.add('owner');
       loadViewCount();
+      if (typeof fetchLogins === 'function') fetchLogins();
       closeLogin();
     }
 
@@ -5194,6 +5305,89 @@
       renderNotes();
     }
 
+    /* ════════════════════════════════════════
+       GUEST LOGINS  (owner-only manager; stored in Supabase)
+    ════════════════════════════════════════ */
+    let loginsCache = [];
+
+    function openLogins() { showPage('logins'); fetchLogins(); }
+
+    function showLoginsNote(msg) {
+      const note = document.getElementById('logins-note');
+      if (note) note.textContent = msg || '';
+    }
+
+    async function fetchLogins() {
+      if (!document.body.classList.contains('owner')) return;
+      const res = await sb.from('guest_logins').select('*').order('created_at', { ascending: true });
+      if (res.error) {
+        showLoginsNote('Saved logins aren’t set up yet — run guest-logins-setup.sql in your Supabase dashboard. Until then, the gate uses the built-in person1 / 123x. (' + res.error.message + ')');
+        return;
+      }
+      loginsCache = res.data || [];
+      showLoginsNote('Tip: “Visits” counts each time that person opens your site. Deleting a login blocks them immediately.');
+      renderLogins();
+    }
+
+    function renderLogins() {
+      const tbody = document.getElementById('logins-tbody');
+      const empty = document.getElementById('logins-empty');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (!loginsCache.length) { if (empty) empty.style.display = ''; return; }
+      if (empty) empty.style.display = 'none';
+      loginsCache.forEach(function (l) {
+        const tr = document.createElement('tr');
+        function cell(text, cls) {
+          const td = document.createElement('td');
+          td.textContent = text;
+          if (cls) td.className = cls;
+          return td;
+        }
+        tr.appendChild(cell(l.name, ''));
+        tr.appendChild(cell(l.pass, ''));
+        tr.appendChild(cell(String(l.visits || 0), 'num'));
+        tr.appendChild(cell(l.last_seen ? new Date(l.last_seen).toLocaleString() : '—', ''));
+        const tdDel = document.createElement('td');
+        const del = document.createElement('button');
+        del.className = 'login-del';
+        del.textContent = 'Remove';
+        del.onclick = function () { deleteLogin(l.id, l.name); };
+        tdDel.appendChild(del);
+        tr.appendChild(tdDel);
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function addLogin() {
+      const nameEl = document.getElementById('new-login-name');
+      const passEl = document.getElementById('new-login-pass');
+      const name = (nameEl.value || '').trim().toLowerCase();
+      const pass = (passEl.value || '').trim();
+      if (!name || !pass) { alert('Enter a name and a password.'); return; }
+      const btn = document.getElementById('login-add-btn');
+      btn.disabled = true; const lbl = btn.textContent; btn.textContent = 'Adding…';
+      try {
+        const ins = await sb.from('guest_logins').insert({ name: name, pass: pass }).select().single();
+        if (ins.error) throw ins.error;
+        loginsCache.push(ins.data);
+        nameEl.value = ''; passEl.value = '';
+        renderLogins();
+      } catch (e) {
+        alert('Could not add login: ' + (e.message || e) + '\n(If it says the table is missing, run guest-logins-setup.sql in Supabase first.)');
+      } finally {
+        btn.disabled = false; btn.textContent = lbl;
+      }
+    }
+
+    async function deleteLogin(id, name) {
+      if (!confirm('Remove login “' + name + '”? They will no longer be able to get in.')) return;
+      const del = await sb.from('guest_logins').delete().eq('id', id);
+      if (del.error) { alert('Could not remove login: ' + del.error.message); return; }
+      loginsCache = loginsCache.filter(function (l) { return l.id !== id; });
+      renderLogins();
+    }
+
     function rateOutfit(id, rating, btn) {
       const btns = btn.closest('.rating-buttons').querySelectorAll('.rating-btn');
       btns.forEach(function (b) { b.classList.remove('selected'); });
@@ -5312,7 +5506,13 @@
 
       /* Restore owner mode if a Supabase login session is still active. */
       const sess = await sb.auth.getSession();
-      if (sess.data.session) { document.body.classList.add('owner'); grantAccess(false); }
+      if (sess.data.session) { document.body.classList.add('owner'); grantAccess(false); if (typeof fetchLogins === 'function') fetchLogins(); }
+
+      /* Count a visit for a remembered guest (never the owner). */
+      const _guestName = localStorage.getItem('patriciaGuestName');
+      if (_guestName && localStorage.getItem('patriciaAccess') === 'granted' && !document.body.classList.contains('owner')) {
+        sb.rpc('record_guest_visit', { p_name: _guestName }).catch(function () {});
+      }
 
       /* Show view count for all visitors and record non-owner visits. */
       loadViewCount();
