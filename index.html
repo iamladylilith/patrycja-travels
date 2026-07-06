@@ -1417,9 +1417,15 @@
        shown larger without touching the artwork: the first copy is clipped to
        the sky/tower (gate erased), the second to the gate strip, enlarged from
        the image's bottom-right corner so it stays on the ground line. */
-    .home-img--berlin-tower { clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%); }
+    .home-img--berlin-tower {
+      /* sky + tower, with the shaft kept down to 67% where the enlarged
+         gate's entablature band hides its end; the original gate is cut away */
+      clip-path: polygon(0 0, 100% 0, 100% 67%, 70% 67%, 70% 61.5%, 0 61.5%);
+    }
     .home-img--berlin-gate {
-      clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+      /* gate only — the notch (x>66%, y<72.4%) excludes the shaft segment
+         that crosses above the gate's entablature in the source art */
+      clip-path: polygon(0 62%, 66% 62%, 66% 72.4%, 100% 72.4%, 100% 100%, 0 100%);
       transform: scale(1.3);
       transform-origin: 100% 100%;
     }
@@ -1500,6 +1506,9 @@
       .home-img { position: relative; top: auto; height: 340px; }
       .home-img--poland { left: 0; }
       .home-img--berlin { right: 0; }
+      /* stacked layout: back to the single untouched image */
+      .home-img--berlin-tower { clip-path: none; }
+      .home-img--berlin-gate { display: none; }
       .home-name {
         position: relative; left: auto !important; right: auto !important; top: auto !important;
         margin-top: 16px; white-space: normal; text-align: center;
