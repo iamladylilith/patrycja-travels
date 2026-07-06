@@ -56,6 +56,11 @@
       min-height: 100vh;
       overflow-x: hidden;
       transition: background 0.5s ease, color 0.5s ease;
+      /* sticky footer: in-flow children are the active .page + the footer,
+         so a flex column keeps the footer pinned to the bottom on every tab,
+         even ones with little content. */
+      display: flex;
+      flex-direction: column;
     }
 
     /* ── Dark mode: nav + starry sky ── */
@@ -248,7 +253,9 @@
 
     /* ── Pages ── */
     .page { display: none; padding-top: 64px; }
-    .page.active { display: block; animation: pgFade 0.5s ease; }
+    /* flex:1 lets the active page fill the height above the footer, so the
+       footer stays at the very bottom regardless of how short the page is. */
+    .page.active { display: block; flex: 1 0 auto; animation: pgFade 0.5s ease; }
     @keyframes pgFade { from { opacity: 0; } to { opacity: 1; } }
 
     /* ════════════════════════════════════════
@@ -488,6 +495,59 @@
     }
     .outfit-card:hover { transform: translateY(-4px); box-shadow: 0 18px 44px rgba(61,32,16,0.12); }
     .outfit-photo { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; cursor: zoom-in; }
+
+    /* ── Ready, Set, Pack (downloadable PDFs) ── */
+    .pack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
+    }
+    .pack-card {
+      background: var(--parchment);
+      border: 1px solid rgba(223, 201, 168, 0.7);
+      border-radius: 3px;
+      padding: 2rem 1.8rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .pack-card:hover { transform: translateY(-4px); box-shadow: 0 18px 44px rgba(61,32,16,0.12); }
+    .pack-card-icon { font-size: 2.4rem; margin-bottom: 0.9rem; line-height: 1; }
+    .pack-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 600;
+      color: var(--dark-brown); margin-bottom: 0.6rem;
+    }
+    .pack-card-desc {
+      font-size: 0.85rem; line-height: 1.6;
+      color: var(--text-muted); font-weight: 300;
+      margin-bottom: 1.6rem; flex: 1;
+    }
+    .pack-download {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--parchment); background: var(--dark-brown);
+      border: none; border-radius: 2px;
+      padding: 12px 26px; cursor: pointer; text-decoration: none;
+      transition: background 0.25s, transform 0.15s;
+    }
+    .pack-download:hover { background: var(--brown); transform: translateY(-1px); }
+
+    /* ── Beautiful Nonsense (non-travel photography) ── */
+    .nonsense-intro {
+      max-width: 620px;
+      margin: -1.5rem auto 2.5rem;
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: var(--brown);
+    }
+
     /* ── Photo lightbox ── */
     .photo-overlay {
       display: none;
@@ -1285,31 +1345,33 @@
       display: flex; flex-direction: column;
       padding: 16px 20px 14px;
     }
+    /* single shared style: solid accent header bar (the old "classic" look) */
     .bp-head {
       display: flex; justify-content: space-between; align-items: center; gap: 10px;
-      border-bottom: 1.5px solid color-mix(in srgb, var(--bp-accent) 55%, transparent);
-      padding-bottom: 8px; margin-bottom: 10px;
+      background: var(--bp-accent);
+      margin: -16px -20px 12px; padding: 10px 20px;
     }
-    .bp-airline { font-weight: 700; font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; color: var(--bp-accent); white-space: nowrap; }
-    .bp-kind { font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
+    .bp-airline { font-weight: 700; font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+    .bp-kind { font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.85); white-space: nowrap; }
 
     .bp-route { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
     .bp-code { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.35rem; letter-spacing: .03em; color: var(--bp-accent); line-height: 1; }
     .bp .bp-dest { font-family: 'Playfair Display', serif; font-size: 1.04rem; font-weight: 600; line-height: 1.2; color: var(--dark-brown); margin: 0; }
     .bp .bp-badge { color: var(--bp-accent); margin: 0 0 8px; }
-    .bp .bp-desc {
-      font-size: .8rem; line-height: 1.55; color: var(--text-muted); font-weight: 300; margin: 0 0 12px;
-    }
     .bp-vlog {
       align-self: flex-start; margin-bottom: 10px;
       font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
       color: var(--bp-accent); border: 1px solid color-mix(in srgb, var(--bp-accent) 45%, transparent);
       border-radius: 999px; padding: 3px 9px;
     }
-    .bp-foot { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-    .bp-foot-grid { display: grid; grid-template-columns: auto auto; gap: 1px 10px; align-content: end; }
-    .bp-k { font-size: .5rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); align-self: center; }
-    .bp-v { font-size: .72rem; font-weight: 700; color: var(--dark-brown); font-variant-numeric: tabular-nums; }
+    .bp-foot { margin-top: auto; display: flex; align-items: flex-end; }
+    /* five fields (Flight/Class · Gate/Baggage · Seat), two label→value pairs
+       per row, sized up so the pass reads full without the description */
+    .bp-foot-grid { display: grid; grid-template-columns: auto minmax(0, .62fr) auto minmax(0, 1.38fr); gap: 7px 12px; align-content: end; width: 100%; }
+    .bp-k { font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); align-self: center; }
+    /* DM Sans is only loaded at 300/400/500 — 500 is the real "bold" here;
+       anything heavier gets faux-bolded by the browser and looks off-brand */
+    .bp-v { font-size: .78rem; font-weight: 500; line-height: 1.25; color: var(--dark-brown); font-variant-numeric: tabular-nums; align-self: center; }
     .bp-barcode {
       height: 32px; width: 92px; opacity: .82;
       background: repeating-linear-gradient(90deg, var(--dark-brown) 0 2px, transparent 2px 4px, var(--dark-brown) 4px 5px, transparent 5px 8px);
@@ -1356,23 +1418,6 @@
     }
     html.dark-mode .bp-stamp-frame * { stroke: color-mix(in srgb, var(--ink) 55%, #ffffff); }
 
-    /* ── variant: classic (solid accent header bar) ── */
-    .bp--classic .bp-head { background: var(--bp-accent); margin: -16px -20px 12px; padding: 10px 20px; border: 0; }
-    .bp--classic .bp-airline { color: #fff; }
-    .bp--classic .bp-kind { color: rgba(255,255,255,.85); }
-
-    /* ── variant: mono (minimal, accent rule only) ── */
-    .bp--mono .bp-head { border-bottom-color: color-mix(in srgb, var(--dark-brown) 16%, transparent); }
-    .bp--mono .bp-airline { color: var(--dark-brown); font-weight: 600; }
-    .bp--mono .bp-code { color: var(--dark-brown); }
-    .bp--mono .bp-main { border-left: 3px solid var(--bp-accent); padding-left: 17px; }
-    .bp--mono .bp-stub { border-left-style: dotted; }
-
-    /* ── variant: ticket (boxed code, thick accent spine) ── */
-    .bp--ticket .bp-main { border-left: 6px solid var(--bp-accent); padding-left: 18px; }
-    .bp--ticket .bp-code { background: var(--bp-accent); color: #fff; font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 700; padding: 2px 9px; border-radius: 4px; letter-spacing: .06em; }
-    .bp--ticket .bp-head { text-transform: uppercase; }
-
     @media (max-width: 420px) {
       .bp-stub { flex-basis: 38%; }
       .bp-code { font-size: 1.3rem; }
@@ -1387,14 +1432,17 @@
       overflow: hidden;
       min-height: clamp(560px, 90vh, 900px);
     }
-    /* centered title floats above the monuments */
-    .homes-header { position: relative; z-index: 3; }
+    /* centered title floats above the monuments (purely decorative text —
+       must not intercept clicks meant for the album zones/buttons beneath it).
+       pointer-events:none lets clicks pass through; the trimmed bottom padding
+       stops its invisible box from hanging down over the album buttons. */
+    .homes-header { position: relative; z-index: 3; pointer-events: none; padding-bottom: 1rem; }
     /* each half of the page opens its album */
     .home-zone {
       position: absolute;
       top: 0; bottom: 0;
       width: 50%;
-      z-index: 1;
+      z-index: 4;   /* above the decorative heading so the whole half stays clickable */
       cursor: pointer;
       color: var(--dark-brown);
       transition: color 0.35s ease;
@@ -2123,8 +2171,10 @@
       text-transform: uppercase;
       color: var(--text-muted);
     }
-    .footer-link { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .footer-link { color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+      display: inline-flex; align-items: center; gap: 0.45rem; }
     .footer-link:hover { color: var(--gold); }
+    .footer-icon { width: 14px; height: 14px; flex-shrink: 0; }
     .footer-sep { opacity: 0.4; }
     .footer-stats {
       display: none;
@@ -2361,8 +2411,10 @@
           <button class="nav-link" data-page="homes" onclick="showPage('homes')" data-i18n="nav-homes">Homes</button>
           <button class="nav-link" data-page="outfits" onclick="showPage('outfits')" data-i18n="nav-outfits">Outfits</button>
           <button class="nav-link" data-page="map" onclick="showPage('map')" data-i18n="nav-map">Map</button>
+          <button class="nav-link" data-page="pack" onclick="showPage('pack')" data-i18n="nav-pack">Ready, Set, Pack</button>
           <button class="nav-link" data-page="notes" onclick="showPage('notes')" data-i18n="nav-notes">Notes to Self</button>
           <button class="nav-link" data-page="playlists" onclick="showPage('playlists')" data-i18n="nav-playlists">Playlists</button>
+          <button class="nav-link" data-page="nonsense" onclick="showPage('nonsense')" data-i18n="nav-nonsense">Beautiful Nonsense</button>
           <button class="nav-link owner-only" data-page="logins" onclick="openLogins()">🔑 Logins</button>
         </div>
       </div>
@@ -2670,6 +2722,17 @@
       <p class="map-save-hint" data-i18n="map-hint">Click any card to explore the map — you can save locations straight from Google Maps.</p>
       <div class="map-grid">
 
+        <div class="map-card" onclick="openMapModal('alicante')">
+          <div class="map-mini">
+            <iframe class="map-mini-canvas" id="mini-alicante" frameborder="0" loading="lazy" title="Map" style="border:0;"></iframe>
+            <span class="map-open">Open map ↗</span>
+          </div>
+          <div class="map-info">
+            <div class="map-badge">2026 &nbsp;·&nbsp; Spain</div>
+            <h3 class="map-title" data-i18n="map-t-alicante">🏝️ &nbsp; Alicante & Ibiza</h3>
+          </div>
+        </div>
+
         <div class="map-card" onclick="openMapModal('mallorca')">
           <div class="map-mini">
             <iframe class="map-mini-canvas" id="mini-mallorca" frameborder="0" loading="lazy" title="Map" style="border:0;"></iframe>
@@ -2899,6 +2962,61 @@
 
       <!-- Notes render here -->
       <div class="note-list" id="note-list"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE — READY, SET, PACK  (downloadable PDFs)
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-pack">
+    <div class="sub-wrap">
+      <div class="sub-header">
+        <p class="sub-eyebrow" data-i18n="pack-eyebrow">✦ &nbsp; The Checklist &nbsp; ✦</p>
+        <h2 class="sub-title" data-i18n="pack-title">Ready, Set, Pack</h2>
+        <p class="sub-sub" data-i18n="pack-sub">Print it, tick it, pack it — and stop forgetting your charger.</p>
+      </div>
+
+      <div class="pack-grid">
+        <div class="pack-card">
+          <div class="pack-card-icon">☀️</div>
+          <h3 class="pack-card-title" data-i18n="pack-summer-t">Summer Packing List</h3>
+          <p class="pack-card-desc" data-i18n="pack-summer-d">Sun, sea, and everything you need for warm-weather trips.</p>
+          <a class="pack-download" href="ready-set-pack-summer.pdf" download data-i18n="pack-dl">Download PDF ↓</a>
+        </div>
+        <div class="pack-card">
+          <div class="pack-card-icon">❄️</div>
+          <h3 class="pack-card-title" data-i18n="pack-winter-t">Winter Packing List</h3>
+          <p class="pack-card-desc" data-i18n="pack-winter-d">Layers, boots, and staying cosy wherever the cold takes you.</p>
+          <a class="pack-download" href="ready-set-pack-winter.pdf" download data-i18n="pack-dl">Download PDF ↓</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE — BEAUTIFUL NONSENSE  (non-travel photography)
+  ════════════════════════════════════════ -->
+  <div class="page" id="page-nonsense">
+    <div class="sub-wrap">
+      <div class="sub-header">
+        <p class="sub-eyebrow" data-i18n="nonsense-eyebrow">✦ &nbsp; The Little Extras &nbsp; ✦</p>
+        <h2 class="sub-title" data-i18n="nonsense-title">Beautiful Nonsense</h2>
+        <p class="sub-sub" data-i18n="nonsense-sub">Pretty pictures that have nothing to do with travel.</p>
+      </div>
+
+      <p class="nonsense-intro" data-i18n="nonsense-intro">Not everything I point a camera at is a place. Sometimes it's a cat mid-nap, the light landing on a coffee cup, or an object too pretty to scroll past. This is the beautiful nonsense — no theme, no itinerary, just the things that caught my eye. (Yes, mostly cats.)</p>
+
+      <!-- Owner mode: upload photos -->
+      <div class="trip-upload-zone" id="nonsense-upload-zone"
+           ondragover="nzDragOver(event)" ondragleave="nzDragLeave(event)" ondrop="nzDrop(event)"
+           onclick="document.getElementById('nonsense-file').click()">
+        <input type="file" id="nonsense-file" accept="image/*" multiple style="display:none" onchange="nzFileChange(this)" />
+        <span>📷</span>
+        <p data-i18n="td-drop">Drop photos here or click to browse</p>
+      </div>
+
+      <div class="trip-gallery-grid" id="nonsense-grid"></div>
+      <p class="trip-gallery-empty" id="nonsense-empty" style="display:none" data-i18n="nonsense-empty">No pictures here yet — but there will be. (Probably cats.)</p>
     </div>
   </div>
 
@@ -3469,6 +3587,7 @@
         'pp-about-10': 'I’m structured enough to function, chaotic enough to make it interesting, and curious enough to never really settle.',
         'pp-about-11': 'Still figuring things out. Probably always will be.',
         'map-hint': 'Click any card to explore the map — you can save locations straight from Google Maps.',
+        'map-t-alicante': '🏝️ &nbsp; Alicante & Ibiza',
         'map-t-mallorca': '🏖️ &nbsp; Mallorca',
         'map-t-maldives': '🐠 &nbsp; Maldives',
         'map-t-paris': '🗼 &nbsp; Paris',
@@ -3509,7 +3628,14 @@
         'gate-wrong': 'Mmm, nope. That’s not it. Nice try though 😉',
         'nav-welcome': 'Welcome', 'nav-adventures': 'Adventures', 'nav-homes': 'Homes', 'nav-outfits': 'Outfits',
         'nav-map': 'Map', 'nav-notes': 'Notes to Self', 'nav-playlists': 'Playlists', 'nav-menu': 'Menu',
-        'nav-about': 'About Me',
+        'nav-about': 'About Me', 'nav-pack': 'Ready, Set, Pack', 'nav-nonsense': 'Beautiful Nonsense',
+        'pack-eyebrow': '&#10022; &nbsp; The Checklist &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Print it, tick it, pack it &mdash; and stop forgetting your charger.',
+        'pack-summer-t': 'Summer Packing List', 'pack-summer-d': 'Sun, sea, and everything you need for warm-weather trips.',
+        'pack-winter-t': 'Winter Packing List', 'pack-winter-d': 'Layers, boots, and staying cosy wherever the cold takes you.',
+        'pack-dl': 'Download PDF &darr;',
+        'nonsense-eyebrow': '&#10022; &nbsp; The Little Extras &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Pretty pictures that have nothing to do with travel.',
+        'nonsense-intro': 'Not everything I point a camera at is a place. Sometimes it\'s a cat mid-nap, the light landing on a coffee cup, or an object too pretty to scroll past. This is the beautiful nonsense &mdash; no theme, no itinerary, just the things that caught my eye. (Yes, mostly cats.)',
+        'nonsense-empty': 'No pictures here yet &mdash; but there will be. (Probably cats.)',
         'about-eyebrow': '&#10022; &nbsp; The Passenger &nbsp; &#10022;', 'about-title': 'About Me', 'about-sub': 'Officially unofficial. Please do not present at any border.',
         'about-cta': 'See all the country stamps I gathered so far &nbsp;&rarr;',
         'welcome-sub': 'for friends, family &amp; the chronically nosy &nbsp;&#x2708;',
@@ -3574,6 +3700,7 @@
         'pp-about-10': 'Jestem wystarczająco poukładana, by funkcjonować, wystarczająco chaotyczna, by było ciekawie, i wystarczająco ciekawa świata, by nigdy się nie zatrzymać na dobre.',
         'pp-about-11': 'Wciąż wszystko sobie układam. Pewnie zawsze będę.',
         'map-hint': 'Kliknij dowolną kartę, aby odkryć mapę — możesz zapisywać lokalizacje prosto z Google Maps.',
+        'map-t-alicante': '🏝️ &nbsp; Alicante i Ibiza',
         'map-t-mallorca': '🏖️ &nbsp; Majorka',
         'map-t-maldives': '🐠 &nbsp; Malediwy',
         'map-t-paris': '🗼 &nbsp; Paryż',
@@ -3614,7 +3741,14 @@
         'gate-wrong': 'Mmm, nie. To nie to. Ale niezła próba 😉',
         'nav-welcome': 'Witaj', 'nav-adventures': 'Przygody', 'nav-homes': 'Domy', 'nav-outfits': 'Stylizacje',
         'nav-map': 'Mapa', 'nav-notes': 'Notatki', 'nav-playlists': 'Playlisty', 'nav-menu': 'Menu',
-        'nav-about': 'O Mnie',
+        'nav-about': 'O Mnie', 'nav-pack': 'Ready, Set, Pack', 'nav-nonsense': 'Beautiful Nonsense',
+        'pack-eyebrow': '&#10022; &nbsp; Lista &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Wydrukuj, odhacz, spakuj &mdash; i przestań zapominać ładowarki.',
+        'pack-summer-t': 'Letnia lista pakowania', 'pack-summer-d': 'Słońce, morze i wszystko, czego potrzebujesz na ciepłe wyjazdy.',
+        'pack-winter-t': 'Zimowa lista pakowania', 'pack-winter-d': 'Warstwy, buty i ciepło, dokądkolwiek zabierze cię mróz.',
+        'pack-dl': 'Pobierz PDF &darr;',
+        'nonsense-eyebrow': '&#10022; &nbsp; Drobiazgi &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Ładne zdjęcia, które nie mają nic wspólnego z podróżami.',
+        'nonsense-intro': 'Nie wszystko, co fotografuję, to jakieś miejsce. Czasem to kot w trakcie drzemki, światło padające na filiżankę kawy albo przedmiot zbyt ładny, żeby go przewinąć. To są te piękne bzdury &mdash; bez tematu, bez planu, po prostu rzeczy, które przykuły mój wzrok. (Tak, głównie koty.)',
+        'nonsense-empty': 'Jeszcze nie ma tu zdjęć &mdash; ale będą. (Pewnie koty.)',
         'about-eyebrow': '&#10022; &nbsp; Pasa&zdot;erka &nbsp; &#10022;', 'about-title': 'O Mnie', 'about-sub': 'Oficjalnie nieoficjalne. Prosz&eogon; nie okazywa&cacute; na &zdot;adnej granicy.',
         'about-cta': 'Zobacz wszystkie piecz&aogon;tki, kt&oacute;re do tej pory zebra&lstrok;am &nbsp;&rarr;',
         'welcome-sub': 'dla przyjaci&oacute;&lstrok;, rodziny i chronicznych ciekawskich &nbsp;&#x2708;',
@@ -3678,6 +3812,7 @@
         'pp-about-10': 'Je suis assez structurée pour fonctionner, assez chaotique pour que ce soit intéressant, et assez curieuse pour ne jamais vraiment me poser.',
         'pp-about-11': 'Toujours en train de comprendre les choses. Probablement pour toujours.',
         'map-hint': 'Cliquez sur une carte pour explorer la carte — vous pouvez enregistrer des lieux directement depuis Google Maps.',
+        'map-t-alicante': '🏝️ &nbsp; Alicante & Ibiza',
         'map-t-mallorca': '🏖️ &nbsp; Majorque',
         'map-t-maldives': '🐠 &nbsp; Maldives',
         'map-t-paris': '🗼 &nbsp; Paris',
@@ -3718,7 +3853,14 @@
         'gate-wrong': 'Mmm, non. Ce n’est pas ça. Bien tenté quand même 😉',
         'nav-welcome': 'Accueil', 'nav-adventures': 'Aventures', 'nav-homes': 'Chez Moi', 'nav-outfits': 'Tenues',
         'nav-map': 'Carte', 'nav-notes': 'Notes Perso', 'nav-playlists': 'Playlists', 'nav-menu': 'Menu',
-        'nav-about': '&Agrave; Propos',
+        'nav-about': '&Agrave; Propos', 'nav-pack': 'Ready, Set, Pack', 'nav-nonsense': 'Beautiful Nonsense',
+        'pack-eyebrow': '&#10022; &nbsp; La Liste &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Imprimez, cochez, préparez &mdash; et n\'oubliez plus votre chargeur.',
+        'pack-summer-t': 'Liste de bagages d\'été', 'pack-summer-d': 'Le soleil, la mer et tout ce qu\'il faut pour les voyages au chaud.',
+        'pack-winter-t': 'Liste de bagages d\'hiver', 'pack-winter-d': 'Des couches, des bottes et du confort où que le froid vous emmène.',
+        'pack-dl': 'Télécharger le PDF &darr;',
+        'nonsense-eyebrow': '&#10022; &nbsp; Les Petits Riens &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'De jolies photos qui n\'ont rien à voir avec les voyages.',
+        'nonsense-intro': 'Je ne photographie pas que des lieux. Parfois c\'est un chat en pleine sieste, la lumière sur une tasse de café, ou un objet trop joli pour passer son chemin. Voilà les belles bêtises &mdash; sans thème, sans itinéraire, juste ce qui a attiré mon regard. (Oui, surtout des chats.)',
+        'nonsense-empty': 'Pas encore de photos ici &mdash; mais ça viendra. (Sans doute des chats.)',
         'about-eyebrow': '&#10022; &nbsp; La Passag&egrave;re &nbsp; &#10022;', 'about-title': '&Agrave; Propos', 'about-sub': 'Officiellement non officiel. &Agrave; ne pr&eacute;senter &agrave; aucune fronti&egrave;re.',
         'about-cta': 'Voir tous les tampons de pays que j\'ai collect&eacute;s jusqu\'ici &nbsp;&rarr;',
         'welcome-sub': 'pour les amis, la famille &amp; les incurables curieux &nbsp;&#x2708;',
@@ -3782,6 +3924,7 @@
         'pp-about-10': 'Ich bin strukturiert genug, um zu funktionieren, chaotisch genug, um es interessant zu machen, und neugierig genug, um nie wirklich zur Ruhe zu kommen.',
         'pp-about-11': 'Versuche immer noch, alles herauszufinden. Werde ich wahrscheinlich immer.',
         'map-hint': 'Klicke auf eine Karte, um die Karte zu erkunden — du kannst Orte direkt aus Google Maps speichern.',
+        'map-t-alicante': '🏝️ &nbsp; Alicante & Ibiza',
         'map-t-mallorca': '🏖️ &nbsp; Mallorca',
         'map-t-maldives': '🐠 &nbsp; Malediven',
         'map-t-paris': '🗼 &nbsp; Paris',
@@ -3822,7 +3965,14 @@
         'gate-wrong': 'Mmm, nein. Das war’s nicht. Netter Versuch 😉',
         'nav-welcome': 'Willkommen', 'nav-adventures': 'Abenteuer', 'nav-homes': 'Zuhause', 'nav-outfits': 'Outfits',
         'nav-map': 'Karte', 'nav-notes': 'Notizen', 'nav-playlists': 'Playlists', 'nav-menu': 'Men&uuml;',
-        'nav-about': '&Uuml;ber Mich',
+        'nav-about': '&Uuml;ber Mich', 'nav-pack': 'Ready, Set, Pack', 'nav-nonsense': 'Beautiful Nonsense',
+        'pack-eyebrow': '&#10022; &nbsp; Die Checkliste &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Ausdrucken, abhaken, packen &mdash; und nie wieder das Ladegerät vergessen.',
+        'pack-summer-t': 'Sommer-Packliste', 'pack-summer-d': 'Sonne, Meer und alles für warme Reisen.',
+        'pack-winter-t': 'Winter-Packliste', 'pack-winter-d': 'Schichten, Stiefel und wohlige Wärme, wohin die Kälte dich auch bringt.',
+        'pack-dl': 'PDF herunterladen &darr;',
+        'nonsense-eyebrow': '&#10022; &nbsp; Kleine Schönheiten &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Schöne Bilder, die nichts mit Reisen zu tun haben.',
+        'nonsense-intro': 'Nicht alles, was ich fotografiere, ist ein Ort. Manchmal ist es eine Katze beim Nickerchen, das Licht auf einer Kaffeetasse oder ein Gegenstand, der zu hübsch zum Weiterscrollen ist. Das ist der schöne Unsinn &mdash; kein Thema, kein Reiseplan, einfach die Dinge, die mir ins Auge fielen. (Ja, meistens Katzen.)',
+        'nonsense-empty': 'Noch keine Bilder hier &mdash; aber sie kommen. (Wahrscheinlich Katzen.)',
         'about-eyebrow': '&#10022; &nbsp; Die Passagierin &nbsp; &#10022;', 'about-title': '&Uuml;ber Mich', 'about-sub': 'Offiziell inoffiziell. Bitte an keiner Grenze vorzeigen.',
         'about-cta': 'Sieh dir all die L&auml;nderstempel an, die ich bisher gesammelt habe &nbsp;&rarr;',
         'welcome-sub': 'f&uuml;r Freunde, Familie &amp; die chronisch Neugierigen &nbsp;&#x2708;',
@@ -3886,6 +4036,7 @@
         'pp-about-10': 'Sono abbastanza strutturata per funzionare, abbastanza caotica per renderlo interessante e abbastanza curiosa da non fermarmi mai davvero.',
         'pp-about-11': 'Sto ancora capendo le cose. Probabilmente sarà sempre così.',
         'map-hint': 'Clicca una scheda per esplorare la mappa — puoi salvare i luoghi direttamente da Google Maps.',
+        'map-t-alicante': '🏝️ &nbsp; Alicante e Ibiza',
         'map-t-mallorca': '🏖️ &nbsp; Maiorca',
         'map-t-maldives': '🐠 &nbsp; Maldive',
         'map-t-paris': '🗼 &nbsp; Parigi',
@@ -3926,7 +4077,14 @@
         'gate-wrong': 'Mmm, no. Non è quella. Bel tentativo però 😉',
         'nav-welcome': 'Benvenuti', 'nav-adventures': 'Avventure', 'nav-homes': 'Case', 'nav-outfits': 'Outfit',
         'nav-map': 'Mappa', 'nav-notes': 'Note', 'nav-playlists': 'Playlist', 'nav-menu': 'Menu',
-        'nav-about': 'Chi Sono',
+        'nav-about': 'Chi Sono', 'nav-pack': 'Ready, Set, Pack', 'nav-nonsense': 'Beautiful Nonsense',
+        'pack-eyebrow': '&#10022; &nbsp; La Lista &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Stampa, spunta, prepara &mdash; e smetti di dimenticare il caricabatterie.',
+        'pack-summer-t': 'Lista bagagli estiva', 'pack-summer-d': 'Sole, mare e tutto il necessario per i viaggi al caldo.',
+        'pack-winter-t': 'Lista bagagli invernale', 'pack-winter-d': 'Strati, stivali e calore ovunque ti porti il freddo.',
+        'pack-dl': 'Scarica il PDF &darr;',
+        'nonsense-eyebrow': '&#10022; &nbsp; Le Piccole Cose &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Belle foto che non hanno nulla a che fare con i viaggi.',
+        'nonsense-intro': 'Non tutto ciò che fotografo è un luogo. A volte è un gatto durante il pisolino, la luce su una tazza di caffè o un oggetto troppo bello per scorrere oltre. Queste sono le belle sciocchezze &mdash; nessun tema, nessun itinerario, solo le cose che hanno catturato il mio sguardo. (Sì, soprattutto gatti.)',
+        'nonsense-empty': 'Ancora nessuna foto qui &mdash; ma arriveranno. (Probabilmente gatti.)',
         'about-eyebrow': '&#10022; &nbsp; La Passeggera &nbsp; &#10022;', 'about-title': 'Chi Sono', 'about-sub': 'Ufficialmente non ufficiale. Da non presentare ad alcuna frontiera.',
         'about-cta': 'Guarda tutti i timbri dei paesi che ho collezionato finora &nbsp;&rarr;',
         'welcome-sub': 'per amici, famiglia &amp; i cronicamente curiosi &nbsp;&#x2708;',
@@ -3990,6 +4148,7 @@
         'pp-about-10': 'Soy lo bastante estructurada para funcionar, lo bastante caótica para que sea interesante y lo bastante curiosa para no asentarme nunca del todo.',
         'pp-about-11': 'Aún averiguando las cosas. Probablemente siempre lo estaré.',
         'map-hint': 'Haz clic en cualquier tarjeta para explorar el mapa — puedes guardar lugares directamente desde Google Maps.',
+        'map-t-alicante': '🏝️ &nbsp; Alicante e Ibiza',
         'map-t-mallorca': '🏖️ &nbsp; Mallorca',
         'map-t-maldives': '🐠 &nbsp; Maldivas',
         'map-t-paris': '🗼 &nbsp; París',
@@ -4030,7 +4189,14 @@
         'gate-wrong': 'Mmm, no. No es esa. Buen intento igual 😉',
         'nav-welcome': 'Bienvenida', 'nav-adventures': 'Aventuras', 'nav-homes': 'Hogares', 'nav-outfits': 'Looks',
         'nav-map': 'Mapa', 'nav-notes': 'Notas', 'nav-playlists': 'Playlists', 'nav-menu': 'Men&uacute;',
-        'nav-about': 'Sobre M&iacute;',
+        'nav-about': 'Sobre M&iacute;', 'nav-pack': 'Ready, Set, Pack', 'nav-nonsense': 'Beautiful Nonsense',
+        'pack-eyebrow': '&#10022; &nbsp; La Lista &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Imprime, marca, haz la maleta &mdash; y deja de olvidar el cargador.',
+        'pack-summer-t': 'Lista de equipaje de verano', 'pack-summer-d': 'Sol, mar y todo lo necesario para los viajes de calor.',
+        'pack-winter-t': 'Lista de equipaje de invierno', 'pack-winter-d': 'Capas, botas y calorcito allá donde te lleve el frío.',
+        'pack-dl': 'Descargar PDF &darr;',
+        'nonsense-eyebrow': '&#10022; &nbsp; Las Pequeñas Cosas &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Fotos bonitas que no tienen nada que ver con viajar.',
+        'nonsense-intro': 'No todo lo que fotografío es un lugar. A veces es un gato a media siesta, la luz sobre una taza de café o un objeto demasiado bonito para pasar de largo. Esto es la bella tontería &mdash; sin tema, sin itinerario, solo las cosas que me llamaron la atención. (Sí, sobre todo gatos.)',
+        'nonsense-empty': 'Aún no hay fotos aquí &mdash; pero las habrá. (Seguramente gatos.)',
         'about-eyebrow': '&#10022; &nbsp; La Pasajera &nbsp; &#10022;', 'about-title': 'Sobre M&iacute;', 'about-sub': 'Oficialmente no oficial. No presentar en ninguna frontera.',
         'about-cta': 'Mira todos los sellos de pa&iacute;ses que he reunido hasta ahora &nbsp;&rarr;',
         'welcome-sub': 'para amigos, familia &amp; los cr&oacute;nicamente curiosos &nbsp;&#x2708;',
@@ -4091,19 +4257,16 @@
       document.querySelectorAll('.map-open').forEach(function(el) {
         el.innerHTML = t['map-open'];
       });
-      // Translate the Adventures cards (title + description) from the TRIPS data
+      // Translate the Adventures card titles from the TRIPS data
       document.querySelectorAll('[data-trip-title]').forEach(function(el) {
         const id = el.getAttribute('data-trip-title');
         if (TRIPS[id]) el.textContent = TRIPS[id].title[lang] || TRIPS[id].title.en;
-      });
-      document.querySelectorAll('[data-trip-desc]').forEach(function(el) {
-        const id = el.getAttribute('data-trip-desc');
-        if (TRIPS[id]) el.textContent = TRIPS[id].desc[lang] || TRIPS[id].desc.en;
       });
       if (typeof equalizeHomeButtons === 'function') equalizeHomeButtons();
       // Re-render the outfit cards so their "Rate this outfit" / "Remove" labels translate
       if (typeof renderOutfits === 'function') renderOutfits();
       if (typeof renderNotes === 'function') renderNotes();
+      if (typeof renderNonsense === 'function') renderNonsense();
       // Update the language menu (current flag + active option)
       const curFlag = document.getElementById('lang-current-flag');
       if (curFlag) curFlag.textContent = LANG_FLAGS[lang] || LANG_FLAGS.en;
@@ -4210,6 +4373,7 @@
        Leave it as '' (empty) and that card's Watch button stays greyed out.
     ═══════════════════════════════════════════════════════════ */
     const VIDEOS = {
+      alicante:   '',
       california: '',
       thailand:   '',
       maldives:   '',
@@ -4249,6 +4413,16 @@
        TRIP DETAIL
     ════════════════════════════════════════ */
     const TRIPS = {
+      alicante: {
+        badge: '2026 &nbsp;·&nbsp; Spain', location: 'Alicante & Ibiza, Spain',
+        title: { en: 'Alicante & Ibiza', pl: 'Alicante i Ibiza', fr: 'Alicante & Ibiza', de: 'Alicante & Ibiza', it: 'Alicante e Ibiza', es: 'Alicante e Ibiza' },
+        desc:  { en: 'Flying south to visit my cousin and relocate the home office somewhere with better light. Laptop in the morning, Ibiza by golden hour. My out-of-office says I\'m working — technically, it isn\'t lying.',
+                 pl: 'Lecę na południe odwiedzić kuzynkę i przenieść home office tam, gdzie światło jest lepsze. Rano laptop, o złotej godzinie Ibiza. Moja autoodpowiedź twierdzi, że pracuję — technicznie rzecz biorąc, nie kłamie.',
+                 fr: 'Direction le sud pour rendre visite à ma cousine et délocaliser mon télétravail là où la lumière est meilleure. Ordinateur le matin, Ibiza à l\'heure dorée. Mon message d\'absence dit que je travaille — techniquement, il ne ment pas.',
+                 de: 'Ab in den Süden: Cousine besuchen und das Homeoffice dorthin verlegen, wo das Licht besser ist. Morgens Laptop, zur goldenen Stunde Ibiza. Meine Abwesenheitsnotiz sagt, ich arbeite — technisch gesehen lügt sie nicht.',
+                 it: 'Volo a sud per trovare mia cugina e trasferire l\'home office dove la luce è migliore. Laptop al mattino, Ibiza all\'ora dorata. La mia risposta automatica dice che sto lavorando — tecnicamente, non mente.',
+                 es: 'Vuelo al sur para visitar a mi prima y trasladar la home office a un sitio con mejor luz. Portátil por la mañana, Ibiza a la hora dorada. Mi respuesta automática dice que estoy trabajando — técnicamente, no miente.' }
+      },
       california: {
         badge: '2023 &nbsp;·&nbsp; USA', location: 'California, USA',
         title: { en: 'California Road Trip', pl: 'Road Trip po Kalifornii', fr: 'Road Trip en Californie', de: 'Kalifornien Road Trip', it: 'Viaggio in Auto in California', es: 'Viaje por Carretera por California' },
@@ -4442,30 +4616,33 @@
     };
 
     /* ── Adventures grid: render each trip as a distinct boarding pass ──
-       Pulls localized title/desc/badge from TRIPS and per-trip visual config
-       (code, accent, ticket variant, passport stamps) from TRIP_META. Keeps
-       data-trip-title / data-trip-desc so the i18n re-translation still works,
-       and onclick=openTrip so cards still open the trip detail. */
-    const ADV_ORDER = ['mallorca','maldives','paris','brussels','vienna','malta','thailand','milan','newengland','newyork','amalfi','california','rome','copenhagen','sicily','edinburgh','rhodes'];
+       Pulls the localized title + badge from TRIPS and per-trip visual config
+       (code, accent, passport stamps, playful Class/Baggage)
+       from TRIP_META. The trip description is NOT shown on the card — it lives
+       only in the trip detail view (openTrip). Keeps data-trip-title so the
+       i18n re-translation still works, and onclick=openTrip so cards still
+       open the trip detail. */
+    const ADV_ORDER = ['alicante','mallorca','maldives','paris','brussels','vienna','malta','thailand','milan','newengland','newyork','amalfi','california','rome','copenhagen','sicily','edinburgh','rhodes'];
 
     const TRIP_META = {
-      mallorca:  { code:'PMI', accent:'#e7a6ad', variant:'classic', stamps:[{country:'SPAIN',date:"'26",glyph:'☼',ink:'#c2545f',rot:-9,shape:'circle',size:96}] },
-      maldives:  { code:'MLE', accent:'#2a9fb8', variant:'mono',    stamps:[{country:'MALDIVES',date:"'26",glyph:'⚓',ink:'#15788f',rot:7,shape:'oval',size:104}] },
-      paris:     { code:'CDG', accent:'#6c7a9c', variant:'ticket',  stamps:[{country:'FRANCE',date:"'23·'26",glyph:'★',ink:'#3f4d70',rot:-8,shape:'rect',size:102}] },
-      brussels:  { code:'BRU', accent:'#b98a4b', variant:'classic', stamps:[{country:'BELGIUM',date:"'22-'26",glyph:'◆',ink:'#8a6a2f',rot:9,shape:'hex',size:98}] },
-      vienna:    { code:'VIE', accent:'#b5564f', variant:'mono',    stamps:[{country:'AUSTRIA',date:"'25",glyph:'♔',ink:'#8f3f3a',rot:-9,shape:'doublecircle',size:94}] },
-      malta:     { code:'MLA', accent:'#3f86c9', variant:'ticket',  stamps:[{country:'MALTA',date:"NOV '25",glyph:'⚓',ink:'#2f6fb0',rot:-8,shape:'rect',size:104}] },
-      thailand:  { code:'BKK', accent:'#2f9e7a', variant:'classic', stamps:[{country:'THAILAND',date:"'25",glyph:'☾',ink:'#1f7d5e',rot:8,shape:'triangle',size:104}] },
-      milan:     { code:'MXP', accent:'#8a7d9b', variant:'mono',    stamps:[{country:'ITALY',date:"'23·'25",glyph:'✦',ink:'#5f5470',rot:-9,shape:'octagon',size:94}] },
-      newengland:{ code:'BOS', accent:'#c4703a', variant:'ticket',  stamps:[{country:'USA',date:"'19·'25",glyph:'☀',ink:'#9a4f24',rot:7,shape:'oval',size:98}] },
-      newyork:   { code:'JFK', accent:'#4a5a78', variant:'classic', stamps:[{country:'USA',date:"'18-'25",glyph:'★',ink:'#33415e',rot:-10,shape:'circle',size:90}] },
-      amalfi:    { code:'NAP', accent:'#d9a93f', variant:'mono',    stamps:[{country:'ITALY',date:"'24",glyph:'❀',ink:'#a37f1f',rot:9,shape:'hex',size:100}] },
-      california:{ code:'LAX', accent:'#d98a4f', variant:'ticket',  stamps:[{country:'USA',date:"'23",glyph:'☀',ink:'#b56a30',rot:-8,shape:'rect',size:96}] },
-      rome:      { code:'FCO', accent:'#a8704a', variant:'classic', stamps:[{country:'ITALY',date:"'23",glyph:'◆',ink:'#8a5436',rot:9,shape:'doublecircle',size:98}] },
-      copenhagen:{ code:'CPH', accent:'#c65b54', variant:'mono',    stamps:[{country:'DENMARK',date:"'23",glyph:'❄',ink:'#3f6f6a',rot:-9,shape:'oval',size:96}] },
-      sicily:    { code:'CTA', accent:'#b5613f', variant:'ticket',  stamps:[{country:'ITALY',date:"'23",glyph:'▲',ink:'#8f4a2f',rot:8,shape:'triangle',size:100}] },
-      edinburgh: { code:'EDI', accent:'#5d6b7a', variant:'classic', stamps:[{country:'SCOTLAND',date:"'23",glyph:'♜',ink:'#46535f',rot:-9,shape:'octagon',size:98}] },
-      rhodes:    { code:'RHO', accent:'#3f9fc4', variant:'mono',    stamps:[{country:'GREECE',date:"'20",glyph:'☼',ink:'#2f7f9c',rot:9,shape:'circle',size:102}] }
+      alicante:  { code:'ALC', accent:'#c25e9b', cls:'Home-office premium',     bag:'Laptop + sunscreen',       stamps:[{country:'SPAIN',date:"'26",glyph:'☼',ink:'#a04478',rot:-8,shape:'oval',size:100}] },
+      mallorca:  { code:'PMI', accent:'#e7a6ad', cls:'Window seat, obviously',  bag:'Stitches + a grudge',      stamps:[{country:'SPAIN',date:"'26",glyph:'☼',ink:'#c2545f',rot:-9,shape:'circle',size:96}] },
+      maldives:  { code:'MLE', accent:'#2a9fb8', cls:'Overwater economy',       bag:'One WhatsApp group',       stamps:[{country:'MALDIVES',date:"'26",glyph:'⚓',ink:'#15788f',rot:7,shape:'oval',size:104}] },
+      paris:     { code:'CDG', accent:'#6c7a9c', cls:'Reluctantly charmed',     bag:'One fresh baguette',       stamps:[{country:'FRANCE',date:"'23·'26",glyph:'★',ink:'#3f4d70',rot:-8,shape:'rect',size:102}] },
+      brussels:  { code:'BRU', accent:'#b98a4b', cls:'Frequent waffler',        bag:'Unresolved waffle debt',   stamps:[{country:'BELGIUM',date:"'22-'26",glyph:'◆',ink:'#8a6a2f',rot:9,shape:'hex',size:98}] },
+      vienna:    { code:'VIE', accent:'#b5564f', cls:'Sachertorte class',       bag:'A serious cake problem',   stamps:[{country:'AUSTRIA',date:"'25",glyph:'♔',ink:'#8f3f3a',rot:-9,shape:'doublecircle',size:94}] },
+      malta:     { code:'MLA', accent:'#3f86c9', cls:'Off-season sunseeker',    bag:'Salt + one kayak',         stamps:[{country:'MALTA',date:"NOV '25",glyph:'⚓',ink:'#2f6fb0',rot:-8,shape:'rect',size:104}] },
+      thailand:  { code:'BKK', accent:'#2f9e7a', cls:'Scooter class',           bag:'Full Moon regrets',        stamps:[{country:'THAILAND',date:"'25",glyph:'☾',ink:'#1f7d5e',rot:8,shape:'triangle',size:104}] },
+      milan:     { code:'MXP', accent:'#8a7d9b', cls:'Aperitivo class',         bag:'Overpacked, no regrets',   stamps:[{country:'ITALY',date:"'23·'25",glyph:'✦',ink:'#5f5470',rot:-9,shape:'octagon',size:94}] },
+      newengland:{ code:'BOS', accent:'#c4703a', cls:'Leaf-peeper deluxe',      bag:'Too many tree photos',     stamps:[{country:'USA',date:"'19·'25",glyph:'☀',ink:'#9a4f24',rot:7,shape:'oval',size:98}] },
+      newyork:   { code:'JFK', accent:'#4a5a78', cls:'Sentimental first',       bag:'Mostly emotional',         stamps:[{country:'USA',date:"'18-'25",glyph:'★',ink:'#33415e',rot:-10,shape:'circle',size:90}] },
+      amalfi:    { code:'NAP', accent:'#d9a93f', cls:'Lemon-scented first',     bag:'One too many lemons',      stamps:[{country:'ITALY',date:"'24",glyph:'❀',ink:'#a37f1f',rot:9,shape:'hex',size:100}] },
+      california:{ code:'LAX', accent:'#d98a4f', cls:'Road-trip class',         bag:'One towed car',            stamps:[{country:'USA',date:"'23",glyph:'☀',ink:'#b56a30',rot:-8,shape:'rect',size:96}] },
+      rome:      { code:'FCO', accent:'#a8704a', cls:'Gelato class',            bag:'Coins for the fountain',   stamps:[{country:'ITALY',date:"'23",glyph:'◆',ink:'#8a5436',rot:9,shape:'doublecircle',size:98}] },
+      copenhagen:{ code:'CPH', accent:'#c65b54', cls:'Hygge economy',           bag:'A pastry habit',           stamps:[{country:'DENMARK',date:"'23",glyph:'❄',ink:'#3f6f6a',rot:-9,shape:'oval',size:96}] },
+      sicily:    { code:'CTA', accent:'#b5613f', cls:'Cannoli class',           bag:'Sunburn + arancini',       stamps:[{country:'ITALY',date:"'23",glyph:'▲',ink:'#8f4a2f',rot:8,shape:'triangle',size:100}] },
+      edinburgh: { code:'EDI', accent:'#5d6b7a', cls:'Highland drizzle class',  bag:'One haunted castle',       stamps:[{country:'SCOTLAND',date:"'23",glyph:'♜',ink:'#46535f',rot:-9,shape:'octagon',size:98}] },
+      rhodes:    { code:'RHO', accent:'#3f9fc4', cls:'Aegean economy',          bag:'Sand in everything',       stamps:[{country:'GREECE',date:"'20",glyph:'☼',ink:'#2f7f9c',rot:9,shape:'circle',size:102}] }
     };
 
     function bpHash(str){ let h=0; for(let i=0;i<str.length;i++){ h=(h*31 + str.charCodeAt(i)) >>> 0; } return h; }
@@ -4517,29 +4694,28 @@
       const lang = (typeof currentLang !== 'undefined' && currentLang) || 'en';
       grid.innerHTML = ADV_ORDER.map(function(id){
         const t = TRIPS[id]; if (!t) return '';
-        const m = TRIP_META[id] || { code:id.slice(0,3).toUpperCase(), accent:'#b98a4b', variant:'classic', stamps:[] };
+        const m = TRIP_META[id] || { code:id.slice(0,3).toUpperCase(), accent:'#b98a4b', stamps:[] };
         const title = t.title[lang] || t.title.en;
-        const desc  = t.desc[lang]  || t.desc.en;
         const isVlog = VLOG_TRIPS.indexOf(id) !== -1;
         const stamps = (m.stamps || []).map(function(s, i){ return bpStampHTML(s, id, i, m.code); }).join('');
         const click = "openTrip('" + id + "')";
         return ''
-        + '<article class="bp bp--'+m.variant+'" style="--bp-accent:'+m.accent+'" '
+        + '<article class="bp" style="--bp-accent:'+m.accent+'" '
           + 'onclick="'+click+'" role="button" tabindex="0" '
           + 'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();'+click+';}">'
           + '<div class="bp-main">'
             + '<div class="bp-head"><span class="bp-airline">&#9992;&#65039; Patricia Air</span><span class="bp-kind">Boarding Pass</span></div>'
             + '<div class="bp-route"><span class="bp-code">'+m.code+'</span><h3 class="video-title bp-dest" data-trip-title="'+id+'">'+title+'</h3></div>'
             + '<div class="bp-badge video-badge">'+t.badge+'</div>'
-            + '<p class="video-desc bp-desc" data-trip-desc="'+id+'">'+desc+'</p>'
             + (isVlog ? '<span class="bp-vlog">&#9654; Watch the vlog</span>' : '')
             + '<div class="bp-foot">'
               + '<div class="bp-foot-grid">'
                 + '<span class="bp-k">Flight</span><span class="bp-v">'+bpFlight(id)+'</span>'
+                + '<span class="bp-k">Class</span><span class="bp-v">'+(m.cls || 'Mystery class')+'</span>'
                 + '<span class="bp-k">Gate</span><span class="bp-v">'+bpGate(id)+'</span>'
+                + '<span class="bp-k">Baggage</span><span class="bp-v">'+(m.bag || 'Assorted feelings')+'</span>'
                 + '<span class="bp-k">Seat</span><span class="bp-v">'+bpSeat(id)+'</span>'
               + '</div>'
-              + '<div class="bp-barcode" aria-hidden="true"></div>'
             + '</div>'
           + '</div>'
           + '<div class="bp-stub">'
@@ -4627,7 +4803,7 @@
       if (location.hash !== h) location.hash = h;
     }
 
-    const VLOG_TRIPS = ['maldives', 'thailand', 'mallorca'];
+    const VLOG_TRIPS = ['maldives', 'thailand', 'mallorca', 'alicante'];
 
     /* Show the vlog inline (or a friendly note if there isn't one) */
     function setTripVideo(id) {
@@ -5087,6 +5263,86 @@
     }
 
     /* ════════════════════════════════════════
+       BEAUTIFUL NONSENSE  (non-travel photos; Supabase-backed, owner-uploadable)
+       Mirrors the trip-photo flow, but as one flat gallery.
+    ════════════════════════════════════════ */
+    let nonsensePhotos = [];
+
+    async function fetchNonsense() {
+      const res = await sb.from('random_photos').select('*').order('created_at', { ascending: false });
+      if (res.error) { console.error(res.error); return; }
+      nonsensePhotos = res.data.map(function (r) {
+        return { id: r.id, url: r.img_url, path: r.storage_path };
+      });
+    }
+
+    function renderNonsense() {
+      const grid  = document.getElementById('nonsense-grid');
+      const empty = document.getElementById('nonsense-empty');
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (!nonsensePhotos.length) { if (empty) empty.style.display = ''; return; }
+      if (empty) empty.style.display = 'none';
+      const urls = nonsensePhotos.map(function (p) { return p.url; });
+      nonsensePhotos.forEach(function (photo, i) {
+        const wrap = document.createElement('div');
+        wrap.className = 'trip-photo-wrap';
+        const img = document.createElement('img');
+        img.className = 'trip-gallery-img';
+        img.src = photo.url;
+        img.onclick = function () {
+          overlayPhotos = urls; overlayIndex = i;
+          document.getElementById('photo-overlay-img').alt = 'Beautiful nonsense ' + (i + 1);
+          renderOverlayPhoto();
+          document.getElementById('photo-overlay').classList.add('open');
+          document.body.style.overflow = 'hidden';
+        };
+        const del = document.createElement('button');
+        del.className = 'trip-photo-delete';
+        del.textContent = (TRANSLATIONS[currentLang] || TRANSLATIONS.en)['btn-remove'];
+        del.onclick = function (e) { e.stopPropagation(); deleteNonsense(i); };
+        wrap.appendChild(img);
+        wrap.appendChild(del);
+        grid.appendChild(wrap);
+      });
+    }
+
+    async function addNonsensePhotos(fileList) {
+      const imgs = Array.from(fileList).filter(function (f) { return f.type.startsWith('image/'); });
+      if (!imgs.length) return;
+      try {
+        for (let i = 0; i < imgs.length; i++) {
+          const up = await uploadPhotoFile(imgs[i], 'nonsense');
+          const ins = await sb.from('random_photos')
+            .insert({ img_url: up.url, storage_path: up.path })
+            .select().single();
+          if (ins.error) throw ins.error;
+          const r = ins.data;
+          nonsensePhotos.unshift({ id: r.id, url: r.img_url, path: r.storage_path });
+          renderNonsense();
+        }
+      } catch (err) {
+        alert('Some photos could not be uploaded: ' + (err.message || err));
+      }
+    }
+
+    async function deleteNonsense(index) {
+      const photo = nonsensePhotos[index];
+      if (!photo) return;
+      const del = await sb.from('random_photos').delete().eq('id', photo.id);
+      if (del.error) { alert('Could not delete: ' + del.error.message); return; }
+      if (photo.path) await sb.storage.from('photos').remove([photo.path]);
+      nonsensePhotos.splice(index, 1);
+      renderNonsense();
+    }
+
+    /* ── Beautiful Nonsense upload zone drag-drop ── */
+    function nzDragOver(e)  { e.preventDefault(); document.getElementById('nonsense-upload-zone').classList.add('drag-over'); }
+    function nzDragLeave()  { document.getElementById('nonsense-upload-zone').classList.remove('drag-over'); }
+    function nzDrop(e)      { e.preventDefault(); nzDragLeave(); addNonsensePhotos(e.dataTransfer.files); }
+    function nzFileChange(input) { addNonsensePhotos(input.files); input.value = ''; }
+
+    /* ════════════════════════════════════════
        OUTFITS  (stored in Supabase; cached in memory for rendering)
     ════════════════════════════════════════ */
     let outfitsCache = [];
@@ -5534,9 +5790,10 @@
       initPlaylistLinks();
 
       /* Load all shared content from Supabase, then render. */
-      await Promise.all([fetchVideoLinks(), fetchOutfits(), fetchTripPhotos(), fetchNotes()]);
+      await Promise.all([fetchVideoLinks(), fetchOutfits(), fetchTripPhotos(), fetchNotes(), fetchNonsense()]);
       renderOutfits();
       renderNotes();
+      renderNonsense();
       if (currentTripId) { setTripVideo(currentTripId); renderTripGallery(currentTripId); }
     });
 
@@ -5564,6 +5821,12 @@
     }
 
     const TRIPS_MAP = {
+      alicante: { zoom: 8, markers: [
+        ['Alicante', 38.3452, -0.4810],
+        ['Explanada de España', 38.3440, -0.4830],
+        ['Ibiza Town', 38.9067, 1.4206],
+        ['Cala Comte', 38.9647, 1.2237]
+      ] },
       california: { zoom: 10, markers: [
         ['Los Angeles', 34.0522, -118.2437],
         ['San Francisco', 37.7749, -122.4194],
@@ -5732,9 +5995,20 @@
   <!-- ── Site footer ── -->
   <footer class="site-footer">
     <div class="footer-contact">
-      <a href="mailto:patrycja.bogaj@gmail.com" class="footer-link">patrycja.bogaj@gmail.com</a>
+      <a href="mailto:patrycja.bogaj@gmail.com" class="footer-link" aria-label="Email Patrycja">
+        <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        patrycja.bogaj@gmail.com
+      </a>
       <span class="footer-sep">·</span>
-      <a href="https://www.instagram.com/iamladylilith" target="_blank" rel="noopener" class="footer-link">@iamladylilith</a>
+      <a href="https://www.instagram.com/iamladylilith" target="_blank" rel="noopener" class="footer-link" aria-label="Patrycja on Instagram">
+        <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg>
+        iamladylilith
+      </a>
+      <span class="footer-sep">·</span>
+      <a href="https://de.pinterest.com/Iamladylilith/_saved/" target="_blank" rel="noopener" class="footer-link" aria-label="Patrycja on Pinterest">
+        <svg class="footer-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.64 7.86 6.36 9.32-.09-.79-.17-2 .03-2.87.18-.78 1.17-4.97 1.17-4.97s-.3-.6-.3-1.48c0-1.39.8-2.42 1.8-2.42.85 0 1.26.64 1.26 1.4 0 .85-.54 2.13-.82 3.31-.24.99.5 1.8 1.47 1.8 1.77 0 3.13-1.87 3.13-4.56 0-2.38-1.71-4.05-4.15-4.05-2.83 0-4.49 2.12-4.49 4.31 0 .85.33 1.77.74 2.27.08.1.09.19.07.29-.08.32-.25 1-.28 1.14-.04.18-.15.22-.34.13-1.25-.58-2.03-2.4-2.03-3.87 0-3.15 2.29-6.04 6.6-6.04 3.46 0 6.16 2.47 6.16 5.77 0 3.44-2.17 6.21-5.18 6.21-1.01 0-1.97-.53-2.29-1.15l-.62 2.37c-.23.86-.83 1.94-1.24 2.6.94.29 1.92.44 2.96.44 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        Pinterest
+      </a>
     </div>
     <div class="footer-stats">
       <span id="site-view-count">—</span> <span data-i18n="footer-views">views</span>
