@@ -1430,7 +1430,9 @@
     .homes-stage {
       position: relative;
       overflow: hidden;
-      min-height: clamp(560px, 90vh, 900px);
+      /* taller cap so big screens render the stage (and monuments) at the
+         proportions of Patrycja's reference composition */
+      min-height: clamp(560px, 90vh, 1200px);
     }
     /* centered title floats above the monuments (purely decorative text —
        must not intercept clicks meant for the album zones/buttons beneath it).
@@ -1459,18 +1461,22 @@
       filter: brightness(0.38) sepia(1) saturate(3) hue-rotate(-8deg);
     }
     html.dark-mode .home-img { filter: brightness(1.04); }
-    .home-img--poland { left: -1%; }
+    .home-img--poland { left: -1%; transform: translateX(3cm); }
     .home-img--berlin { right: -1%; }
-    /* Berlin is layered from two derivatives of the same artwork (split
-       pixel-precisely along the gate's silhouette, original file untouched)
-       so the Brandenburg Gate can be shown larger: the tower layer keeps the
-       sky and the full shaft ending as drawn, the gate layer is enlarged
-       from the image's bottom-right corner so it stays on the ground line
-       and the shaft disappears behind its entablature. */
-    .home-img--berlin-gate {
-      transform: scale(1.3);
-      transform-origin: 100% 100%;
+    /* Berlin desktop art is a single pre-composited scene (gate + tower
+       exactly as in Patrycja's approved reference screenshot — extracted
+       from it, so size, nesting and line density match it 1:1). Pinned to
+       the stage's right edge; the tiny top/height offsets replicate the
+       reference's placement relative to the stage and keep the whole
+       composition stage-proportional at every window size. */
+    .home-img--berlin-scene {
+      right: 0;
+      top: -0.95%;
+      height: 100.9%;
+      opacity: 1; /* capture already includes the base art opacity */
     }
+    /* the capture was taken in dark mode — don't re-apply its brightness */
+    html.dark-mode .home-img--berlin-scene { filter: none; }
     .home-img--berlin-mobile { display: none; }
     /* album-name buttons — match the welcome-page CTA (DM Sans, solid pill) */
     .home-name {
@@ -1547,10 +1553,10 @@
         padding: 8px 16px 40px;
       }
       .home-img { position: relative; top: auto; height: 340px; }
-      .home-img--poland { left: 0; }
+      .home-img--poland { left: 0; transform: none; }
       .home-img--berlin { right: 0; }
       /* stacked layout: back to the single untouched image */
-      .home-img--berlin-tower, .home-img--berlin-gate { display: none; }
+      .home-img--berlin-scene { display: none; }
       .home-img--berlin-mobile { display: block; }
       .home-name {
         position: relative; left: auto !important; right: auto !important; top: auto !important;
@@ -3463,8 +3469,7 @@
       <div class="home-zone home-zone--berlin" onclick="openTrip('berlin')" role="button" tabindex="0"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrip('berlin');}"
            aria-label="Open the Berlin photo album">
-        <img class="home-img home-img--berlin home-img--berlin-tower" src="home-berlin-tower.png" alt="Brandenburg Gate and TV Tower, Berlin" loading="lazy">
-        <img class="home-img home-img--berlin home-img--berlin-gate" src="home-berlin-gate.png" alt="" aria-hidden="true" loading="lazy">
+        <img class="home-img home-img--berlin home-img--berlin-scene" src="home-berlin-scene.png" alt="Brandenburg Gate and TV Tower, Berlin" loading="lazy">
         <img class="home-img home-img--berlin home-img--berlin-mobile" src="home-berlin.png" alt="" aria-hidden="true" loading="lazy">
         <span class="home-name home-name--berlin" data-trip-title="berlin">Berlin day by day</span>
       </div>
