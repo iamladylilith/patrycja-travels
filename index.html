@@ -1787,6 +1787,28 @@
       margin: 0 0 24px;
     }
     .access-card .gate-sub em { color: var(--gold); font-style: italic; }
+    /* Language flags on the gate so guests can translate before entering */
+    .gate-lang {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 6px; margin: 0 0 22px;
+    }
+    .access-card .gate-lang-btn {
+      margin: 0; font-size: 1.3rem; line-height: 1;
+      letter-spacing: normal; text-transform: none;
+      color: inherit; background: transparent;
+      border: 1px solid transparent; border-radius: 8px;
+      padding: 5px 8px; cursor: pointer;
+      opacity: 0.5; filter: grayscale(0.4);
+      transition: opacity 0.15s, border-color 0.15s, background 0.15s, transform 0.15s;
+    }
+    .access-card .gate-lang-btn:hover {
+      opacity: 1; filter: none;
+      background: rgba(200, 144, 60, 0.10); transform: translateY(-1px);
+    }
+    .access-card .gate-lang-btn.active {
+      opacity: 1; filter: none;
+      border-color: var(--gold); background: rgba(200, 144, 60, 0.16);
+    }
     .access-card form { display: flex; flex-direction: column; gap: 10px; }
     .access-card input {
       width: 100%; box-sizing: border-box;
@@ -2343,6 +2365,14 @@
   <!-- ── Visitor access gate (blur + password). Guests defined in GUEST_LOGINS. ── -->
   <div class="access-gate" id="access-gate">
     <div class="access-card" id="access-card">
+      <div class="gate-lang" role="group" aria-label="Choose your language / Wybierz język">
+        <button type="button" class="gate-lang-btn active" data-lang="en" onclick="setLanguage('en')" title="English" aria-label="English">🇬🇧</button>
+        <button type="button" class="gate-lang-btn" data-lang="pl" onclick="setLanguage('pl')" title="Polski" aria-label="Polski">🇵🇱</button>
+        <button type="button" class="gate-lang-btn" data-lang="fr" onclick="setLanguage('fr')" title="Français" aria-label="Français">🇫🇷</button>
+        <button type="button" class="gate-lang-btn" data-lang="de" onclick="setLanguage('de')" title="Deutsch" aria-label="Deutsch">🇩🇪</button>
+        <button type="button" class="gate-lang-btn" data-lang="it" onclick="setLanguage('it')" title="Italiano" aria-label="Italiano">🇮🇹</button>
+        <button type="button" class="gate-lang-btn" data-lang="es" onclick="setLanguage('es')" title="Español" aria-label="Español">🇪🇸</button>
+      </div>
       <h2 data-i18n="gate-title">Well, well, well… 👀</h2>
       <p class="gate-sub" data-i18n="gate-sub">This little corner of the internet isn’t for <em>everyone</em>. Got the password? Prove it below. If not — you’ll have to sweet-talk the owner (that’s me 💁‍♀️).</p>
       <form onsubmit="return tryUnlock(event)">
@@ -4288,6 +4318,10 @@
       const curFlag = document.getElementById('lang-current-flag');
       if (curFlag) curFlag.textContent = LANG_FLAGS[lang] || LANG_FLAGS.en;
       document.querySelectorAll('.lang-option').forEach(function(o) {
+        o.classList.toggle('active', o.getAttribute('data-lang') === lang);
+      });
+      // Keep the gate's language flags in sync (guests pick a language before entering)
+      document.querySelectorAll('.gate-lang-btn').forEach(function(o) {
         o.classList.toggle('active', o.getAttribute('data-lang') === lang);
       });
       const sw = document.getElementById('lang-switcher');
