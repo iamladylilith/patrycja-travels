@@ -1162,6 +1162,11 @@
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 8px; margin-bottom: 1.5rem;
     }
+    /* Beautiful Nonsense sits in a narrower wrapper than Adventures, so bump its
+       thumbnails to fewer/larger columns to match the Adventures gallery size. */
+    #nonsense-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
     .trip-gallery-img {
       width: 100%; aspect-ratio: 1; object-fit: cover;
       border-radius: 2px; cursor: zoom-in; display: block;
