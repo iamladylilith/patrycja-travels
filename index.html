@@ -5282,8 +5282,7 @@
       btn.disabled = false; btn.textContent = 'Log in';
       if (error) { errEl.textContent = 'Wrong email or password.'; return; }
       document.body.classList.add('owner');
-      loadViewCount();
-      if (typeof fetchLogins === 'function') fetchLogins();
+      if (typeof fetchLogins === 'function') fetchLogins();   // also fills the footer's total-visits counter
       closeLogin();
     }
 
@@ -5645,7 +5644,20 @@
       renderLogins();
     }
 
+    /* Sum of every guest's visits — shown in the owner-only "views" counter in
+       the footer. Guests never see it (footer-stats is owner-only); it's your
+       private running total of how many times people have opened the site. */
+    function updateTotalVisits() {
+      const el = document.getElementById('site-view-count');
+      if (!el) return;
+      const total = (loginsCache || []).reduce(function (sum, l) {
+        return sum + (Number(l.visits) || 0);
+      }, 0);
+      el.textContent = total.toLocaleString();
+    }
+
     function renderLogins() {
+      updateTotalVisits();   // keep the footer total in sync with guest visits
       const tbody = document.getElementById('logins-tbody');
       const empty = document.getElementById('logins-empty');
       if (!tbody) return;
@@ -5830,8 +5842,9 @@
         sb.rpc('record_guest_visit', { p_name: _guestName }).catch(function () {});
       }
 
-      /* Show view count for all visitors and record non-owner visits. */
-      loadViewCount();
+      /* Record this page load (non-owners only). The footer "views" counter is
+         owner-only and shows the total of all guest visits — it's filled by
+         fetchLogins()/updateTotalVisits() when you're in owner mode. */
       recordPageView();
 
       /* Populate the outfit trip dropdown (owner form). */
