@@ -1159,13 +1159,13 @@
     }
     .trip-gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      /* Fixed ~240px squares — about 1cm bigger than before, and identical in
+         both the Adventures and Beautiful Nonsense galleries. Collapses to full
+         width on very narrow phones; centered so the narrower Nonsense wrapper
+         stays balanced. */
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 240px));
+      justify-content: center;
       gap: 8px; margin-bottom: 1.5rem;
-    }
-    /* Beautiful Nonsense sits in a narrower wrapper than Adventures, so bump its
-       thumbnails to fewer/larger columns to match the Adventures gallery size. */
-    #nonsense-grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
     .trip-gallery-img {
       width: 100%; aspect-ratio: 1; object-fit: cover;
