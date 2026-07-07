@@ -1452,15 +1452,18 @@
     .home-zone--poland { left: 0; }
     .home-zone--berlin { right: 0; }
     .home-zone:hover, .home-zone:focus-visible { color: var(--gold); outline: none; }
-    /* monument art (light-on-dark). Graphics span full height on each side.
-       Light mode inverts to warm brown ink (matching the My Homes heading and
-       buttons); dark mode keeps the original glowing-white art for the night sky. */
+    /* monument art. Each landmark ships as a pair: a baked brown-ink day
+       variant (duotone mapped from the site palette — no CSS filter, so it
+       renders identically in every browser and keeps full detail) and the
+       original glowing-white night art for dark mode. */
     .home-img {
       position: absolute; top: 0; height: 100%; width: auto; display: block;
       opacity: 0.96; pointer-events: none; user-select: none; -webkit-user-drag: none;
-      filter: brightness(0.38) sepia(1) saturate(3) hue-rotate(-8deg);
     }
     html.dark-mode .home-img { filter: brightness(1.04); }
+    .home-img--night { display: none; }
+    html.dark-mode .home-img--day { display: none; }
+    html.dark-mode .home-img--night { display: block; }
     .home-img--poland { left: -1%; transform: translateX(3cm); }
     .home-img--berlin { right: -1%; }
     /* Berlin desktop art is a single pre-composited scene (gate + tower
@@ -1477,7 +1480,8 @@
     }
     /* the capture was taken in dark mode — don't re-apply its brightness */
     html.dark-mode .home-img--berlin-scene { filter: none; }
-    .home-img--berlin-mobile { display: none; }
+    /* !important so the dark-mode night-swap rule can't reveal it on desktop */
+    .home-img--berlin-mobile { display: none !important; }
     /* album-name buttons — match the welcome-page CTA (DM Sans, solid pill) */
     .home-name {
       position: absolute;
@@ -1555,9 +1559,14 @@
       .home-img { position: relative; top: auto; height: 340px; }
       .home-img--poland { left: 0; transform: none; }
       .home-img--berlin { right: 0; }
-      /* stacked layout: back to the single untouched image */
-      .home-img--berlin-scene { display: none; }
-      .home-img--berlin-mobile { display: block; }
+      /* stacked layout: swap to the combined artwork, one variant per mode.
+         All !important so they outrank both the global day/night swap and
+         the desktop-only mobile hide (also !important); among !important
+         rules the more specific dark-mode pair wins in dark mode. */
+      .home-img--berlin-scene { display: none !important; }
+      .home-img--berlin-mobile.home-img--day { display: block !important; }
+      html.dark-mode .home-img--berlin-mobile.home-img--day { display: none !important; }
+      html.dark-mode .home-img--berlin-mobile.home-img--night { display: block !important; }
       .home-name {
         position: relative; left: auto !important; right: auto !important; top: auto !important;
         margin-top: 16px; white-space: normal; text-align: center;
@@ -3461,7 +3470,8 @@
       <div class="home-zone home-zone--poland" onclick="openTrip('poland')" role="button" tabindex="0"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrip('poland');}"
            aria-label="Open the Poland photo album">
-        <img class="home-img home-img--poland" src="home-poland.png" alt="Palace of Culture and poppies, Warsaw" loading="lazy">
+        <img class="home-img home-img--poland home-img--day" src="home-poland-day.png" alt="Palace of Culture and poppies, Warsaw" loading="lazy">
+        <img class="home-img home-img--poland home-img--night" src="home-poland.png" alt="" aria-hidden="true" loading="lazy">
         <span class="home-name home-name--poland" data-trip-title="poland">Poland through my lenses</span>
       </div>
 
@@ -3469,8 +3479,10 @@
       <div class="home-zone home-zone--berlin" onclick="openTrip('berlin')" role="button" tabindex="0"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTrip('berlin');}"
            aria-label="Open the Berlin photo album">
-        <img class="home-img home-img--berlin home-img--berlin-scene" src="home-berlin-scene.png" alt="Brandenburg Gate and TV Tower, Berlin" loading="lazy">
-        <img class="home-img home-img--berlin home-img--berlin-mobile" src="home-berlin.png" alt="" aria-hidden="true" loading="lazy">
+        <img class="home-img home-img--berlin home-img--berlin-scene home-img--day" src="home-berlin-scene-day.png" alt="Brandenburg Gate and TV Tower, Berlin" loading="lazy">
+        <img class="home-img home-img--berlin home-img--berlin-scene home-img--night" src="home-berlin-scene.png" alt="" aria-hidden="true" loading="lazy">
+        <img class="home-img home-img--berlin home-img--berlin-mobile home-img--day" src="home-berlin-day.png" alt="" aria-hidden="true" loading="lazy">
+        <img class="home-img home-img--berlin home-img--berlin-mobile home-img--night" src="home-berlin.png" alt="" aria-hidden="true" loading="lazy">
         <span class="home-name home-name--berlin" data-trip-title="berlin">Berlin day by day</span>
       </div>
 
