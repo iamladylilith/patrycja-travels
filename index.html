@@ -1886,6 +1886,14 @@
       transition: border-color 0.2s, color 0.2s;
     }
     .login-del:hover { border-color: #b04040; color: #b04040; }
+    /* Pinned owner login row: yours — greyed out so it stands apart from guests */
+    .login-row-owner td { color: var(--text-muted); opacity: 0.55; }
+    .login-owner-tag {
+      display: inline-block; font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); border: 1px solid var(--beige); border-radius: 999px;
+      padding: 4px 11px; white-space: nowrap;
+    }
     .logins-note { margin-top: 1.4rem; font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
 
     .owner-row {
@@ -5156,6 +5164,7 @@
     async function recordPageView() {
       if (sessionStorage.getItem('pv_done')) return;
       if (document.body.classList.contains('owner')) return;
+      if (localStorage.getItem('patriciaOwnerDevice')) return;   // you, via the Patricia gate login
       try {
         await sb.from('page_views').insert([{ created_at: new Date().toISOString() }]);
         sessionStorage.setItem('pv_done', '1');
@@ -5230,6 +5239,11 @@
     const GUEST_LOGINS = [
       { name: 'person1', pass: '123x' },   // ← your test login
     ];
+    /* Your own gate login, for when you're away from your home IP.
+       Built into the page (not in the database) — it always works,
+       never adds to any visit count, and shows pinned + greyed out
+       at the top of the Logins tab. */
+    const OWNER_LOGIN = { name: 'Patricia', pass: 'ngs64' };
     const OWNER_IPS = ['84.173.53.251'];  // owner's home IP → auto-skip the gate. Add more in the list if your IP changes.
 
     function grantAccess(remember) {
@@ -5250,6 +5264,17 @@
       const localOk = function () {
         return GUEST_LOGINS.some(function (u) { return u.name.toLowerCase() === name && u.pass === pass; });
       };
+      /* Owner's own login: unlock straight away and count nothing —
+         no verify_guest_login call (which adds a visit), no remembered
+         guest name (which re-counts on later loads), and this device
+         stops adding page views from now on. */
+      if (name === OWNER_LOGIN.name.toLowerCase() && pass === OWNER_LOGIN.pass) {
+        if (submitBtn) submitBtn.disabled = false;
+        localStorage.removeItem('patriciaGuestName');
+        localStorage.setItem('patriciaOwnerDevice', '1');
+        grantAccess(true);
+        return false;
+      }
       let ok = false;
       try {
         const res = await sb.rpc('verify_guest_login', { p_name: name, p_pass: pass });
@@ -5641,11 +5666,12 @@
       if (!document.body.classList.contains('owner')) return;
       const res = await sb.from('guest_logins').select('*').order('created_at', { ascending: true });
       if (res.error) {
+        renderLogins();   // still show your own pinned login
         showLoginsNote('Saved logins aren’t set up yet — run guest-logins-setup.sql in your Supabase dashboard. Until then, the gate uses the built-in person1 / 123x. (' + res.error.message + ')');
         return;
       }
       loginsCache = res.data || [];
-      showLoginsNote('Tip: “Visits” counts each time that person opens your site. Deleting a login blocks them immediately.');
+      showLoginsNote('Tip: “Visits” counts each time that person opens your site. Deleting a login blocks them immediately. The greyed-out pinned login is your own — it always works and never counts as a visit.');
       renderLogins();
     }
 
@@ -5667,16 +5693,31 @@
       const empty = document.getElementById('logins-empty');
       if (!tbody) return;
       tbody.innerHTML = '';
+      function cell(text, cls) {
+        const td = document.createElement('td');
+        td.textContent = text;
+        if (cls) td.className = cls;
+        return td;
+      }
+      /* Pinned first row: your own login. Lives in the page, not the
+         database — can't be removed here and never counts visits. */
+      const ownerTr = document.createElement('tr');
+      ownerTr.className = 'login-row-owner';
+      ownerTr.appendChild(cell('📌 ' + OWNER_LOGIN.name, ''));
+      ownerTr.appendChild(cell(OWNER_LOGIN.pass, ''));
+      ownerTr.appendChild(cell('—', 'num'));
+      ownerTr.appendChild(cell('—', ''));
+      const tdTag = document.createElement('td');
+      const tag = document.createElement('span');
+      tag.className = 'login-owner-tag';
+      tag.textContent = 'yours';
+      tdTag.appendChild(tag);
+      ownerTr.appendChild(tdTag);
+      tbody.appendChild(ownerTr);
       if (!loginsCache.length) { if (empty) empty.style.display = ''; return; }
       if (empty) empty.style.display = 'none';
       loginsCache.forEach(function (l) {
         const tr = document.createElement('tr');
-        function cell(text, cls) {
-          const td = document.createElement('td');
-          td.textContent = text;
-          if (cls) td.className = cls;
-          return td;
-        }
         tr.appendChild(cell(l.name, ''));
         tr.appendChild(cell(l.pass, ''));
         tr.appendChild(cell(String(l.visits || 0), 'num'));
