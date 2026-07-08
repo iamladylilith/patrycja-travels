@@ -1886,6 +1886,26 @@
       transition: border-color 0.2s, color 0.2s;
     }
     .login-del:hover { border-color: #b04040; color: #b04040; }
+    /* Privacy eye + blurred names/passwords (default when opening the tab).
+       Selector doubled with the button tag to out-rank .logins-add button. */
+    .logins-add button.logins-eye, .logins-eye {
+      margin-left: auto; display: inline-flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; padding: 0; border-radius: 50%; flex: none;
+      color: var(--text-muted); background: none; border: 1px solid var(--beige);
+      cursor: pointer; transition: border-color 0.2s, color 0.2s;
+    }
+    .logins-add button.logins-eye:hover, .logins-eye:hover {
+      background: none; border-color: var(--gold); color: var(--gold);
+    }
+    .logins-eye .eye-open { display: none; }
+    .logins-eye .eye-off { display: block; }
+    .logins-eye:not(.is-hidden) .eye-open { display: block; }
+    .logins-eye:not(.is-hidden) .eye-off { display: none; }
+    .logins-table .secret { display: inline-block; }
+    .logins-table.secrets-hidden .secret {
+      filter: blur(6px);
+      user-select: none; -webkit-user-select: none;
+    }
     /* Pinned owner login row: yours — greyed out so it stands apart from guests */
     .login-row-owner td { color: var(--text-muted); opacity: 0.55; }
     .login-owner-tag {
@@ -3448,9 +3468,24 @@
         <input id="new-login-name" type="text" placeholder="Name (e.g. kasia)" autocomplete="off" />
         <input id="new-login-pass" type="text" placeholder="Password" autocomplete="off" />
         <button id="login-add-btn" onclick="addLogin()">Add login</button>
+        <!-- Privacy eye: crossed out = names & passwords blurred (the default,
+             for opening this tab in public). Click to reveal. -->
+        <button id="logins-eye" class="logins-eye is-hidden" onclick="toggleLoginsPrivacy()"
+                aria-pressed="true" title="Names &amp; passwords are hidden — click to show">
+          <svg class="eye-open" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+          <svg class="eye-off" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+            <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+        </button>
       </div>
 
-      <table class="logins-table" id="logins-table">
+      <table class="logins-table secrets-hidden" id="logins-table">
         <thead>
           <tr><th>Name</th><th>Password</th><th>Visits</th><th>Last seen</th><th></th></tr>
         </thead>
@@ -5655,7 +5690,24 @@
     ════════════════════════════════════════ */
     let loginsCache = [];
 
-    function openLogins() { showPage('logins'); fetchLogins(); }
+    /* Café mode: names & passwords come up blurred every time the tab is
+       opened; the eye button (crossed = hidden) reveals them on click. */
+    let loginsHidden = true;
+    function applyLoginsPrivacy() {
+      const table = document.getElementById('logins-table');
+      const btn = document.getElementById('logins-eye');
+      if (table) table.classList.toggle('secrets-hidden', loginsHidden);
+      if (btn) {
+        btn.classList.toggle('is-hidden', loginsHidden);
+        btn.setAttribute('aria-pressed', String(loginsHidden));
+        btn.title = loginsHidden
+          ? 'Names & passwords are hidden — click to show'
+          : 'Click to hide names & passwords';
+      }
+    }
+    function toggleLoginsPrivacy() { loginsHidden = !loginsHidden; applyLoginsPrivacy(); }
+
+    function openLogins() { loginsHidden = true; applyLoginsPrivacy(); showPage('logins'); fetchLogins(); }
 
     function showLoginsNote(msg) {
       const note = document.getElementById('logins-note');
@@ -5693,9 +5745,16 @@
       const empty = document.getElementById('logins-empty');
       if (!tbody) return;
       tbody.innerHTML = '';
-      function cell(text, cls) {
+      function cell(text, cls, secret) {
         const td = document.createElement('td');
-        td.textContent = text;
+        if (secret) {   // wrapped in a span so the privacy eye can blur it
+          const s = document.createElement('span');
+          s.className = 'secret';
+          s.textContent = text;
+          td.appendChild(s);
+        } else {
+          td.textContent = text;
+        }
         if (cls) td.className = cls;
         return td;
       }
@@ -5703,8 +5762,10 @@
          database — can't be removed here and never counts visits. */
       const ownerTr = document.createElement('tr');
       ownerTr.className = 'login-row-owner';
-      ownerTr.appendChild(cell('📌 ' + OWNER_LOGIN.name, ''));
-      ownerTr.appendChild(cell(OWNER_LOGIN.pass, ''));
+      const ownerName = cell(OWNER_LOGIN.name, '', true);
+      ownerName.insertBefore(document.createTextNode('📌 '), ownerName.firstChild);
+      ownerTr.appendChild(ownerName);
+      ownerTr.appendChild(cell(OWNER_LOGIN.pass, '', true));
       ownerTr.appendChild(cell('—', 'num'));
       ownerTr.appendChild(cell('—', ''));
       const tdTag = document.createElement('td');
@@ -5718,8 +5779,8 @@
       if (empty) empty.style.display = 'none';
       loginsCache.forEach(function (l) {
         const tr = document.createElement('tr');
-        tr.appendChild(cell(l.name, ''));
-        tr.appendChild(cell(l.pass, ''));
+        tr.appendChild(cell(l.name, '', true));
+        tr.appendChild(cell(l.pass, '', true));
         tr.appendChild(cell(String(l.visits || 0), 'num'));
         tr.appendChild(cell(l.last_seen ? new Date(l.last_seen).toLocaleString() : '—', ''));
         const tdDel = document.createElement('td');
