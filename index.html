@@ -2321,54 +2321,71 @@
     ═══════════════════════════════════════ */
     .passport { max-width: 860px; margin: 6px auto 36px; padding: 16px 14px 0; }
 
-    /* the passport card (landscape) */
+    /* the ornate passport card (landscape — styled like the cover / bio-data page) */
     .pp-pass {
       position: relative;
       width: min(760px, 96vw);
       margin: 0 auto;
-      padding: 20px 26px 16px;
+      padding: clamp(22px, 3.5vw, 36px);
       background:
-        radial-gradient(130% 120% at 50% 0%, rgba(255,250,238,0.5), transparent 62%),
+        radial-gradient(120% 130% at 50% 0%, rgba(255,250,238,0.6), transparent 60%),
         repeating-linear-gradient(0deg, rgba(122,80,48,0.015) 0 2px, transparent 2px 6px),
         var(--parchment);
       color: var(--text);
-      border: 1px solid var(--beige);
-      border-radius: 10px;
-      box-shadow: inset 0 0 0 1px rgba(200,144,60,0.18), 0 18px 40px -18px rgba(0,0,0,0.4);
+      border-radius: 14px;
+      box-shadow: 0 24px 50px -22px rgba(0,0,0,0.45);
     }
 
-    /* top strip: emblem + country | doc number */
-    .pp-pass-top { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(200,144,60,0.45); padding-bottom: 11px; margin-bottom: 16px; }
-    .pp-emblem { color: var(--gold); font-size: 19px; }
-    .pp-country { font-family: 'Playfair Display', serif; font-size: clamp(17px, 2.6vw, 23px); color: var(--dark-brown); letter-spacing: 0.5px; }
-    .pp-docno { margin-left: auto; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--brown); white-space: nowrap; display: flex; flex-direction: column; gap: 1px; text-align: right; }
+    /* double ornamental gold frame */
+    .pp-frame { position: absolute; inset: 13px; border: 1px solid rgba(200,144,60,0.55); border-radius: 9px; pointer-events: none; }
+    .pp-frame::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(200,144,60,0.28); border-radius: 6px; }
 
-    /* body: photo | fields | ghost + xoxo */
-    .pp-pass-body { display: flex; gap: clamp(14px, 3vw, 28px); align-items: flex-start; }
-    .pp-pass-left { flex: 0 0 auto; width: 120px; display: flex; flex-direction: column; gap: 8px; }
-    .pp-pass-label { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--brown); }
-    .pp-photo { position: relative; width: 120px; height: 150px; border: 1px solid var(--gold); padding: 4px; background: #fbf8f1; box-shadow: 0 5px 14px rgba(0,0,0,0.20); }
+    /* scattered corner / edge ornaments */
+    .pp-orn { position: absolute; color: var(--gold); line-height: 1; pointer-events: none; user-select: none; }
+    .pp-orn.corner { font-size: 15px; opacity: 0.85; }
+    .pp-orn.tl { top: 20px; left: 22px; }
+    .pp-orn.tr { top: 20px; right: 22px; }
+    .pp-orn.bl { bottom: 20px; left: 22px; }
+    .pp-orn.br { bottom: 20px; right: 22px; }
+    .pp-orn.top    { top: 13px; left: 50%; transform: translateX(-50%); font-size: 12px; letter-spacing: 5px; }
+    .pp-orn.bottom { bottom: 13px; left: 50%; transform: translateX(-50%); font-size: 14px; }
+    .pp-orn.left   { top: 50%; left: 15px; transform: translateY(-50%); font-size: 17px; opacity: 0.8; }
+    .pp-orn.right  { top: 50%; right: 15px; transform: translateY(-50%); font-size: 17px; opacity: 0.8; }
+
+    /* content laid over the frame */
+    .pp-inner { position: relative; display: flex; gap: clamp(22px, 4vw, 48px); align-items: stretch; }
+
+    /* ── left: branding + photo ── */
+    .pp-brand { flex: 0 0 37%; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 4px 4px 2px; }
+    .pp-brand-kicker { font-family: 'Playfair Display', serif; font-size: clamp(13px, 1.8vw, 16px); letter-spacing: 0.34em; color: var(--brown); text-transform: uppercase; }
+    .pp-brand-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(30px, 5vw, 46px); letter-spacing: 0.05em; color: var(--dark-brown); line-height: 1; margin-top: 5px; text-transform: uppercase; }
+    .pp-brand-rule { display: flex; align-items: center; justify-content: center; gap: 9px; color: var(--gold); font-size: 9px; margin: 13px 0 11px; }
+    .pp-brand-rule::before, .pp-brand-rule::after { content: ''; width: 36px; height: 1px; background: rgba(200,144,60,0.5); }
+    .pp-brand-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(14px, 2vw, 17px); color: var(--brown); margin-bottom: 22px; }
+
+    /* framed photo with a faint compass ring behind it */
+    .pp-photo-wrap { position: relative; margin-top: auto; }
+    .pp-photo-ring { position: absolute; inset: -20px; border: 1px dashed rgba(200,144,60,0.4); border-radius: 50%; pointer-events: none; }
+    .pp-photo-ring::before { content: ''; position: absolute; inset: 10px; border: 1px solid rgba(200,144,60,0.18); border-radius: 50%; }
+    .pp-photo { position: relative; width: clamp(122px, 20vw, 152px); height: clamp(152px, 25vw, 190px); border: 1px solid var(--gold); padding: 5px; background: #fbf8f1; box-shadow: 0 6px 16px rgba(0,0,0,0.18); }
     .pp-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 58% 30%; display: block; }
-    .pp-photo::after { content: ""; position: absolute; inset: 4px; background: linear-gradient(125deg, rgba(255,255,255,0.30), transparent 42%, transparent 70%, rgba(255,255,255,0.12)); pointer-events: none; }
-    .pp-type { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark-brown); display: flex; flex-direction: column; gap: 1px; }
+    .pp-photo::after { content: ""; position: absolute; inset: 5px; background: linear-gradient(125deg, rgba(255,255,255,0.28), transparent 42%, transparent 72%, rgba(255,255,255,0.12)); pointer-events: none; }
 
-    /* fields grid — short ones share a row, long ones span full width */
-    .pp-fields { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 11px 22px; align-content: start; }
-    .pp-field { display: flex; flex-direction: column; gap: 2px; }
-    .pp-field:nth-child(n+3) { grid-column: 1 / -1; }
-    .pp-key { font-family: 'DM Sans', sans-serif; font-size: 8.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-muted); }
-    .pp-val { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; color: var(--dark-brown); line-height: 1.25; }
+    /* vertical divider between the two halves */
+    .pp-divide { flex: 0 0 1px; align-self: stretch; background: linear-gradient(180deg, transparent, rgba(200,144,60,0.5) 12%, rgba(200,144,60,0.5) 88%, transparent); }
 
-    /* right column — faded ghost photo + handwritten signature */
-    .pp-pass-right { flex: 0 0 auto; width: 116px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .pp-ghost { width: 80px; height: 100px; border: none; padding: 0; background: none; box-shadow: none; opacity: 0.22; }
-    .pp-ghost::after { display: none; }
-    .pp-ghost img { filter: grayscale(1) contrast(1.1); object-position: 58% 30%; }
-    .pp-sig-label { font-family: 'DM Sans', sans-serif; font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 8px; }
-    .pp-xoxo { font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 34px; color: var(--dark-brown); line-height: 1; transform: rotate(-4deg); }
+    /* ── right: bio-data fields ── */
+    .pp-data { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: clamp(12px, 1.9vw, 17px); padding: 4px 0; }
+    .pp-field { display: flex; flex-direction: column; gap: 5px; }
+    .pp-key { font-family: 'DM Sans', sans-serif; font-size: 9.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+    .pp-val { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: clamp(14px, 1.9vw, 16px); color: var(--dark-brown); line-height: 1.3; border-bottom: 1px dotted rgba(156,122,90,0.5); padding-bottom: 6px; }
 
-    /* machine-readable zone */
-    .pp-mrz { margin-top: 16px; border-top: 1px dashed rgba(156,122,90,0.4); padding-top: 10px; font-family: 'Courier New', monospace; font-size: clamp(8px, 1.5vw, 10.5px); letter-spacing: 1.5px; color: var(--text-muted); opacity: 0.55; line-height: 1.7; white-space: nowrap; overflow: hidden; }
+    /* ── travel stats band ── */
+    .pp-stats { position: relative; margin-top: clamp(20px, 3vw, 28px); padding-top: clamp(16px, 2.5vw, 20px); border-top: 1px dashed rgba(156,122,90,0.4); display: flex; align-items: center; justify-content: center; gap: clamp(16px, 4vw, 48px); flex-wrap: wrap; }
+    .pp-stat { text-align: center; }
+    .pp-stat-num { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(24px, 4vw, 34px); color: var(--dark-brown); line-height: 1; }
+    .pp-stat-label { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-top: 8px; }
+    .pp-stat-sep { color: rgba(200,144,60,0.55); font-size: 11px; }
 
     /* About Me — plain prose, matching the site body (.w-desc) */
     /* widen beyond the 900px .sub-wrap and centre on the page */
@@ -2380,15 +2397,14 @@
 
     /* responsive — stack the passport card on phones */
     @media (max-width: 680px) {
-      .pp-pass { padding: 18px 16px 14px; }
-      .pp-pass-body { flex-wrap: wrap; }
-      .pp-pass-left { flex-direction: row; align-items: center; width: 100%; gap: 14px; }
-      .pp-fields { grid-template-columns: 1fr; width: 100%; }
-      .pp-field:nth-child(n+3) { grid-column: auto; }
-      .pp-pass-right { width: 100%; flex-direction: row; justify-content: flex-end; align-items: center; gap: 12px; border-top: 1px dashed rgba(200,144,60,0.3); padding-top: 10px; }
-      .pp-sig-label { margin-top: 0; }
-      .pp-country { font-size: 18px; }
-      .pp-docno { font-size: 10px; }
+      .pp-pass { padding: 30px 20px 22px; }
+      .pp-inner { flex-direction: column; align-items: center; gap: 26px; }
+      .pp-brand { flex: none; width: 100%; }
+      .pp-photo-wrap { margin-top: 20px; }
+      .pp-divide { flex: none; width: 60%; height: 1px; align-self: center; background: linear-gradient(90deg, transparent, rgba(200,144,60,0.5) 12%, rgba(200,144,60,0.5) 88%, transparent); }
+      .pp-data { width: 100%; }
+      .pp-stats { gap: 14px 22px; }
+      .pp-orn.left, .pp-orn.right { display: none; }
     }
 
   </style>
@@ -2603,25 +2619,39 @@
       </div>
 
       <div class="passport">
-        <!-- ── Single horizontal passport bio-data page ── -->
+        <!-- ── Horizontal passport bio-data page (ornate cover style) ── -->
         <div class="pp-pass">
-          <div class="pp-pass-top">
-            <span class="pp-emblem" aria-hidden="true">✦</span>
-            <span class="pp-country" data-i18n="pp-country">Republic of Wonderland</span>
-            <span class="pp-docno"><span class="pp-key" data-i18n="pp-docno">Passport No.</span> XD6967</span>
-          </div>
+          <div class="pp-frame" aria-hidden="true"></div>
 
-          <div class="pp-pass-body">
-            <div class="pp-pass-left">
-              <span class="pp-pass-label" data-i18n="pp-passport">Passport · Passeport</span>
-              <div class="pp-photo">
+          <!-- decorative ornaments (corners, edges, top & bottom) -->
+          <span class="pp-orn corner tl" aria-hidden="true">✷</span>
+          <span class="pp-orn corner tr" aria-hidden="true">✷</span>
+          <span class="pp-orn corner bl" aria-hidden="true">✷</span>
+          <span class="pp-orn corner br" aria-hidden="true">✷</span>
+          <span class="pp-orn top" aria-hidden="true">✦&nbsp;&nbsp;☾&nbsp;&nbsp;✦</span>
+          <span class="pp-orn left" aria-hidden="true">☾</span>
+          <span class="pp-orn right" aria-hidden="true">☽</span>
+          <span class="pp-orn bottom" aria-hidden="true">⚓</span>
+
+          <div class="pp-inner">
+            <!-- left: branding + photo -->
+            <div class="pp-brand">
+              <span class="pp-brand-kicker" data-i18n="pp-brand-kicker">Digital</span>
+              <span class="pp-brand-title" data-i18n="pp-brand-title">Passport</span>
+              <span class="pp-brand-rule" aria-hidden="true">✦</span>
+              <span class="pp-brand-sub" data-i18n="pp-brand-sub">a lifetime of curiosity</span>
+              <div class="pp-photo-wrap">
+                <span class="pp-photo-ring" aria-hidden="true"></span>
                 <!-- Swap src / object-position to reframe the crop -->
-                <img src="passport.jpg" alt="Patrycja" />
+                <div class="pp-photo"><img src="passport.jpg" alt="Patrycja" /></div>
               </div>
-              <span class="pp-type"><span class="pp-key" data-i18n="pp-type">Type</span> P</span>
             </div>
 
-            <div class="pp-fields">
+            <div class="pp-divide" aria-hidden="true"></div>
+
+            <!-- right: bio-data fields -->
+            <div class="pp-data">
+              <div class="pp-field"><span class="pp-key" data-i18n="pp-docno">Traveller No.</span><span class="pp-val">000001</span></div>
               <div class="pp-field"><span class="pp-key" data-i18n="pp-f-name">Name / Nom</span><span class="pp-val">Patrycja</span></div>
               <div class="pp-field"><span class="pp-key" data-i18n="pp-f-eyes">Eyes / Yeux</span><span class="pp-val" data-i18n="pp-v-eyes">Blue</span></div>
               <div class="pp-field"><span class="pp-key" data-i18n="pp-f-cosmic">Cosmic placement</span><span class="pp-val" data-i18n="pp-v-cosmic">Virgo sun / Libra moon / Aries rising</span></div>
@@ -2629,15 +2659,16 @@
               <div class="pp-field"><span class="pp-key" data-i18n="pp-f-marks">Identification marks</span><span class="pp-val" data-i18n="pp-v-marks">More tattoos than my mom is aware of</span></div>
               <div class="pp-field"><span class="pp-key" data-i18n="pp-f-validity">Validity</span><span class="pp-val" data-i18n="pp-v-validity">Until further self-discovery</span></div>
             </div>
-
-            <div class="pp-pass-right">
-              <div class="pp-photo pp-ghost" aria-hidden="true"><img src="passport.jpg" alt="" /></div>
-              <span class="pp-sig-label" data-i18n="pp-sig">Holder’s signature</span>
-              <span class="pp-xoxo">xoxo</span>
-            </div>
           </div>
 
-          <div class="pp-mrz">P&lt;WONPATRYCJA&lt;&lt;WANDERER&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br>XD69674WON&lt;&lt;VIRGOSUN&lt;LIBRAMOON&lt;ARIESRISING&lt;3&lt;&lt;CREATESEVERYTHING&lt;&lt;READS3ATONCE&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+          <!-- travel stats band -->
+          <div class="pp-stats">
+            <div class="pp-stat"><div class="pp-stat-num">16</div><div class="pp-stat-label" data-i18n="pp-s-countries">Visited countries</div></div>
+            <span class="pp-stat-sep" aria-hidden="true">✦</span>
+            <div class="pp-stat"><div class="pp-stat-num">55</div><div class="pp-stat-label" data-i18n="pp-s-flights">Flights taken</div></div>
+            <span class="pp-stat-sep" aria-hidden="true">✦</span>
+            <div class="pp-stat"><div class="pp-stat-num">≈117,000</div><div class="pp-stat-label" data-i18n="pp-s-km">Km travelled</div></div>
+          </div>
         </div>
 
         <!-- ── About Me — plain prose, beneath the passport ── -->
@@ -3067,6 +3098,12 @@
           <h3 class="pack-card-title" data-i18n="pack-winter-t">Winter Packing List</h3>
           <p class="pack-card-desc" data-i18n="pack-winter-d">Layers, boots, and staying cosy wherever the cold takes you.</p>
           <a class="pack-download" href="ready-set-pack-winter.pdf" download data-i18n="pack-dl">Download PDF ↓</a>
+        </div>
+        <div class="pack-card">
+          <div class="pack-card-icon"><img src="pack-flight.png" alt="" /></div>
+          <h3 class="pack-card-title" data-i18n="pack-fly-t">Before You Fly</h3>
+          <p class="pack-card-desc" data-i18n="pack-fly-d">The leaving-home checklist — for everything a suitcase can't hold.</p>
+          <a class="pack-download" href="ready-set-pack-before-you-fly.pdf" download data-i18n="pack-dl">Download PDF ↓</a>
         </div>
       </div>
     </div>
@@ -3655,7 +3692,13 @@
     const TRANSLATIONS = {
       en: {
         'pp-country': 'Republic of Wonderland',
-        'pp-docno': 'Passport No.',
+        'pp-brand-kicker': 'Digital',
+        'pp-brand-title': 'Passport',
+        'pp-brand-sub': 'a lifetime of curiosity',
+        'pp-s-countries': 'Visited countries',
+        'pp-s-flights': 'Flights taken',
+        'pp-s-km': 'Km travelled',
+        'pp-docno': 'Traveller No.',
         'pp-passport': 'Passport · Passeport',
         'pp-type': 'Type',
         'pp-f-name': 'Name / Nom',
@@ -3728,6 +3771,7 @@
         'pack-eyebrow': '&#10022; &nbsp; The Checklist &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Print it, tick it, pack it &mdash; and stop forgetting your charger.',
         'pack-summer-t': 'Summer Packing List', 'pack-summer-d': 'Sun, sea, and everything you need for warm-weather trips.',
         'pack-winter-t': 'Winter Packing List', 'pack-winter-d': 'Layers, boots, and staying cosy wherever the cold takes you.',
+        'pack-fly-t': 'Before You Fly', 'pack-fly-d': 'The leaving-home checklist &mdash; for everything a suitcase can\'t hold.',
         'pack-dl': 'Download PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; The Little Extras &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Pretty pictures that have nothing to do with travel.',
         'nonsense-intro': 'Not everything I point a camera at is a place. Sometimes it\'s a cat mid-nap, the light landing on a coffee cup, or an object too pretty to scroll past. This is the beautiful nonsense &mdash; no theme, no itinerary, just the things that caught my eye. (Yes, mostly cats.)',
@@ -3768,7 +3812,13 @@
       },
       pl: {
         'pp-country': 'Republika Krainy Czarów',
-        'pp-docno': 'Nr paszportu',
+        'pp-brand-kicker': 'Cyfrowy',
+        'pp-brand-title': 'Paszport',
+        'pp-brand-sub': 'całe życie ciekawości',
+        'pp-s-countries': 'Odwiedzone kraje',
+        'pp-s-flights': 'Odbyte loty',
+        'pp-s-km': 'Przebyte km',
+        'pp-docno': 'Nr podróżnika',
         'pp-passport': 'Paszport · Passeport',
         'pp-type': 'Typ',
         'pp-f-name': 'Imię / Nom',
@@ -3841,6 +3891,7 @@
         'pack-eyebrow': '&#10022; &nbsp; Lista &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Wydrukuj, odhacz, spakuj &mdash; i przestań zapominać ładowarki.',
         'pack-summer-t': 'Letnia lista pakowania', 'pack-summer-d': 'Słońce, morze i wszystko, czego potrzebujesz na ciepłe wyjazdy.',
         'pack-winter-t': 'Zimowa lista pakowania', 'pack-winter-d': 'Warstwy, buty i ciepło, dokądkolwiek zabierze cię mróz.',
+        'pack-fly-t': 'Zanim wylecisz', 'pack-fly-d': 'Lista przed wyjściem z domu &mdash; wszystko, czego nie pomieści walizka.',
         'pack-dl': 'Pobierz PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Drobiazgi &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Ładne zdjęcia, które nie mają nic wspólnego z podróżami.',
         'nonsense-intro': 'Nie wszystko, co fotografuję, to jakieś miejsce. Czasem to kot w trakcie drzemki, światło padające na filiżankę kawy albo przedmiot zbyt ładny, żeby go przewinąć. To są te piękne bzdury &mdash; bez tematu, bez planu, po prostu rzeczy, które przykuły mój wzrok. (Tak, głównie koty.)',
@@ -3880,7 +3931,13 @@
       },
       fr: {
         'pp-country': 'République du Pays des Merveilles',
-        'pp-docno': 'N° de passeport',
+        'pp-brand-kicker': 'Numérique',
+        'pp-brand-title': 'Passeport',
+        'pp-brand-sub': 'une vie de curiosité',
+        'pp-s-countries': 'Pays visités',
+        'pp-s-flights': 'Vols effectués',
+        'pp-s-km': 'Km parcourus',
+        'pp-docno': 'N° du voyageur',
         'pp-passport': 'Passeport · Passport',
         'pp-type': 'Type',
         'pp-f-name': 'Nom / Name',
@@ -3953,6 +4010,7 @@
         'pack-eyebrow': '&#10022; &nbsp; La Liste &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Imprimez, cochez, préparez &mdash; et n\'oubliez plus votre chargeur.',
         'pack-summer-t': 'Liste de bagages d\'été', 'pack-summer-d': 'Le soleil, la mer et tout ce qu\'il faut pour les voyages au chaud.',
         'pack-winter-t': 'Liste de bagages d\'hiver', 'pack-winter-d': 'Des couches, des bottes et du confort où que le froid vous emmène.',
+        'pack-fly-t': 'Avant de décoller', 'pack-fly-d': 'La check-list avant de quitter la maison &mdash; pour tout ce qu\'une valise ne contient pas.',
         'pack-dl': 'Télécharger le PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Les Petits Riens &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'De jolies photos qui n\'ont rien à voir avec les voyages.',
         'nonsense-intro': 'Je ne photographie pas que des lieux. Parfois c\'est un chat en pleine sieste, la lumière sur une tasse de café, ou un objet trop joli pour passer son chemin. Voilà les belles bêtises &mdash; sans thème, sans itinéraire, juste ce qui a attiré mon regard. (Oui, surtout des chats.)',
@@ -3992,7 +4050,13 @@
       },
       de: {
         'pp-country': 'Republik Wunderland',
-        'pp-docno': 'Pass-Nr.',
+        'pp-brand-kicker': 'Digitaler',
+        'pp-brand-title': 'Reisepass',
+        'pp-brand-sub': 'ein Leben voller Neugier',
+        'pp-s-countries': 'Besuchte Länder',
+        'pp-s-flights': 'Absolvierte Flüge',
+        'pp-s-km': 'Zurückgelegte km',
+        'pp-docno': 'Reisende-Nr.',
         'pp-passport': 'Reisepass · Passeport',
         'pp-type': 'Typ',
         'pp-f-name': 'Name / Nom',
@@ -4065,6 +4129,7 @@
         'pack-eyebrow': '&#10022; &nbsp; Die Checkliste &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Ausdrucken, abhaken, packen &mdash; und nie wieder das Ladegerät vergessen.',
         'pack-summer-t': 'Sommer-Packliste', 'pack-summer-d': 'Sonne, Meer und alles für warme Reisen.',
         'pack-winter-t': 'Winter-Packliste', 'pack-winter-d': 'Schichten, Stiefel und wohlige Wärme, wohin die Kälte dich auch bringt.',
+        'pack-fly-t': 'Bevor du fliegst', 'pack-fly-d': 'Die Checkliste fürs Zuhause &mdash; für alles, was nicht in den Koffer passt.',
         'pack-dl': 'PDF herunterladen &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Kleine Schönheiten &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Schöne Bilder, die nichts mit Reisen zu tun haben.',
         'nonsense-intro': 'Nicht alles, was ich fotografiere, ist ein Ort. Manchmal ist es eine Katze beim Nickerchen, das Licht auf einer Kaffeetasse oder ein Gegenstand, der zu hübsch zum Weiterscrollen ist. Das ist der schöne Unsinn &mdash; kein Thema, kein Reiseplan, einfach die Dinge, die mir ins Auge fielen. (Ja, meistens Katzen.)',
@@ -4104,7 +4169,13 @@
       },
       it: {
         'pp-country': 'Repubblica del Paese delle Meraviglie',
-        'pp-docno': 'N. passaporto',
+        'pp-brand-kicker': 'Digitale',
+        'pp-brand-title': 'Passaporto',
+        'pp-brand-sub': 'una vita di curiosità',
+        'pp-s-countries': 'Paesi visitati',
+        'pp-s-flights': 'Voli effettuati',
+        'pp-s-km': 'Km percorsi',
+        'pp-docno': 'N. viaggiatore',
         'pp-passport': 'Passaporto · Passeport',
         'pp-type': 'Tipo',
         'pp-f-name': 'Nome / Nom',
@@ -4177,6 +4248,7 @@
         'pack-eyebrow': '&#10022; &nbsp; La Lista &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Stampa, spunta, prepara &mdash; e smetti di dimenticare il caricabatterie.',
         'pack-summer-t': 'Lista bagagli estiva', 'pack-summer-d': 'Sole, mare e tutto il necessario per i viaggi al caldo.',
         'pack-winter-t': 'Lista bagagli invernale', 'pack-winter-d': 'Strati, stivali e calore ovunque ti porti il freddo.',
+        'pack-fly-t': 'Prima di volare', 'pack-fly-d': 'La checklist prima di uscire di casa &mdash; per tutto ciò che non entra in valigia.',
         'pack-dl': 'Scarica il PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Le Piccole Cose &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Belle foto che non hanno nulla a che fare con i viaggi.',
         'nonsense-intro': 'Non tutto ciò che fotografo è un luogo. A volte è un gatto durante il pisolino, la luce su una tazza di caffè o un oggetto troppo bello per scorrere oltre. Queste sono le belle sciocchezze &mdash; nessun tema, nessun itinerario, solo le cose che hanno catturato il mio sguardo. (Sì, soprattutto gatti.)',
@@ -4216,7 +4288,13 @@
       },
       es: {
         'pp-country': 'República del País de las Maravillas',
-        'pp-docno': 'N.º de pasaporte',
+        'pp-brand-kicker': 'Digital',
+        'pp-brand-title': 'Pasaporte',
+        'pp-brand-sub': 'una vida de curiosidad',
+        'pp-s-countries': 'Países visitados',
+        'pp-s-flights': 'Vuelos realizados',
+        'pp-s-km': 'Km recorridos',
+        'pp-docno': 'N.º de viajero',
         'pp-passport': 'Pasaporte · Passeport',
         'pp-type': 'Tipo',
         'pp-f-name': 'Nombre / Nom',
@@ -4289,6 +4367,7 @@
         'pack-eyebrow': '&#10022; &nbsp; La Lista &nbsp; &#10022;', 'pack-title': 'Ready, Set, Pack', 'pack-sub': 'Imprime, marca, haz la maleta &mdash; y deja de olvidar el cargador.',
         'pack-summer-t': 'Lista de equipaje de verano', 'pack-summer-d': 'Sol, mar y todo lo necesario para los viajes de calor.',
         'pack-winter-t': 'Lista de equipaje de invierno', 'pack-winter-d': 'Capas, botas y calorcito allá donde te lleve el frío.',
+        'pack-fly-t': 'Antes de volar', 'pack-fly-d': 'La lista antes de salir de casa &mdash; para todo lo que no cabe en la maleta.',
         'pack-dl': 'Descargar PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Las Pequeñas Cosas &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Fotos bonitas que no tienen nada que ver con viajar.',
         'nonsense-intro': 'No todo lo que fotografío es un lugar. A veces es un gato a media siesta, la luz sobre una taza de café o un objeto demasiado bonito para pasar de largo. Esto es la bella tontería &mdash; sin tema, sin itinerario, solo las cosas que me llamaron la atención. (Sí, sobre todo gatos.)',
