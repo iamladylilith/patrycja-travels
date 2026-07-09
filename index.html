@@ -1174,6 +1174,29 @@
       transition: opacity 0.2s, transform 0.2s;
     }
     .trip-gallery-img:hover { opacity: 0.86; transform: scale(1.02); }
+    /* Smooth photo loading: each frame shows a soft shimmer until the image
+       paints, so galleries never flash a blank box. A broken image falls back
+       to a calm tile (with its caption) instead of a torn-icon. */
+    .trip-gallery-img, .outfit-photo {
+      background-image: linear-gradient(100deg,
+        rgba(180,150,110,0.08) 30%, rgba(180,150,110,0.20) 50%, rgba(180,150,110,0.08) 70%);
+      background-size: 200% 100%;
+      animation: photoShimmer 1.3s ease-in-out infinite;
+    }
+    .trip-gallery-img.is-loaded, .outfit-photo.is-loaded {
+      animation: none; background-image: none;
+    }
+    .trip-gallery-img.img-error, .outfit-photo.img-error {
+      animation: none;
+      background-image: none;
+      background-color: var(--beige);
+      font-size: 0.7rem; color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center; text-align: center;
+    }
+    @keyframes photoShimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
     .trip-gallery-empty {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic; color: var(--text-muted); font-size: 0.95rem;
@@ -2363,29 +2386,23 @@
     .pp-brand-rule::before, .pp-brand-rule::after { content: ''; width: 36px; height: 1px; background: rgba(200,144,60,0.5); }
     .pp-brand-sub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(14px, 2vw, 17px); color: var(--brown); margin-bottom: 22px; }
 
-    /* framed photo with a faint compass ring behind it */
-    .pp-photo-wrap { position: relative; margin-top: auto; }
-    .pp-photo-ring { position: absolute; inset: -20px; border: 1px dashed rgba(200,144,60,0.4); border-radius: 50%; pointer-events: none; }
-    .pp-photo-ring::before { content: ''; position: absolute; inset: 10px; border: 1px solid rgba(200,144,60,0.18); border-radius: 50%; }
-    .pp-photo { position: relative; width: clamp(122px, 20vw, 152px); height: clamp(152px, 25vw, 190px); border: 1px solid var(--gold); padding: 5px; background: #fbf8f1; box-shadow: 0 6px 16px rgba(0,0,0,0.18); }
-    .pp-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 58% 30%; display: block; }
-    .pp-photo::after { content: ""; position: absolute; inset: 5px; background: linear-gradient(125deg, rgba(255,255,255,0.28), transparent 42%, transparent 72%, rgba(255,255,255,0.12)); pointer-events: none; }
+    /* oval-framed photo embedded inside the dashed compass ring */
+    .pp-photo-wrap { position: relative; margin-top: auto; display: flex; align-items: center; justify-content: center; padding: 15px; }
+    .pp-photo-ring { position: absolute; inset: 0; border: 1px dashed rgba(200,144,60,0.5); border-radius: 50%; pointer-events: none; }
+    .pp-photo-ring::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(200,144,60,0.22); border-radius: 50%; }
+    .pp-photo { position: relative; width: clamp(128px, 21vw, 158px); height: clamp(160px, 26vw, 200px); border-radius: 50%; overflow: hidden; padding: 0; border: 2px solid var(--gold); background: #fbf8f1; box-shadow: 0 8px 20px rgba(0,0,0,0.22); }
+    .pp-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 56% 26%; display: block; border-radius: 50%; }
+    .pp-photo::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(125deg, rgba(255,255,255,0.22), transparent 45%, transparent 74%, rgba(255,255,255,0.10)); pointer-events: none; }
 
     /* vertical divider between the two halves */
     .pp-divide { flex: 0 0 1px; align-self: stretch; background: linear-gradient(180deg, transparent, rgba(200,144,60,0.5) 12%, rgba(200,144,60,0.5) 88%, transparent); }
 
-    /* ── right: bio-data fields ── */
-    .pp-data { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: clamp(12px, 1.9vw, 17px); padding: 4px 0; }
-    .pp-field { display: flex; flex-direction: column; gap: 5px; }
+    /* ── right: bio-data fields (2-column grid; long fields span full width) ── */
+    .pp-data { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(11px, 1.6vw, 15px) clamp(16px, 2.5vw, 26px); align-content: center; padding: 4px 0; }
+    .pp-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+    .pp-field.wide { grid-column: 1 / -1; }
     .pp-key { font-family: 'DM Sans', sans-serif; font-size: 9.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
     .pp-val { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: clamp(14px, 1.9vw, 16px); color: var(--dark-brown); line-height: 1.3; border-bottom: 1px dotted rgba(156,122,90,0.5); padding-bottom: 6px; }
-
-    /* ── travel stats band ── */
-    .pp-stats { position: relative; margin-top: clamp(20px, 3vw, 28px); padding-top: clamp(16px, 2.5vw, 20px); border-top: 1px dashed rgba(156,122,90,0.4); display: flex; align-items: center; justify-content: center; gap: clamp(16px, 4vw, 48px); flex-wrap: wrap; }
-    .pp-stat { text-align: center; }
-    .pp-stat-num { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(24px, 4vw, 34px); color: var(--dark-brown); line-height: 1; }
-    .pp-stat-label { font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-top: 8px; }
-    .pp-stat-sep { color: rgba(200,144,60,0.55); font-size: 11px; }
 
     /* About Me — plain prose, matching the site body (.w-desc) */
     /* widen beyond the 900px .sub-wrap and centre on the page */
@@ -2402,8 +2419,8 @@
       .pp-brand { flex: none; width: 100%; }
       .pp-photo-wrap { margin-top: 20px; }
       .pp-divide { flex: none; width: 60%; height: 1px; align-self: center; background: linear-gradient(90deg, transparent, rgba(200,144,60,0.5) 12%, rgba(200,144,60,0.5) 88%, transparent); }
-      .pp-data { width: 100%; }
-      .pp-stats { gap: 14px 22px; }
+      .pp-data { width: 100%; grid-template-columns: 1fr; }
+      .pp-field.wide { grid-column: auto; }
       .pp-orn.left, .pp-orn.right { display: none; }
     }
 
@@ -2654,20 +2671,14 @@
               <div class="pp-field"><span class="pp-key" data-i18n="pp-docno">Traveller No.</span><span class="pp-val">000001</span></div>
               <div class="pp-field"><span class="pp-key" data-i18n="pp-f-name">Name / Nom</span><span class="pp-val">Patrycja</span></div>
               <div class="pp-field"><span class="pp-key" data-i18n="pp-f-eyes">Eyes / Yeux</span><span class="pp-val" data-i18n="pp-v-eyes">Blue</span></div>
-              <div class="pp-field"><span class="pp-key" data-i18n="pp-f-cosmic">Cosmic placement</span><span class="pp-val" data-i18n="pp-v-cosmic">Virgo sun / Libra moon / Aries rising</span></div>
-              <div class="pp-field"><span class="pp-key" data-i18n="pp-f-residency">Residency status</span><span class="pp-val" data-i18n="pp-v-residency">Between flights &amp; feelings</span></div>
-              <div class="pp-field"><span class="pp-key" data-i18n="pp-f-marks">Identification marks</span><span class="pp-val" data-i18n="pp-v-marks">More tattoos than my mom is aware of</span></div>
-              <div class="pp-field"><span class="pp-key" data-i18n="pp-f-validity">Validity</span><span class="pp-val" data-i18n="pp-v-validity">Until further self-discovery</span></div>
+              <div class="pp-field"><span class="pp-key" data-i18n="pp-s-countries">Visited countries</span><span class="pp-val">16</span></div>
+              <div class="pp-field"><span class="pp-key" data-i18n="pp-s-flights">Flights taken</span><span class="pp-val">55</span></div>
+              <div class="pp-field"><span class="pp-key" data-i18n="pp-s-km">Km travelled</span><span class="pp-val">≈117,000</span></div>
+              <div class="pp-field wide"><span class="pp-key" data-i18n="pp-f-cosmic">Cosmic placement</span><span class="pp-val" data-i18n="pp-v-cosmic">Virgo sun / Libra moon / Aries rising</span></div>
+              <div class="pp-field wide"><span class="pp-key" data-i18n="pp-f-residency">Residency status</span><span class="pp-val" data-i18n="pp-v-residency">Between flights &amp; feelings</span></div>
+              <div class="pp-field wide"><span class="pp-key" data-i18n="pp-f-marks">Identification marks</span><span class="pp-val" data-i18n="pp-v-marks">More tattoos than my mom is aware of</span></div>
+              <div class="pp-field wide"><span class="pp-key" data-i18n="pp-f-validity">Validity</span><span class="pp-val" data-i18n="pp-v-validity">Until further self-discovery</span></div>
             </div>
-          </div>
-
-          <!-- travel stats band -->
-          <div class="pp-stats">
-            <div class="pp-stat"><div class="pp-stat-num">16</div><div class="pp-stat-label" data-i18n="pp-s-countries">Visited countries</div></div>
-            <span class="pp-stat-sep" aria-hidden="true">✦</span>
-            <div class="pp-stat"><div class="pp-stat-num">55</div><div class="pp-stat-label" data-i18n="pp-s-flights">Flights taken</div></div>
-            <span class="pp-stat-sep" aria-hidden="true">✦</span>
-            <div class="pp-stat"><div class="pp-stat-num">≈117,000</div><div class="pp-stat-label" data-i18n="pp-s-km">Km travelled</div></div>
           </div>
         </div>
 
@@ -3104,6 +3115,18 @@
           <h3 class="pack-card-title" data-i18n="pack-fly-t">Before You Fly</h3>
           <p class="pack-card-desc" data-i18n="pack-fly-d">The leaving-home checklist — for everything a suitcase can't hold.</p>
           <a class="pack-download" href="ready-set-pack-before-you-fly.pdf" download data-i18n="pack-dl">Download PDF ↓</a>
+        </div>
+        <div class="pack-card">
+          <div class="pack-card-icon"><img src="pack-planner.png" alt="" /></div>
+          <h3 class="pack-card-title" data-i18n="pack-plan-t">Trip Planner</h3>
+          <p class="pack-card-desc" data-i18n="pack-plan-d">One page per trip: flights, stays, plans, and the budget corner.</p>
+          <a class="pack-download" href="ready-set-pack-trip-planner.pdf" download data-i18n="pack-dl">Download PDF ↓</a>
+        </div>
+        <div class="pack-card">
+          <div class="pack-card-icon"><img src="pack-bucket.png" alt="" /></div>
+          <h3 class="pack-card-title" data-i18n="pack-bucket-t">Travel Bucket List</h3>
+          <p class="pack-card-desc" data-i18n="pack-bucket-d">Every place you keep saying “one day” about — written down, ticked off.</p>
+          <a class="pack-download" href="ready-set-pack-bucket-list.pdf" download data-i18n="pack-dl">Download PDF ↓</a>
         </div>
       </div>
     </div>
@@ -3772,6 +3795,8 @@
         'pack-summer-t': 'Summer Packing List', 'pack-summer-d': 'Sun, sea, and everything you need for warm-weather trips.',
         'pack-winter-t': 'Winter Packing List', 'pack-winter-d': 'Layers, boots, and staying cosy wherever the cold takes you.',
         'pack-fly-t': 'Before You Fly', 'pack-fly-d': 'The leaving-home checklist &mdash; for everything a suitcase can\'t hold.',
+        'pack-plan-t': 'Trip Planner', 'pack-plan-d': 'One page per trip: flights, stays, plans, and the budget corner.',
+        'pack-bucket-t': 'Travel Bucket List', 'pack-bucket-d': 'Every place you keep saying &ldquo;one day&rdquo; about &mdash; written down, ticked off.',
         'pack-dl': 'Download PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; The Little Extras &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Pretty pictures that have nothing to do with travel.',
         'nonsense-intro': 'Not everything I point a camera at is a place. Sometimes it\'s a cat mid-nap, the light landing on a coffee cup, or an object too pretty to scroll past. This is the beautiful nonsense &mdash; no theme, no itinerary, just the things that caught my eye. (Yes, mostly cats.)',
@@ -3892,6 +3917,8 @@
         'pack-summer-t': 'Letnia lista pakowania', 'pack-summer-d': 'Słońce, morze i wszystko, czego potrzebujesz na ciepłe wyjazdy.',
         'pack-winter-t': 'Zimowa lista pakowania', 'pack-winter-d': 'Warstwy, buty i ciepło, dokądkolwiek zabierze cię mróz.',
         'pack-fly-t': 'Zanim wylecisz', 'pack-fly-d': 'Lista przed wyjściem z domu &mdash; wszystko, czego nie pomieści walizka.',
+        'pack-plan-t': 'Planer podróży', 'pack-plan-d': 'Jedna strona na wyjazd: loty, noclegi, plany i kącik budżetowy.',
+        'pack-bucket-t': 'Lista podróżniczych marzeń', 'pack-bucket-d': 'Wszystkie miejsca, o których mówisz &bdquo;kiedyś&rdquo; &mdash; spisane i odhaczone.',
         'pack-dl': 'Pobierz PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Drobiazgi &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Ładne zdjęcia, które nie mają nic wspólnego z podróżami.',
         'nonsense-intro': 'Nie wszystko, co fotografuję, to jakieś miejsce. Czasem to kot w trakcie drzemki, światło padające na filiżankę kawy albo przedmiot zbyt ładny, żeby go przewinąć. To są te piękne bzdury &mdash; bez tematu, bez planu, po prostu rzeczy, które przykuły mój wzrok. (Tak, głównie koty.)',
@@ -4011,6 +4038,8 @@
         'pack-summer-t': 'Liste de bagages d\'été', 'pack-summer-d': 'Le soleil, la mer et tout ce qu\'il faut pour les voyages au chaud.',
         'pack-winter-t': 'Liste de bagages d\'hiver', 'pack-winter-d': 'Des couches, des bottes et du confort où que le froid vous emmène.',
         'pack-fly-t': 'Avant de décoller', 'pack-fly-d': 'La check-list avant de quitter la maison &mdash; pour tout ce qu\'une valise ne contient pas.',
+        'pack-plan-t': 'Planificateur de voyage', 'pack-plan-d': 'Une page par voyage : vols, logements, plans et le coin budget.',
+        'pack-bucket-t': 'Liste de rêves de voyage', 'pack-bucket-d': 'Tous les endroits dont vous dites &laquo; un jour &raquo; &mdash; notés, puis cochés.',
         'pack-dl': 'Télécharger le PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Les Petits Riens &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'De jolies photos qui n\'ont rien à voir avec les voyages.',
         'nonsense-intro': 'Je ne photographie pas que des lieux. Parfois c\'est un chat en pleine sieste, la lumière sur une tasse de café, ou un objet trop joli pour passer son chemin. Voilà les belles bêtises &mdash; sans thème, sans itinéraire, juste ce qui a attiré mon regard. (Oui, surtout des chats.)',
@@ -4130,6 +4159,8 @@
         'pack-summer-t': 'Sommer-Packliste', 'pack-summer-d': 'Sonne, Meer und alles für warme Reisen.',
         'pack-winter-t': 'Winter-Packliste', 'pack-winter-d': 'Schichten, Stiefel und wohlige Wärme, wohin die Kälte dich auch bringt.',
         'pack-fly-t': 'Bevor du fliegst', 'pack-fly-d': 'Die Checkliste fürs Zuhause &mdash; für alles, was nicht in den Koffer passt.',
+        'pack-plan-t': 'Reiseplaner', 'pack-plan-d': 'Eine Seite pro Reise: Flüge, Unterkünfte, Pläne und die Budget-Ecke.',
+        'pack-bucket-t': 'Reise-Wunschliste', 'pack-bucket-d': 'Alle Orte, über die du &bdquo;irgendwann&ldquo; sagst &mdash; aufgeschrieben und abgehakt.',
         'pack-dl': 'PDF herunterladen &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Kleine Schönheiten &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Schöne Bilder, die nichts mit Reisen zu tun haben.',
         'nonsense-intro': 'Nicht alles, was ich fotografiere, ist ein Ort. Manchmal ist es eine Katze beim Nickerchen, das Licht auf einer Kaffeetasse oder ein Gegenstand, der zu hübsch zum Weiterscrollen ist. Das ist der schöne Unsinn &mdash; kein Thema, kein Reiseplan, einfach die Dinge, die mir ins Auge fielen. (Ja, meistens Katzen.)',
@@ -4249,6 +4280,8 @@
         'pack-summer-t': 'Lista bagagli estiva', 'pack-summer-d': 'Sole, mare e tutto il necessario per i viaggi al caldo.',
         'pack-winter-t': 'Lista bagagli invernale', 'pack-winter-d': 'Strati, stivali e calore ovunque ti porti il freddo.',
         'pack-fly-t': 'Prima di volare', 'pack-fly-d': 'La checklist prima di uscire di casa &mdash; per tutto ciò che non entra in valigia.',
+        'pack-plan-t': 'Pianificatore di viaggio', 'pack-plan-d': 'Una pagina per viaggio: voli, alloggi, piani e l\'angolo del budget.',
+        'pack-bucket-t': 'Lista dei sogni di viaggio', 'pack-bucket-d': 'Tutti i posti di cui dici &laquo;un giorno&raquo; &mdash; scritti e spuntati.',
         'pack-dl': 'Scarica il PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Le Piccole Cose &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Belle foto che non hanno nulla a che fare con i viaggi.',
         'nonsense-intro': 'Non tutto ciò che fotografo è un luogo. A volte è un gatto durante il pisolino, la luce su una tazza di caffè o un oggetto troppo bello per scorrere oltre. Queste sono le belle sciocchezze &mdash; nessun tema, nessun itinerario, solo le cose che hanno catturato il mio sguardo. (Sì, soprattutto gatti.)',
@@ -4368,6 +4401,8 @@
         'pack-summer-t': 'Lista de equipaje de verano', 'pack-summer-d': 'Sol, mar y todo lo necesario para los viajes de calor.',
         'pack-winter-t': 'Lista de equipaje de invierno', 'pack-winter-d': 'Capas, botas y calorcito allá donde te lleve el frío.',
         'pack-fly-t': 'Antes de volar', 'pack-fly-d': 'La lista antes de salir de casa &mdash; para todo lo que no cabe en la maleta.',
+        'pack-plan-t': 'Planificador de viaje', 'pack-plan-d': 'Una página por viaje: vuelos, alojamientos, planes y el rincón del presupuesto.',
+        'pack-bucket-t': 'Lista de sueños viajeros', 'pack-bucket-d': 'Todos los lugares de los que dices &laquo;algún día&raquo; &mdash; escritos y marcados.',
         'pack-dl': 'Descargar PDF &darr;',
         'nonsense-eyebrow': '&#10022; &nbsp; Las Pequeñas Cosas &nbsp; &#10022;', 'nonsense-title': 'Beautiful Nonsense', 'nonsense-sub': 'Fotos bonitas que no tienen nada que ver con viajar.',
         'nonsense-intro': 'No todo lo que fotografío es un lugar. A veces es un gato a media siesta, la luz sobre una taza de café o un objeto demasiado bonito para pasar de largo. Esto es la bella tontería &mdash; sin tema, sin itinerario, solo las cosas que me llamaron la atención. (Sí, sobre todo gatos.)',
@@ -5043,6 +5078,19 @@
       }
     }
 
+    /* Set up a gallery image so it loads lazily and smoothly: the shimmer
+       stops once it paints, and a failed load shows a calm placeholder
+       instead of a broken-image icon. Call BEFORE assigning img.src. */
+    function primeGalleryImg(img) {
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      const done = function () { img.classList.add('is-loaded'); };
+      const fail = function () { img.classList.add('is-loaded', 'img-error'); img.alt = img.alt || 'Photo unavailable'; };
+      if (img.complete && img.naturalWidth > 0) { done(); return; }
+      img.addEventListener('load', done);
+      img.addEventListener('error', fail);
+    }
+
     function renderTripGallery(id) {
       const all    = loadTripPhotos();
       const photos = all[id] || [];
@@ -5066,6 +5114,8 @@
         wrap.className = 'trip-photo-wrap';
         const img = document.createElement('img');
         img.className = 'trip-gallery-img';
+        img.alt = (TRIPS[id] ? (TRIPS[id].title.en || id) : id) + ' photo ' + (i + 1);
+        primeGalleryImg(img);
         img.src = photo.url;
         img.onclick = function () { openTripPhoto(id, i); };
         const del = document.createElement('button');
@@ -5281,9 +5331,10 @@
       if (document.body.classList.contains('owner')) return;
       if (localStorage.getItem('patriciaOwnerDevice')) return;   // you, via the Patricia gate login
       try {
-        await sb.from('page_views').insert([{ created_at: new Date().toISOString() }]);
+        await sb.from('page_views').insert([{}]);   // let the DB fill its own id/timestamp defaults
         sessionStorage.setItem('pv_done', '1');
-        loadViewCount();
+        // Note: the footer's visible counter is owner-only and filled by
+        // updateTotalVisits(); guests can't read page_views, so we don't query it here.
       } catch (e) {}
     }
 
@@ -5484,6 +5535,8 @@
         wrap.className = 'trip-photo-wrap';
         const img = document.createElement('img');
         img.className = 'trip-gallery-img';
+        img.alt = 'Beautiful nonsense ' + (i + 1);
+        primeGalleryImg(img);
         img.src = photo.url;
         img.onclick = function () {
           overlayPhotos = urls; overlayIndex = i;
@@ -5568,7 +5621,10 @@
           return '<button class="rating-btn" onclick="rateOutfit(\'' + o.id + '\',' + n + ',this)">' + n + '</button>';
         }).join('');
         card.innerHTML =
-          '<img class="outfit-photo" src="' + o.img + '" alt="' + o.name + '" onclick="openPhoto(this.src,this.alt)" />' +
+          '<img class="outfit-photo" src="' + o.img + '" alt="' + o.name + '" loading="lazy" decoding="async"' +
+            ' onload="this.classList.add(\'is-loaded\')"' +
+            ' onerror="this.classList.add(\'is-loaded\',\'img-error\')"' +
+            ' onclick="openPhoto(this.src,this.alt)" />' +
           '<div class="outfit-info">' +
             '<div class="outfit-badge">' + o.year + (o.loc ? ' &nbsp;·&nbsp; ' + o.loc : '') + '</div>' +
             '<h3 class="outfit-name">' + o.name + '</h3>' +
